@@ -1,0 +1,95 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+	    {
+            "name": "Debug",
+            "type": "chrome",
+            "request": "launch",
+            "webRoot": "${workspaceRoot}",
+            "url": "http://localhost:3000/index.html", 
+            "userDataDir": "${workspaceRoot}/.vscode/chrome",
+            "sourceMaps": true,
+            "preLaunchTask": "(Internal)Development",
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": [
+                "node_modules/**"
+            ],
+            "sourceMapPathOverrides": {
+                "webpack:///*": "${webRoot}/*"
+            }
+        },
+	    {
+            "name": "Run Production",
+            "type": "chrome",
+            "request": "launch",
+            "webRoot": "${workspaceRoot}",
+            "url": "http://localhost:3000/dist/index.html", 
+            "userDataDir": "${workspaceRoot}/.vscode/chrome",
+            "sourceMaps": true,
+            "preLaunchTask": "(Internal)Production",
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": [
+                "node_modules/**"
+            ],
+            "sourceMapPathOverrides": {
+                "webpack:///*": "${webRoot}/*"
+            }
+        },
+        {
+            "name": "Run Mocha Tests",
+            "type": "node",
+            "request": "launch",
+            //TODO: Change this to your correct location for mocha. 
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "smartStep": true,
+            "args": [
+                "--require", 
+                "babel-register",
+                "--require", 
+                "ignore-styles", 
+                "--require", 
+                "test/setup.js",
+                "--no-timeouts",
+                "--colors"
+            ],
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": null,
+            "env": { "NODE_ENV": "testing"}
+            },
+        {
+            "name": "Start Debug Mocha Tests",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "(Internal)BuildMochaDebug"
+        },
+        {
+            "name": "Debug Mocha Tests",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            //TODO: Change this to your correct location for mocha. 
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--require", 
+                "ignore-styles",
+                "--require", 
+                "./temp/test/setup.js",
+                "./temp/test/**/*.js",
+                "--no-timeouts",
+                "--colors"
+            ],
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "smartStep": true,
+            "outFiles": ["${workspaceRoot}/temp/**/*.js"],
+            "env": { "NODE_ENV": "debugTesting"}
+        }
+	]
+}
