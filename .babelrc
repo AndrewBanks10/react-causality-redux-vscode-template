@@ -1,0 +1,24 @@
+{
+    "presets": [
+        "es2015",
+        "react"
+    ],
+    "plugins": [
+        "react-hot-loader/babel",
+        "transform-react-jsx"
+    ],
+    "env": {
+        "production": {
+            "presets": [
+                "react-optimize"
+            ]
+        },
+        "development": {
+            "plugins": [
+                "transform-react-jsx-source"
+            ]
+        }
+    },
+    "sourceMaps": true,
+    "retainLines": true
+}
