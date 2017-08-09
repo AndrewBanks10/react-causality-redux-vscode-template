@@ -1,0 +1,36 @@
+@import 'common';
+
+.counter-form {
+    border: $single-gray-border; 
+    border-radius: 6px;
+    margin-bottom:12px;
+}
+
+.counter-form-button-container {
+    padding: 6px;
+}
+
+.counter-form-button {
+    margin-right:10px;
+    float:left;
+   
+}
+
+.counter-form-text {
+    background: #4e89c5;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    padding:6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.counter-form-value {
+    padding:6px;
+    border: $single-gray-border;  
+}
+
+.counter-text {
+    height:24px;
+}
