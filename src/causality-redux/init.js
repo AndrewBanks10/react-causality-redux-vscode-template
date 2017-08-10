@@ -11,10 +11,6 @@ function onStateChange(arg) {
 }
 
 function onListener(arg) {
-    //???
-    if (arg.listenerName === '') {
-       const x = 1;
-    } 
     console.log(`Effect: ${arg.listenerName}.`);
 }
 
