@@ -53,6 +53,7 @@ CausalityRedux.establishControllerConnections({
     partition: reduxComments
 });
 
+// Put in some initial comments.
 if ( CausalityRedux.store[COMMENTS_STATE].getState().items.length === 0 ) {
     const initialComments = [
         {author: 'Cory Brown', text: 'My 2 scents'},

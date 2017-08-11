@@ -3,17 +3,6 @@ import CausalityRedux from 'causality-redux';
 import { COMMENTS_STATE } from './commentscontroller';
 import styles from '../../stylesheets/comments';
 
-if ( CausalityRedux.store[COMMENTS_STATE].getState().items.length === 0 ) {
-    const initialComments = [
-        {author: 'Cory Brown', text: 'My 2 scents'},
-        {author: 'Jared Anderson', text: 'Let me put it this way. You`ve heard of Socrates? Aristotle? Plato? Morons!'},
-        {author: 'Matt Poulson', text: 'It`s just a function!'},
-        {author: 'Bruce Campbell', text: 'Fish in a tree? How can that be?'}
-    ];
-
-    initialComments.forEach(comment => CausalityRedux.store[COMMENTS_STATE].onAddComment(comment) );
-}
-
 const Comment = ({ author, children }) =>
     <div className={styles['comment-entry']}>
         <div className={styles['comment-list-author']}>
