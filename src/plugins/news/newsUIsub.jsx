@@ -10,10 +10,6 @@ const LoaderNews = ({isBusy}) => {
     );
 };
 
-//
-// react-causality-redux gave access to the variable 'error' and the function clearError as props.
-// See below.
-//
 const ErrorMessage = ({ errorMsg, clearError }) => {
     if (errorMsg === '')
         return null;

@@ -19,7 +19,8 @@ const handleGet = (url, successCallback, errorCallback) => {
 const getNewsSources = (getNewsSourcesSuccess, getNewsSourcesFail) => {
     _getNewsSourcesSuccess = getNewsSourcesSuccess;
     _getNewsSourcesFail = getNewsSourcesFail;
-    // Check the cache. Demonstrates the use of module data.
+    // Check the cache. Demonstrates the use of no UI module data contained in a separate file
+    // so that hot re-loading works properly.
     if (newsNonUIData.newsSourcesCache.length > 0)
         newsSourcesSuccess({ sources: newsNonUIData.newsSourcesCache });
     else
