@@ -29,6 +29,8 @@ const CounterForm = ({ counter, increment, decrement }) =>
         </div>
     </div>;
 
+// This might be considered controller logic, but in the event that the UI is removed this code would
+// most likely be removed also.
 export default CausalityRedux.connectChangersAndStateToProps(
     CounterForm, // Wrapped component
     COUNTER_STATE, // State partition
