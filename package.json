@@ -90,9 +90,9 @@
     "webpack-dev-server": "^2.5.0"
   },
   "dependencies": {
-    "causality-redux": "^2.1.10",
+    "causality-redux": "^2.1.11",
     "react": "^15.6.1",
-    "react-causality-redux": "^2.0.8",
+    "react-causality-redux": "^2.0.9",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
     "react-router": "^4.1.1",
