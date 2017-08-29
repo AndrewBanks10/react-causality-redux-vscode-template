@@ -9,7 +9,6 @@ import 'css';
 import './causality-redux/init';
 
 import App from './react-components/app';
-
 import { AppContainer } from 'react-hot-loader';
 
 //
