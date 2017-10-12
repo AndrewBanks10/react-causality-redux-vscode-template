@@ -1,5 +1,6 @@
 //
-// Import stylesheets here that do not support modules
+// TODO: Import stylesheets here that do not support modules.
+// Used for global stylesheets. They will be in the 'no_css_modules' directory.
 //
 
 import 'no_css_modules/header.1';
