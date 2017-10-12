@@ -1,10 +1,9 @@
-// Available variables which can be used inside of strings.
-// ${workspaceRoot}: the root folder of the team
-// ${file}: the current opened file
-// ${fileBasename}: the current opened file's basename
-// ${fileDirname}: the current opened file's dirname
-// ${fileExtname}: the current opened file's extension
-// ${cwd}: the current working directory of the spawned process
+//
+// https://github.com/Microsoft/vscode/issues/26897
+// Can't use terminal window on background tasks because they do not exit when vscode exits.
+// And, the output window cannot collect input from a task.
+// So we must remain at 0.1.0 until this is resolved.
+//
 {
 	"version": "0.1.0",
 	"command": "npm",
@@ -19,13 +18,13 @@
 				"start",
 				"--silent",
 				"--react-hot-boilerplate-vscode:port=3000",
-				"--react-hot-boilerplate-vscode:host=localhost" // use these command line args to override host and port of the dev-server. default values are defined in package.json config section.
+				"--react-hot-boilerplate-vscode:host=localhost"
 			],
 			"problemMatcher": [
 				{
 					"owner": "custom",
 					"pattern": {
-					  "regexp": "____________"
+						"regexp": "____________"
 					},
 					"background": {
 						"activeOnStart": true,
@@ -85,7 +84,7 @@
 				{
 					"owner": "custom",
 					"pattern": {
-					  "regexp": "____________"
+						"regexp": "____________"
 					},
 					"background": {
 						"activeOnStart": true,
@@ -176,6 +175,43 @@
 				"--silent"
 			],
 			"taskName": "(Internal)BuildMochaDebug"
+		},
+		/*
+		{
+			"args": [
+				"run",
+				"createcomponent"
+			],
+			"presentation": {
+				"reveal": "always",
+				"focus": true
+			},
+			"type": "shell",
+			"taskName": "Create Component",
+			"problemMatcher": []
+		},
+		{
+			"args": [
+				"run",
+				"createcomponentwc"
+			],
+			"presentation": {
+				"reveal": "always",
+				"focus": true
+			},
+			"type": "shell",
+			"taskName": "Create Component w/o Comments",
+			"problemMatcher": []
+		},
+
+		*/
+		{
+			"args": [
+				"run",
+				"createreactproject"
+			],
+			"taskName": "Create React Project",
+			"problemMatcher": []
 		},
 		{
 			"args": [

@@ -111,5 +111,6 @@
         "**/node_modules": true,
 		".vscode/chrome/**": true
     },
-	"typescript.check.tscVersion": false
+	"typescript.check.tscVersion": false,
+	"git.ignoreLimitWarning": true
 }
