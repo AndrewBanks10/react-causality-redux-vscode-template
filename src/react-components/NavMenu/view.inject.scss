@@ -1,0 +1,24 @@
+$dark-gray: #606060;
+
+.LinkEntry {
+    display:inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+
+.LinkEntry:visited {
+    color: $dark-gray;
+}
+
+.LinkEntry:hover {
+    color: $dark-gray;
+}
+
+.LinkEntry:link {
+    color: $dark-gray;   
+}
+
+.LinkEntry:active {
+    color: $dark-gray;
+}
