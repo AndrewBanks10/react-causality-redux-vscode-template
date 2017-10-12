@@ -8,38 +8,12 @@ $single-gray-border: 1px solid #c0c0c0;
 	transform: translate(-50%, -50%);
 }
 
-.change-form {
-    border: $single-gray-border; 
-    border-radius: 6px;
-    margin-bottom:12px;
-}
-
-.change-form-text {
-    background: #4e89c5;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-    padding:6px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
-
-.form-button {
-    margin-left:8px;
-}
-
-.ajax-button-container2 {
-    padding-top:6px;
-    padding-bottom:6px;
-}
-
-.ajax-button-container1 {
-    @extend .ajax-button-container2;
-    float:left;
+.ajax-button-container {
+    margin:8px;
 }
 
 .table-container {
-    max-height:200px;
+    max-height:400px;
     overflow:auto;
 }
 

@@ -1,5 +1,5 @@
 import CausalityRedux from 'causality-redux';
-import ChangeFormValue from './view/ajax-componentUImain';
+import AjaxDemoCausalityChain from './view/ajax-componentUImain';
 import ajaxController from './controller/ajax-componentcontroller';
 //
 // This is a sample of a causality-redux independent component.
@@ -20,12 +20,12 @@ import ajaxController from './controller/ajax-componentcontroller';
 // that restores 'data' in the state partition CAUSALITY_CHAIN_STATE to its default value of an empty array.
 //
 export default CausalityRedux.connectChangersAndStateToProps(
-    ChangeFormValue, // Wrapped component
+    AjaxDemoCausalityChain, // Wrapped component
     ajaxController.CAUSALITY_CHAIN_STATE, // State partition
     ['onGet', 'clear', 'onAbortGet'], // Changers made avilable through the props to this component.
     ['data', 'getIsBusy'],  // State partition variables made available to the props. When the biz code
                             // changes these values, this component is rendered with the new values in the props.
-    'ChangeFormValue render' // Used for debugging and tracking
+    'AjaxDemoCausalityChain render' // Used for debugging and tracking
 );
 
 

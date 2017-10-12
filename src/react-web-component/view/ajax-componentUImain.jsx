@@ -1,5 +1,9 @@
 import React from 'react';
+import Paper from 'material-ui/Paper';
+import AppBar from 'material-ui/AppBar';
+import NavMenu from '../../react-components/NavMenu/controller';
 import ajaxController from '../controller/ajax-componentcontroller';
+import RaisedButton from 'material-ui/RaisedButton';
 
 //
 // This is a css injection because this component is an independent react web component.
@@ -8,7 +12,7 @@ import ajaxController from '../controller/ajax-componentcontroller';
 //
 import styles from './ajax-componentUI.inject';
 
-const ChangeFormValue = ({onGet, onAbortGet, clear, data, getIsBusy}) => {
+const AjaxDemoCausalityChain = ({onGet, onAbortGet, clear, data, getIsBusy}) => {
     const tlist = data.map((o) => {
         return( 
             <tr key={o.id}>
@@ -20,39 +24,37 @@ const ChangeFormValue = ({onGet, onAbortGet, clear, data, getIsBusy}) => {
         );
     });
     return (
-        < div className={styles['change-form']}>
-            <ajaxController.ErrorMessage />
-            <ajaxController.Loader1/>
-            <div className={styles['change-form-text']}>
-                {'Causality chain example.'}
-            </div>
-            <div className={styles['table-container']}>
-                <table>
-                    <tbody>
-                      <tr>
-                        <th>User Id</th>
-                        <th>Todo Id</th>
-                        <th>Text</th>
-                        <th>Completed</th>                       
-                      </tr>
-                      {tlist}
-                    </tbody>
-                </table>
-            </div>
-            <div className={styles['ajax-button-container1']}>
-                <button disabled={getIsBusy} className={styles['form-button']} onClick={() => onGet()}>Ajax Load</button>  
-            </div>
-            <div className={styles['ajax-button-container1']}>
-                <button disabled={!getIsBusy} className={styles['form-button']} onClick={() => onAbortGet()}>Abort</button>  
-            </div>                 
-            <div className={styles['ajax-button-container2']}>
-                <button className={styles['form-button']} onClick={() => clear()}>Clear</button>  
-            </div>                  
-        </div>
+        <div>
+            <AppBar
+                title='Causality Chain Demo'
+                iconElementLeft={<NavMenu useHome={'useHome'}/>}
+            />
+            <Paper zDepth={4}>
+                <ajaxController.ErrorMessage />
+                <ajaxController.Loader1/>
+
+                <div className={styles['table-container']}>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>User Id</th>
+                            <th>Todo Id</th>
+                            <th>Text</th>
+                            <th>Completed</th>                       
+                        </tr>
+                        {tlist}
+                        </tbody>
+                    </table>
+                </div>
+                <RaisedButton className={styles['ajax-button-container']} disabled={getIsBusy} label="Ajax Load" onClick={onGet} />
+                <RaisedButton className={styles['ajax-button-container']} disabled={!getIsBusy} label="Abort" onClick={onAbortGet} />
+                <RaisedButton className={styles['ajax-button-container']} disabled={getIsBusy} secondary={true} label="Clear" onClick={clear} />
+            </Paper>
+        </div>    
     );
 };
 
-export default ChangeFormValue;
+export default AjaxDemoCausalityChain;
 
 
 
