@@ -17,6 +17,17 @@ module.exports = {
         path: configCommon.absoluteBuildPath,
         filename: `${path.join(configCommon.buildScriptDir, configCommon.bundleName)}.js`        
     },
+    devServer: {
+        contentBase: configCommon.basePath,
+        inline: true,
+        hot: true,
+        historyApiFallback: true,
+        stats: {
+            colors: true,
+            chunks: false,
+            'errors-only': true
+        }
+    },
     plugins: [
         new webpack.DefinePlugin({
             '__DEV__': true,

@@ -20,6 +20,15 @@ const exportObject = {
         path: configCommon.absoluteBuildPath,
         filename: `${buildScriptDir}${configCommon.bundleName}.js`
     },
+    devServer: {
+        contentBase: configCommon.absoluteBuildPath,
+        historyApiFallback: true,
+        stats: {
+            colors: true,
+            chunks: false,
+            'errors-only': true
+        }
+    },
     plugins: [
 
         new ExtractTextPlugin(`${buildCSSDir}${configCommon.bundleName}.css`),

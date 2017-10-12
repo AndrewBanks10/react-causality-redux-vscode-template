@@ -1,12 +1,18 @@
 import React from 'react';
 import assert from 'assert';
 import { mount } from 'enzyme';
-// Must be included before any react components
-import '../src/causality-redux/init';
-import App from '../src/react-components/app';
+import CausalityRedux from 'causality-redux';
+import 'react-causality-redux';
+import NewsForm from '../src/react-components/plugins/news/controller/newscontrollerUImain';
+import CounterForm from '../src/react-components/CounterForm/controller/countercontrollerUImain';
+import { Provider } from 'react-redux';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+// This is required because of a bug in material-ui with mocha/enzyme testing.
+CausalityRedux.store['NavMenu_Partition'].setState({mochaTesting: true});
 
 // Mount the App
-const appMount = mount(<App />);
+const appMount = mount(<Provider store={CausalityRedux.store}><MuiThemeProvider><div><NewsForm/><CounterForm/></div></MuiThemeProvider></Provider>);
 
 const waitTime = 2000;
 let intervalID;

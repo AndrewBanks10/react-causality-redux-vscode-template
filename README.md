@@ -15,6 +15,8 @@ A complete react-causality-redux es6 jsx boilerplate project for Visual Studio C
 * Major extensions and simplifications to redux.
 * Clean separation between business logic and react components. No entangling program state and business code wiht the UI. Allows react components to be pure UI components. This way when react becomes obsolute, you simply take it out and install a new UI without having to rewrite any program state code or business code.
 * The ability to build independent react web components with the react UI part of the component being free of business logic.
+* Support for the react router and redux store synchronization with your routes such that any route component
+will retain its redux store values given route changes and/or browser forward or back movements.
 * React/enzyme auto test environment with vscode debugging.
 * Dll library support for debugging for much faster debug compilation.
 * Dll library support for production. Users do not have to reload react code for example, each time they visit your site. Ideally, they need only reload your code when it changes.

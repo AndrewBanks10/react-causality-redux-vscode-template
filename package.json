@@ -9,14 +9,17 @@
     "build": "npm run build:prod",
     "builddll": "npm run builddll:dev && npm run builddll:prod",
     "build:all": "npm run builddll:dev && npm run builddll:prod && npm run build",
-    "start": "cross-env NODE_ENV=development node devtools/devServer.js",
-    "startprod": "cross-env NODE_ENV=production node devtools/prodServer.js",
+    "start": "cross-env NODE_ENV=development node devtools/server.js",
+    "startprod": "cross-env NODE_ENV=production node devtools/server.js",
     "lint": "eslint src/**",
     "test": "mocha --require ignore-styles --require test/setup.js test/**/*-test.js",
     "compile:del": "rimraf temp",
     "compile:copy": "copyfiles src/**/*.* temp",
     "compile:src": "babel ./test/**/*.js ./src/**/*.js ./src/**/*.jsx --out-dir temp --source-maps --watch",
     "buildmochadebug": "npm run compile:del && npm run compile:copy && npm run compile:src",
+    "createcomponent": "node devtools/createcomponent.js",
+    "createcomponentwc": "node devtools/createcomponentwc.js",
+    "createreactproject": "node devtools/createreactproject.js",
     "mochadebug": "npm run compile:del && npm run compile:copy && npm run compile:testjs"
   },
   "repository": {
@@ -91,11 +94,14 @@
   },
   "dependencies": {
     "causality-redux": "^2.1.11",
+    "history": "^4.7.2",
+    "material-ui": "^0.19.4",
     "react": "^15.6.1",
     "react-causality-redux": "^2.0.9",
+    "react-causality-redux-router": "^0.0.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
-    "react-router": "^4.1.1",
+    "react-router-dom": "^4.2.2",
     "redux": "^3.7.1"
   },
   "config": {

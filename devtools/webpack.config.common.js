@@ -41,6 +41,7 @@ function cssLoaders(sourceMaps, useModules) {
     postcss: {
       loader: 'postcss-loader',
       options: {
+        zindex: false,
         plugins: () => [
           autoprefixer({
             browsers: ['last 2 versions']
@@ -51,6 +52,7 @@ function cssLoaders(sourceMaps, useModules) {
     sass: {
       loader: 'sass-loader',
       options: {
+        zindex: false,
         sourceMaps,
         includePaths: [config.absoluteSourcePath]
       }
