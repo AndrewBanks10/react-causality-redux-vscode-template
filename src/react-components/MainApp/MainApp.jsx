@@ -7,6 +7,7 @@ import NewsForm from '../plugins/news/controller/newscontrollerUImain';
 import AjaxDemoCausalityChain from '../../react-web-component/index';
 import RouterForm from '../RouterForm/controller';
 import HomeApp from '../HomeApp/HomeApp';
+import MonitorComponent from '../MonitorComponent/index';
 
 export const HOMEROUTE = '/';
 export const CAUSALITYCHAINROUTE = '/causalitychain';
@@ -16,14 +17,17 @@ export const COMMENTSROUTE = '/commentboxcausalityredux';
 export const ROUTERDEMOROUTE = '/routerdemo';
 
 const MainApp = () =>
-    <Switch>
-        <Route exact path={HOMEROUTE} component={HomeApp} />
-        <Route path={CAUSALITYCHAINROUTE} component={AjaxDemoCausalityChain} />
-        <Route path={NEWSROUTE} component={NewsForm} />
-        <Route path={COUNTERROUTE} component={CounterForm} />
-        <Route path={COMMENTSROUTE} component={CommentForm} />
-        <Route path={ROUTERDEMOROUTE} component={RouterForm} />
-        <Redirect to={HOMEROUTE} />
-    </Switch>;
+    <div> 
+        <MonitorComponent/>
+        <Switch>
+            <Route exact path={HOMEROUTE} component={HomeApp} />
+            <Route path={CAUSALITYCHAINROUTE} component={AjaxDemoCausalityChain} />
+            <Route path={NEWSROUTE} component={NewsForm} />
+            <Route path={COUNTERROUTE} component={CounterForm} />
+            <Route path={COMMENTSROUTE} component={CommentForm} />
+            <Route path={ROUTERDEMOROUTE} component={RouterForm} />
+            <Redirect to={HOMEROUTE} />
+        </Switch>
+    </div>     
 
 export default MainApp;

@@ -127,7 +127,8 @@ $lightGreen: RGB(137,209,133);
     font-size:18px;
     color:$lightGreen;
     cursor:default;
-    padding-left:4px;   
+    padding-left:4px; 
+    padding-right:4px;   
 }
 
 .transitionButton {
@@ -151,30 +152,29 @@ $lightGreen: RGB(137,209,133);
 }
 
 .transitionExitButton {
-    float:right;
+    float:left;
     font-size:18px;
     color:white;
     cursor:default;
     padding-top:0px;
-    padding-right:4px;
 }
 
 .transitionMinimizeButton {
-    float:right;
+    float:left;
     font-size:18px;
     font-weight:bold;
     color:white;
     cursor:default;
     padding-top:3px;
-    padding-right:8px;
+    padding-right:12px;
 }
 
 .debugButton {
-    float:right;
+    float:left;
     font-size:18px;
     color:$lightGreen;
     cursor:default;
-    padding-right:10px;
+    padding-right:12px;
 }
 
 .maximizeButton {
@@ -201,7 +201,7 @@ $lightGreen: RGB(137,209,133);
 }
 
 .eraseButton {
-    float:right;
+    float:left;
     font-size:18px;
     color:red;
     cursor:default;

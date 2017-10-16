@@ -1,226 +1,189 @@
 import CausalityRedux from 'causality-redux';
 import 'react-causality-redux';
+import { setHistoryState } from 'react-causality-redux-router';
+
+const defaultState = {
+    data: [],
+    isDebugging: false,
+    currentState: -1,
+    display: true,
+    isMinimized: false
+};
+
+//
+// Since state can go forward and back, this would affect the monitor negatively.
+// Hence, some data must be kept out of the redux store in order to keep the monitor stable. 
+//
+const monitorMirroredState = CausalityRedux.merge({}, defaultState);
+
+const controllerFunctions = {
+    startDebug,
+    clickedState,
+    forwardOneState,
+    backOneState,
+    stopDebug,
+    replayStates,
+    beginning,
+    exit,
+    minimize,
+    maximize,
+    setThisState
+};
 
 export const MONITOR_STATE = 'MONITOR_STATE';
 
 const monitorPartitionDef = {
     partitionName: MONITOR_STATE,
-    defaultState: {
-        data: [],
-        partitionSelect: false,
-        partitions: [],
-        isDebugging: false,
-        currentState: -1,
-        display: true,
-        isMinimized: false
-    },
-    changerDefinitions: {
-        'selectAll': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: selectAll },
-        'partitionSelected': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: partitionSelected },
-        'selectPartition': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: selectPartition },
-        'startDebug': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: startDebug },
-        'clickedState': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: clickedState },
-        'forwardOneState': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: forwardOneState },
-        'backOneState': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: backOneState },
-        'stopDebug': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: stopDebug },
-        'replayStates': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: replayStates },
-        'beginning': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: beginning },
-        'exit': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: exit },
-        'minimize': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: minimize },
-        'maximize': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: maximize },
-        'removeAll': { operation: CausalityRedux.operations.STATE_FUNCTION_CALL, controllerFunction: removeAll }
-    }
+    defaultState,
+    controllerFunctions
 };
 
-let states = [];
-let allStates = [];
+const allStates = [];
 const listeners = [];
-let monitorPartition = '';
-
-const isBasicObjectType = (obj) => Object.prototype.toString.call(obj).slice(8, -1) === 'Object';
 
 function discloseStates() {
-    let discloseStates;
-    if (partitionState.isDebugging)
-        discloseStates = states;
-    else
-        discloseStates = allStates;    
     const data = [];
-    discloseStates.forEach(e => {
-        if (monitorPartition === '' || monitorPartition === e.partitionName) {
-            let strObj = '';
-            if (typeof e.nextState['crFunctionCall'] !== 'undefined') {
-                strObj = `${e.nextState['crFunctionCall']}(${e.nextState['args'].toString()})`;
-            } else {
-                CausalityRedux.getKeys(e.nextState).forEach(key => {
-                    if (e.nextState[key] !== e.prevState[key]) {
-                        if (strObj !== '')
-                            strObj += ', ';
-                        strObj += `${key}: ${e.nextState[key]}`;
-                    }
-                });
-            }    
+    allStates.forEach(e => {
+        let strObj = '';
+        CausalityRedux.getKeys(e.nextState).forEach(key => {
+            if (e.nextState[key] !== e.prevState[key]) {
+                if (strObj !== '')
+                    strObj += ', ';
+                strObj += `${key}: ${e.nextState[key]}`;
+            }
+        });
+        if (typeof e.nextState === 'undefined')
+            data.push('Initial Store');  
+        else
             data.push(`${e.partitionName}: {${strObj}}`);
-        }    
     });
-    partitionState.data = data;    
+    monitorMirroredState.data = data;
+    setMonitorState();
 }
 
 //
 // The two functions below will disclose all transactions to the causality redux store.
 //
 function onStateChange(arg) {
-    if (!partitionState.isDebugging && arg.partitionName !== MONITOR_STATE) {
+    if (arg.partitionName !== MONITOR_STATE && monitorMirroredState.isDebugging) {
+        setTimeout(stopDebug, 1);
+    }
+    if (arg.partitionName !== MONITOR_STATE && arg.operation !== CausalityRedux.operations.STATE_FUNCTION_CALL) {
+        arg.store = CausalityRedux.store.getState();
+        // First state
+        if (allStates.length === 0) {
+            const firstArg = CausalityRedux.merge({}, arg);
+            delete firstArg.nextState;
+            allStates.push(firstArg);
+            arg.store = CausalityRedux.merge({}, arg.store);
+        }
+        arg.store[arg.partitionName] = CausalityRedux.merge({}, arg.store[arg.partitionName], arg.nextState);
+        arg.store[CausalityRedux.storeVersionKey] = arg[CausalityRedux.storeVersionKey];
         allStates.push(arg);
         setTimeout(discloseStates, 1);
     }   
 }
 
 function onListener(arg) {
-    if (arg.partitionName !== MONITOR_STATE)
+    if (arg.partitionName !== MONITOR_STATE && arg.operation !== CausalityRedux.operations.STATE_FUNCTION_CALL) {
         listeners.push(arg);
-}
-
-function selectAll() {
-    monitorPartition = '';
-    setTimeout(discloseStates, 1); 
-}
-
-function partitionSelected(partition) {
-    monitorPartition = partition;
-    partitionState.partitionSelect = false;
-    setTimeout(discloseStates, 1); 
-}
-
-function selectPartition() {
-    const partitions = [];
-    Object.keys(CausalityRedux.store.getState()).forEach(e => {
-        partitions.push(e);
-    });
-    partitionState.partitionSelect = true;
-    setState({partitionSelect: true, partitions});
-}
-
-function executeChanger(stateObj) {
-    const partitionDefinitions = CausalityRedux.partitionDefinitions;
-    const partitionDefinition = partitionDefinitions.find(e =>
-        stateObj.partitionName === e.partitionName
-    );
-    if (partitionDefinition && stateObj.changerName !== 'setState') {
-        const changerEntry = partitionDefinition.changerDefinitions[stateObj.changerName];
-        if (changerEntry && changerEntry.arrayArgShape) {
-            let index = 0;
-            for (; index < stateObj.args.length; ++index)
-                if (isBasicObjectType(stateObj.args[index]))
-                    break;
-            if (index < stateObj.args.length) {
-                const args = {};
-                CausalityRedux.getKeys(changerEntry.arrayArgShape).forEach(key => {
-                    args[key] = stateObj.args[index][key];
-                });
-                stateObj.args[index] = args;
-            }
-        }
     }
-    const changer = CausalityRedux.store[stateObj.partitionName][stateObj.changerName];
-    changer(...stateObj.args);
 }
 
-function initializeState() {
-    for (let i = states.length - 1; i >= 0; --i)
-        CausalityRedux.store[states[i].partitionName].setState(states[i].prevState);
+function setMonitorState()
+{
+    setState(monitorMirroredState);
+}
+
+function copyStoreState(position) {
+    CausalityRedux.copyState(allStates[position].store);
 }
 
 function replayStates() {
-    initializeState();
-    const len = states.length;
-    for (let i = 0; i < len; ++i)
-        executeChanger(states[i]);
-    partitionState.currentState = states.length - 1;
+    const position = allStates.length - 1; 
+    copyStoreState(position);
+    monitorMirroredState.currentState = position;
+    setMonitorState();
 }
 
 function beginning() {
-    initializeState();
-    partitionState.currentState = -1;
+    copyStoreState(0);
+    monitorMirroredState.currentState = -1;
+    setMonitorState();
 }
 
 function stopDebug() {
     replayStates();
-    partitionState.isDebugging = false;
-    partitionState.currentState = -1;
+    monitorMirroredState.isDebugging = false;
+    monitorMirroredState.currentState = -1;
+    setMonitorState();
 }
 
 function startDebug() {
     if (allStates.length === 0)
         return;  
-    
-    if (monitorPartition === '')
-        states = allStates;
-    else
-        states = allStates.filter(e =>
-            e.partitionName === monitorPartition
-        );   
   
-    partitionState.isDebugging = true;
-    partitionState.currentState = states.length - 1;
+    monitorMirroredState.isDebugging = true;
+    monitorMirroredState.currentState = allStates.length - 1;
+    setMonitorState();
 }
 
 function exit() {
-    partitionState.display = false;
+    monitorMirroredState.display = false;
+    setMonitorState();
 }
 
 function clickedState(index) {
-    if(!partitionState.isDebugging)
+    if (!monitorMirroredState.isDebugging)
         return;
-    let currentState = partitionState.currentState;
-    if (index < currentState) {
-        while (index < currentState) {
-            CausalityRedux.store[states[currentState].partitionName].setState(states[currentState].prevState);
-            --currentState;
-        }
-    } else {
-        while (index > currentState) {
-            ++currentState;
-            executeChanger(states[currentState]);
-        }
-    }
-    partitionState.currentState = index;
+    copyStoreState(index);
+    monitorMirroredState.currentState = index;
+    setMonitorState();
 }
 
+//OK
 function forwardOneState() {
-    if (partitionState.currentState === states.length - 1)
-        return;    
-    const i = partitionState.currentState + 1;
-    executeChanger(states[i]);
-    partitionState.currentState = i;
+    const i = monitorMirroredState.currentState;
+    if (i === allStates.length - 1)
+        return; 
+    copyStoreState(i+1); 
+    monitorMirroredState.currentState++;
+    setMonitorState();
 }
 
 function backOneState() {
-    const i = partitionState.currentState;
+    const i = monitorMirroredState.currentState;
     if (i === -1)
         return;   
-    CausalityRedux.store[states[i].partitionName].setState(states[i].prevState); 
-    --partitionState.currentState;
+    copyStoreState(i-1);
+    --monitorMirroredState.currentState;
+    setMonitorState();
 }
 
 function minimize() {
-    partitionState.isMinimized = true;
+    monitorMirroredState.isMinimized = true;
+    setMonitorState();
 }
 
 function maximize() {
-    partitionState.isMinimized = false;
+    monitorMirroredState.isMinimized = false;
+    setMonitorState();
 }
 
-function removeAll() {
-    allStates = [];
-    setTimeout(discloseStates, 1); 
+function setThisState() {
+    const currentState = monitorMirroredState.currentState;
+    allStates.length = currentState + 1;
+    copyStoreState(currentState);
+    if ( typeof setHistoryState === 'function')
+        setHistoryState(allStates[currentState].store);
+    discloseStates();
+    setMonitorState();
 }
 
-const { partitionState } = CausalityRedux.establishControllerConnections({
+const { setState } = CausalityRedux.establishControllerConnections({
     module,
     partition: monitorPartitionDef
 });
 
-const { setState } = CausalityRedux.store[MONITOR_STATE];
 CausalityRedux.setOptions({ onStateChange, onListener });
 
