@@ -132,7 +132,6 @@ function maximize() {
     setMonitorState();
 }
 
-//??? once debug is on it does not turn off
 function setThisState() {
     const currentState = monitorMirroredState.currentState;
     monitorMirroredState.isDebugging = false;
