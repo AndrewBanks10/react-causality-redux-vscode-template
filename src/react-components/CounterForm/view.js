@@ -13,7 +13,7 @@ export const CounterFormValue = ({ counter }) =>
 export const CounterForm = ({ increment, decrement, counter, CounterFormValue }) =>
     <div>
         <AppBar
-            title='Demonstrates a MVC component with asynchronous model functions.'
+            title='Counter Demo.'
             iconElementLeft={<NavMenu useHome={'useHome'} />}
         />
         <Paper zDepth={4}>
