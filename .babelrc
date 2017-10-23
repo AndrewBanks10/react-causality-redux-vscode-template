@@ -3,7 +3,9 @@
         "es2015",
         "react"
     ],
-    "plugins": [
+    "plugins": [        
+        "syntax-dynamic-import",
+        "transform-object-rest-spread",
         "react-hot-loader/babel",
         "transform-react-jsx"
     ],
