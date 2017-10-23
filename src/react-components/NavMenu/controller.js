@@ -35,9 +35,11 @@ const controllerFunctions = {
  By default, all the function keys and state keys in the partition definition will be made available in the props
  to the connect redux component uiComponent: NavMenu.
  */
+const NavMenu_Partition = 'NavMenu_Partition';
+
 const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
     module, // Needed for hot reloading.
-    partition: { partitionName: 'NavMenu_Partition', defaultState, controllerFunctions },
+    partition: { partitionName: NavMenu_Partition, defaultState, controllerFunctions },
     uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
     uiComponentName: 'NavMenu' // Used for tracing.
 });

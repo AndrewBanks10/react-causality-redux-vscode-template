@@ -1,0 +1,146 @@
+@import '../../stylesheets/common';
+
+.error-message-text
+{
+	padding-bottom:4px;
+}
+
+.error-message
+{
+  @extend .center-div-on-screen;
+  padding:20px;
+  background-color:RGB(245,245,245);
+  color:red;
+  font-weight:bold;
+  border-radius: 8px;
+  border: $single-gray-border;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #555555;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: spin 1s linear infinite;
+  position: fixed;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+    z-index:99;
+}
+
+tr:nth-child(even) {
+    background-color: #eeeeee;
+}
+
+.news-container {
+    @extend .center-div-on-screen;
+    border-radius: 6px;
+    background: #ffffff;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-article-container {
+    overflow:auto;
+}
+
+.news-exit {
+    font-weight: bold;
+    border-radius: 4px;
+    background: #000000;
+    color:#ffffff;
+    border: $single-gray-border; 
+    z-index: 100;
+    float:right;
+    padding:6px;
+    cursor:pointer;
+}
+
+a {
+    text-decoration: none;
+}
+
+.news-entry{
+    color:black;
+    border-bottom: $single-gray-border;
+    margin-top:0px;
+}
+
+.news-entry:hover {
+    background: #f0f0f0;
+    cursor: pointer;
+}
+
+.author-entry {
+    font-size: 10px;
+}
+
+.title-entry {
+    font-size: 14px;
+    font-weight:bold;
+    padding-bottom:4px;
+}
+
+.description-entry {
+    padding: 0px 6px 6px 6px;
+    font-size: 13px;
+}
+
+.img-entry {
+    height:40px;
+    width:40px;
+    border:0px;
+}
+
+.title-author-entry {
+    height:40px;
+    border:0px;
+    padding-left:0px;
+}
+
+.cover {
+    background: rgba(0,0,0,0.7);
+    z-index: 98;
+    width: 100%;
+    height:100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+}
+
+.news-title {
+    text-align: center;
+    font-weight: bold;
+    color:white;
+    background: #4e89c5;
+    border: $single-gray-border;
+    padding-top:6px;  
+    padding-bottom:6px; 
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.news-row{ 
+    cursor: pointer;
+}
+
+.table-container {
+    max-height:400px;
+    overflow:auto;
+}
+
+.ajax-button-container {
+    margin:8px;
+}
+
+
+

@@ -1,4 +1,4 @@
-import { history } from 'react-causality-redux-router';
+import history from '../../history/history';
 
 export const replaceHistory = (url) => {
     history.replace(url);

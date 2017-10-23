@@ -1,16 +1,16 @@
-import { React, render, App } from './index-common';
+import { React, render, App, reactMountNode } from './index-common';
 import { AppContainer } from 'react-hot-loader';
 
 //
 // The below is the necessary technique to utilize hot re-loading of react.
 // 
 const renderRoot = (TheApp) => {
-  render(
-    <AppContainer>
-      <TheApp/>
-    </AppContainer>,
-    document.getElementById('reactroot')
-  );
+    render(
+        <AppContainer warnings={false}>
+            <TheApp/>
+        </AppContainer>,
+        reactMountNode
+    );
 };
 
 // First module render.
