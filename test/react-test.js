@@ -3,8 +3,8 @@ import assert from 'assert';
 import { mount } from 'enzyme';
 import CausalityRedux from 'causality-redux';
 import 'react-causality-redux';
-import NewsForm from '../src/react-components/plugins/news/controller/newscontrollerUImain';
-import CounterForm from '../src/react-components/CounterForm/controller/countercontrollerUImain';
+import NewsForm from '../src/react-components/NewsForm/controller';
+import CounterForm from '../src/react-components/CounterForm/controller';
 import { Provider } from 'react-redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 

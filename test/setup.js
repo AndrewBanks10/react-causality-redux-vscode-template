@@ -23,6 +23,8 @@ global.navigator = {
     userAgent: 'node.js'
 };
 
-
-
-
+if (typeof global.localStorage === 'undefined' || global.localStorage === null) {
+    global.localStorage = require('node-localstorage').LocalStorage;
+    global.localStorage = new global.localStorage('./temp');
+}
+ 

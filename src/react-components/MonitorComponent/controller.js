@@ -132,8 +132,10 @@ function maximize() {
     setMonitorState();
 }
 
+//??? once debug is on it does not turn off
 function setThisState() {
     const currentState = monitorMirroredState.currentState;
+    monitorMirroredState.isDebugging = false;
     allStates.length = currentState + 1;
     discloseStates();
     setMonitorState();
@@ -175,8 +177,8 @@ const { setState, partitionState, getState } = CausalityRedux.establishControlle
     controllerUIConnections
 });
 
-const isCausalityReduxComponent = (obj) =>
-    typeof obj !== 'undefined' && typeof obj.prototype !== 'undefined' && typeof obj.prototype.isCausalityReduxComponent !== 'undefined';
+const isCausalityReduxComponent = val =>
+    typeof val === 'function' && val.prototype !== 'undefined' && typeof val.prototype.isCausalityReduxComponent !== 'undefined';  
 
 const copyHotReloadedComponents = (partitionName, partition) => {
     CausalityRedux.getKeys(partition).forEach(partitionKey => {
