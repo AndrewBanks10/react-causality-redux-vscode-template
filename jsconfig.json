@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
-        "allowSyntheticDefaultImports": true
-    },
+        "target": "ES6"
+    },    
     "exclude": [
-        "typings/main.d.ts",
-        "typings/main",
-        "node_modules"
+        "node_modules",
+        "dist",
+        "devdll"
     ]
 }

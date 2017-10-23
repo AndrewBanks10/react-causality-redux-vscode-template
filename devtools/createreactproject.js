@@ -1,118 +1,400 @@
+/* eslint no-empty:0 */
+/* eslint no-console:0 */
+
 const path = require('path');
 const fs = require('fs');
+const config = require('./webpack.config.config');
 
-const configCommon = require('./webpack.config.common');
+function writeFile(directory, strFile) {
+    fs.writeFileSync(directory, strFile);
+}
 
-
-const controllerCode = (component) =>
-`import CausalityRedux from 'causality-redux';
-import ${component} from './view';
-
-/*
- TODO: Define the partition store definition
-*/
-const defaultState = {
-    sampleKey1: '',
-    sampleKey2: []
-};
-
-/*
- TODO: Define Controller functions available to the UI.
- Use partitionState to access the keys of default state in these functions.
- partitionState is a proxy that returns a copy of the value at the selected key.
- let value = partitionState.key;
- modify value.
- To set a key do partitionState.key = value;
- use setState to set multiple keys like setState({key1: val1, key2: val2});
-*/
-const controllerFunctions = {
-    sampleFunction1: (url) => {
-        partitionState.sampleKey1 = url;
-    },
-    sampleFunction2: (e) => {
-        // Note partitionState returns a copy of the value at the key.
-        // So, the below must be done for objects, which are pointers in javascript.
-        const arr = partitionState.sampleKey2 ;
-        arr.push(e);
-        partitionState.sampleKey2 = arr;
-    },
-    sampleFunction3: (url, arr) => {
-        // Each assignment by partitionState causes a component render
-        // So use the below to change multiple keys with one render.
-        setState({sampleKey1: url, sampleKey2: arr});
+function mkdir(directory) {
+    try {
+        fs.mkdirSync(directory);
+    } catch (ex) {
+        
     }
+}
+
+const newLine = () =>
+`
+`; 
+const spaces = (amt) => {
+    let str = '';
+    for ( let i = 0; i < amt; ++i)
+        str += ' ';
+    return str;
 };
 
-/*
- This establishes all the connections between the UI and business code.
- It also supports hot reloading for the business logic.
- By default, all the function keys and state keys in the partition definition will be made available in the props
- to the connect redux component uiComponent: NavMenu.
- */
-const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
-    module, // Needed for hot reloading.
-    partition: { partitionName: '${component}_Partition', defaultState, controllerFunctions },
-    uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
-    uiComponentName: '${component}' // Used for tracing.
-});
+const reactComponentsPath = path.join(config.sourceDir, config.reactcomponentsdirectory);
 
-// Export the redux connect component. Use this in parent components.
-export default uiComponent;`
-;
+const  useReactRouter = () =>
+    config.useReactRouterWithTimeTravel || config.useReactRouterWithoutTimeTravel;
 
-const viewCode = (component) =>
-`import React from 'react';
-
-const ${component} = () =>
-    <div>
-    TODO: Define your component.
-    </div>;
-
-export default ${component};`
-;
-
-const modelCode = () => 
-`/*
-  Ideally, the business code would consist only of pure functions. However, there are cases (such as a cache)
-  where business code data is needed.
-  To support hot reloading, use the below for business data.
-  This will create a unique redux partition for this business data in order to support hot reloading
-  in this business code.
-
-  let nonUIData = {
-      whateveryouneed: [];
-      numberType: 0;
-  }
-  const moduleData = CausalityRedux.getModuleData(process.env.NODE_ENV === 'development', nonUIData).moduleData;
- 
-  Then moduleData is a proxy to the redux store partitiondata.
-  So, moduleData.whateveryouneed returns a copy to the data. Then to change whateveryouneed do
-  let arr = moduleData.whateveryouneed;
-  arr.push('1');
-  moduleData.whateveryouneed = arr;
-
-  For javascript basic data types, simply do the below.
-  moduleData.numberType = 1;
-  or you can do
-  ++moduleData.numberType;
-
-  
-  TODO: Add your business functions
-*/
-`;
-
-rl.question('Name of MVC react component: ', (component) => {
-    rl.close();
-    const dir = path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory, component);
-    if (fs.existsSync(dir)) {
-        console.log(`The directory ${dir} already exists.`);
+function handleDirectories() {
+    if (fs.existsSync(config.sourceDir)) {
+        console.log('The project is already created.');
         return;
     }
     
+    mkdir(config.sourceDir);
+    mkdir(config.testDirectory);
+
+    mkdir(reactComponentsPath);
+    mkdir(path.join(config.sourceDir, config.assetsDirectory));
+    if ( config.useCSSModules === 2 )
+        mkdir(path.join(config.sourceDir, config.noCSSModulesName));
+}
+
+function handleStylesheets() {
+    //
+    // Use global stylesheets
+    // 
+    if (config.useCSSModules !== 1) {
+        const cssFile =
+`//
+// TODO: Import stylesheets here that do not support modules.
+// Used for global stylesheets. They will be in the '${config.noCSSModulesName}' directory.
+// Note. If you do not import them here then they will not be included in the build.
+//
+
+// Example import './${config.noCSSModulesName}/header.1';
+
+// hot re-load support for the css above.
+if (module.hot)
+    module.hot.accept();
+`;
+        writeFile(path.join(config.sourceDir, 'css.js'), cssFile);    
+    }
+}
+
+function handleIndexCommon() {
+    //
+    // index-common.js
+    //
+    let index_common =
+`import React from 'react';
+import { render } from 'react-dom';
+`;
+
+    if (config.useCSSModules !== 1) {
+        index_common += 'import \'css\';';
+        index_common += newLine();
+    }
+        
+    if (config.useCausalityRedux) {
+        index_common += 'import \'./causality-redux/init\';';
+        index_common += newLine();
+    }
+
+    index_common += `import App from './${config.reactcomponentsdirectory}/App';`;
+    index_common += newLine();
+    index_common += newLine();
+    index_common += 
+`const reactRootId = 'reactroot';
+const reactMountNode = document.getElementById(reactRootId);
+
+export { App, React, render, reactMountNode };
+export default App;`;
+
+    writeFile(path.join(config.sourceDir, 'index-common.js'), index_common);      
+}
+
+function handleDllLibraries() {
+    const dllFiles = ['react', 'react-dom'];
+    if (config.useCausalityRedux) {
+        dllFiles.push('redux');
+        dllFiles.push('react-redux');
+        dllFiles.push('causality-redux');
+        dllFiles.push('react-causality-redux');
+    }
+    if (useReactRouter()) {
+        if (config.useReactRouterWithTimeTravel)
+            dllFiles.push('react-causality-redux-router');
+        dllFiles.push('react-router-dom');
+        dllFiles.push('history');
+    }
+    if (config.useMaterialUI)
+        dllFiles.push('material-ui');
+    
+    let dllFile = 'module.exports = [';
+    
+    for (let i = 0; i < dllFiles.length; ++i) {
+        if (i !== 0)
+            dllFile += ','; 
+        dllFile += newLine();
+        dllFile += spaces(4);
+        dllFile += `'${dllFiles[i]}'`;
+        if (i === dllFiles.length-1)
+            dllFile += newLine();
+    }
+
+    dllFile += '];';
+    writeFile(path.join('devtools', 'projectdllmodules.js'), dllFile);  
+}
+
+function handleHistoryFile() {
+    if (useReactRouter()) {
+        mkdir(path.join(config.sourceDir, 'history'));
+        let historyfile = ''; 
+        if (config.useCausalityRedux) {
+            if ( config.useReactRouterWithTimeTravel )
+                historyfile += 'import createBrowserHistory from \'react-causality-redux-router\';';
+            else
+                historyfile += 'import { createBrowserHistory } from \'history\';';    
+            historyfile += newLine();
+        } else {
+            historyfile += 'import { createBrowserHistory } from \'history\';';
+            historyfile += newLine();       
+        }
+        historyfile += 'const history = createBrowserHistory();';
+        historyfile += newLine();
+        historyfile += 'export default history;';
+        writeFile(path.join(config.sourceDir, 'history', 'history.js'), historyfile);  
+    }     
+}
+
+function handleCausalityRedux() {
+    //
+    // causality-redux/init.js
+    //
+    if (!config.useCausalityRedux)
+        return;    
+    const dir = path.join(config.sourceDir, 'causality-redux');  
     fs.mkdirSync(dir);
-    fs.writeFileSync(path.join(dir, 'controller.js'), controllerCode(component));
-    fs.writeFileSync(path.join(dir, 'view.jsx'), viewCode(component));
-    fs.writeFileSync(path.join(dir, 'model.js'), modelCode());
-    console.log(`MvC React Component ${component} generated.`);
+    const cr = 
+`import CausalityRedux from 'causality-redux';
+import 'react-causality-redux';
+
+CausalityRedux.createStore();`;
+    writeFile(path.join(dir, 'init.js'), cr);      
+}
+
+function handleApp() {
+
+    //
+    // App.js
+    //
+    let App = 'import React from \'react\';';
+    App += newLine(); 
+
+    if (config.useCausalityRedux) {
+        App += `import CausalityRedux from 'causality-redux';
+import { Provider } from 'react-redux';
+`;
+    }
+
+    if (useReactRouter()) {
+        App += 'import { Router } from \'react-router-dom\';';
+        App += newLine();
+        App += 'import history from \'../history/history\';';
+        App += newLine(); 
+
+    }    
+
+    if (config.useMaterialUI)
+        App += `import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+`;
+    
+    App += `import MainApp from './MainApp/MainApp';
+
+const App = () =>
+`;
+
+    let indentSpaces = 4;
+    const tagstack = [];
+    const closeTagstack = [];
+
+    if (config.useCausalityRedux) {
+        tagstack.push({
+            str: `<Provider store={CausalityRedux.store}>
+`, indentSpaces});
+        closeTagstack.push('</Provider>');
+        indentSpaces += 4;
+    }  
+
+    if (useReactRouter()) {
+        tagstack.push({
+            str: `<Router history={history}>
+`, indentSpaces});
+        closeTagstack.push('</Router>');
+        indentSpaces += 4;
+    } 
+
+    if (config.useMaterialUI) {
+        tagstack.push({
+            str: `<MuiThemeProvider>
+`, indentSpaces});
+        closeTagstack.push('</MuiThemeProvider>');
+        indentSpaces += 4;
+    } 
+
+    for (let i = 0; i < tagstack.length; ++i) {
+        App += spaces(tagstack[i].indentSpaces);
+        App += tagstack[i].str;
+    }
+
+    App += spaces(indentSpaces);
+    App += '<MainApp/>';
+    if (tagstack.length > 0)
+        App += newLine();
+
+    for (let i = tagstack.length - 1; i >= 0; --i) {
+        App += spaces(tagstack[i].indentSpaces);
+        App += closeTagstack[i];
+        if ( i !== 0)
+            App += newLine();   
+    }
+
+    App += `;
+
+export default App;`;
+
+    writeFile(path.join(reactComponentsPath, 'App.jsx'), App);  
+
+}
+
+function handleMainApp() {
+    //
+    // MainApp
+    //
+    const mainAppPath = path.join(reactComponentsPath, 'MainApp');
+    mkdir(mainAppPath);
+
+    let mainApp = 'import React from \'react\';';
+    mainApp += newLine();
+
+    if (useReactRouter()) {
+        mainApp += `
+import { Switch, Route, Redirect } from 'react-router-dom';
+    
+// TODO: Put your route strings here so that they may be imported from this module
+// when a router <Link> is needed
+export const HOMEROUTE = '/';
+    
+const MainApp = () =>
+    <Switch>
+        {/* TODO: Put your routes here example: <Route exact path={HOMEROUTE} component={HomeApp} /> */}
+        <Redirect to={HOMEROUTE} />
+    </Switch>;
+`;
+    } else {
+        mainApp += `
+const MainApp = () =>
+    {/* TODO: Put your react component(s) here. */};
+`;
+    }        
+    
+    mainApp += newLine();
+    mainApp += 'export default MainApp;';
+
+    writeFile(path.join(mainAppPath, 'MainApp.jsx'), mainApp);     
+}
+
+function buildServerIndexFiles() {
+    const index =
+`import { React, render, App, reactMountNode } from './index-common';
+    
+render(
+    <App />,
+    reactMountNode
+);`;
+
+    writeFile(path.join(config.sourceDir, 'index.js'), index); 
+    
+    const index_dev =
+        `import { React, render, App, reactMountNode } from './index-common';
+import { AppContainer } from 'react-hot-loader';
+
+//
+// The below is the necessary technique to utilize hot re-loading of react.
+// 
+const renderRoot = (TheApp) => {
+    render(
+        <AppContainer warnings={false}>
+            <TheApp/>
+        </AppContainer>,
+        reactMountNode
+    );
+};
+
+// First module render.
+renderRoot(App);
+
+//
+// Hot reload support for react. If any of the react components change this will
+// hot reload all changed components and then re-render the root
+//
+if (module.hot) {
+    module.hot.accept('./index-common', () => {
+        // The below requires the location of App or whatever is used for the root component
+        // The require('./index-common') brings in a new copy of the App module.
+        // react will handle keeping the props and state the same after the load. 
+        renderRoot(require('./index-common').default);
+    });
+}`; 
+    writeFile(path.join(config.sourceDir, 'index.dev.js'), index_dev);     
+}
+
+function handleTestDirectory() {
+    const setup =
+        `const { JSDOM } = require('jsdom');
+    
+const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
+const { window } = jsdom;
+global.window = window;
+global.document = window.document;
+    
+Object.keys(global.window).forEach( property => {
+    if (typeof global[property] === 'undefined') {
+        global[property] = global.window[property];
+    }
 });
+    
+global.navigator = {
+    userAgent: 'node.js'
+};`;
+
+    writeFile(path.join('test', 'setup.js'), setup);  
+
+    const reacttest =
+    `import React from 'react';
+import assert from 'assert';
+import { mount } from 'enzyme';
+// Must be included before any react components
+import '../src/causality-redux/init';
+import App from '../src/${config.reactcomponentsdirectory}/App';
+    
+// Mount the App
+const appMount = mount(<App />);
+
+// TODO: Add your test code below.`;
+
+    writeFile(path.join('test', 'react-test.js'), reacttest);  
+}
+
+function buildProject() {
+    handleDirectories();
+    handleStylesheets();
+    handleIndexCommon();
+    handleDllLibraries();
+    handleCausalityRedux();
+    handleApp();
+    handleMainApp();
+    buildServerIndexFiles();
+    handleHistoryFile();
+
+    handleTestDirectory();
+
+    console.log('React project created.');
+}
+
+buildProject();
+
+
+
+
+
+
 

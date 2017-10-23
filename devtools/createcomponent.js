@@ -2,16 +2,29 @@ const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
 
-const configCommon = require('./webpack.config.common');
+const configCommon = require('./webpack.config.config');
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const controllerCode = (component) =>
-`import CausalityRedux from 'causality-redux';
-import ${component} from './view';
+const controllerCode = (component, isMultiple) => {
+    let code =
+        'import CausalityRedux from \'causality-redux\';';
+    if (isMultiple)
+        code += `
+import {${component}} from './view';`;
+    else
+        code += `
+import ${component} from './view';`;    
+
+    code +=
+        `
+/*
+    Note: Hot reloading in this controller file only supports changes to the controllerFunctions.
+    Any other change requires a refresh.
+*/
 
 /*
  TODO: Define the partition store definition
@@ -20,15 +33,23 @@ const defaultState = {
     sampleKey1: '',
     sampleKey2: []
 };
-
+    
 /*
- TODO: Define Controller functions available to the UI.
+ TODO: Define Controller functions which will be made available by causality-redux to the react
+ UI component in the props. The fundamental role of a controller function is to set values in the redux
+ partition defaultState. This may be done based on changes from the UI or may also be done as
+ a result of a call to a synchronous or asynchronous operation in the business code (model.js).
+ Based on changes in defaultState, causality-redux will re-render the react component with these 
+ new values set correctly in the props so that the react UI is updated correctly.
+ 
  Use partitionState to access the keys of default state in these functions.
  partitionState is a proxy that returns a copy of the value at the selected key.
+ Example:
  let value = partitionState.key;
- modify value.
+
  To set a key do partitionState.key = value;
- use setState to set multiple keys like setState({key1: val1, key2: val2});
+ use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
+ Using partitionState to set multiple keys will cause multiple renders of the react component(s).
 */
 const controllerFunctions = {
     sampleFunction1: (url) => {
@@ -36,45 +57,123 @@ const controllerFunctions = {
     },
     sampleFunction2: (e) => {
         // Note partitionState returns a copy of the value at the key.
-        // So, the below must be done for objects, which are pointers in javascript.
+        // So, the below must be done to correctly change objects, which are pointers in javascript.
         const arr = partitionState.sampleKey2 ;
         arr.push(e);
         partitionState.sampleKey2 = arr;
-    },
+     },
     sampleFunction3: (url, arr) => {
         // Each assignment by partitionState causes a component render
         // So use the below to change multiple keys with one render.
         setState({sampleKey1: url, sampleKey2: arr});
     }
 };
+`;
 
+    if (isMultiple)
+        code +=
+`
 /*
- This establishes all the connections between the UI and business code.
- It also supports hot reloading for the business logic.
- By default, all the function keys and state keys in the partition definition will be made available in the props
- to the connect redux component uiComponent: NavMenu.
+  TODO: Add your UI props connections here.
+  Each child component of ${component} that requires contoller functions or values in the defaultState above
+  needs to be listed in the controllerUIConnections below as an array.
+  Entry1 - The component. Must be imported from ../view
+  Entry2 - Array of controllerFunctions keys that this component needs provided in the props.
+  Entry3 - Array of defaultState keys (store keys) that this component needs provided in the props.
+  Entry4 - String name of the component.
+
+  CausalityRedux automatically adds any component name(key)/component listed in controllerUIConnections
+  to the component's store partition. This way, you can access the redux connected component in the props. 
+
+  Any component listed below that is required by another component must be listed in the parent component's
+  store keys. Then the parent must include that component's name in the props.
+  Example:
+
+const controllerUIConnections = [
+    [Child, ['sampleFunction2'], ['sampleKey2'], 'Child'],
+    [Parent, ['sampleFunction1'], ['sampleKey1', 'Child'], 'Parent']
+];
+
+in view.jsx
+
+const Child = ({sampleFunction2, sampleKey2}) =>
+    <div/>
+
+// Note that Child is included in Parent in controllerUIConnections in the store keys.
+// Then CausalityRedux creates a partition store entry that contains the enhanced redux connected Child component.
+// You then use that as a component in the Parent react definition.
+
+// Child below is not the Child defined above but is the redux connected component.
+const Parent = ({sampleFunction1, sampleKey1, Child}) =>
+    <Child/>
+*/
+
+export const ${component}_Partition = '${component}_Partition';
+
+const controllerUIConnections = [
+    [${component}, ${component}_Partition, ['sampleFunction1'], ['sampleKey1'], '${component}']
+];
+
+const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+    module, 
+    partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
+    controllerUIConnections
+});
+
+// Export the redux connect component. Use this in the parent component(s).
+export default partitionState.${component};
+`;    
+    else
+        code +=
+`
+/*
+ This establishes all the connections between the UI and defaultState/controllerFunctions.
+ It also supports hot reloading for the business logic, UI component and the controller functions.
+ By default, all the function keys in controllerFunctions and state keys in defaultState will be made available
+ in the props of the connect redux component uiComponent: ${component}.
+ To override the function keys, define an array of function key strings at changerKeys in the input object
+ to establishControllerConnections.
+ To override the defaultState keys, define an array of defaultState key strings at storeKeys in the input object
+ to establishControllerConnections.
  */
+export const ${component}_Partition = '${component}_Partition';
 const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
     module, // Needed for hot reloading.
-    partition: { partitionName: '${component}_Partition', defaultState, controllerFunctions },
+    partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
     uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
     uiComponentName: '${component}' // Used for tracing.
 });
 
-// Export the redux connect component. Use this in parent components.
-export default uiComponent;`
-;
+// Export the redux connect component. Use this in the parent component(s).
+export default uiComponent;`;
+    return code;    
+};
 
-const viewCode = (component) =>
-`import React from 'react';
+const viewCode = (component, isMultiple) => {
+    let code =
+        `import React from 'react';
 
-const ${component} = () =>
+// TODO: Add your defaultState keys and controllerFunctions keys from ./controller.js
+// as shown below.
+`;
+    
+    if (!isMultiple)
+        code +=
+`const ${component} = (/*{sampleKey1, sampleKey2, sampleFunction1, sampleFunction2, sampleFunction3}*/) =>
     <div>
     TODO: Define your component.
     </div>;
 
-export default ${component};`
-;
+export default ${component};`;
+    else
+        code +=
+`export const ${component} = (/*{sampleKey1, sampleKey2, sampleFunction1, sampleFunction2, sampleFunction3}*/) =>
+    <div>
+    TODO: Define your component.
+    </div>;`;
+
+    return code;    
+};
 
 const modelCode = () => 
 `/*
@@ -107,17 +206,22 @@ const modelCode = () =>
 `;
 
 rl.question('Name of MVC react component: ', (component) => {
-    rl.close();
-    const dir = path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory, component);
-    if (fs.existsSync(dir)) {
-        console.log(`The directory ${dir} already exists.`);
-        return;
-    }
-    
-    fs.mkdirSync(dir);
-    fs.writeFileSync(path.join(dir, 'controller.js'), controllerCode(component));
-    fs.writeFileSync(path.join(dir, 'view.jsx'), viewCode(component));
-    fs.writeFileSync(path.join(dir, 'model.js'), modelCode());
-    console.log(`MvC React Component ${component} generated.`);
+    rl.question('Is this a multiple component (Y/N): ', (answer) => {
+        if (answer === 'y')
+            answer = 'Y'; 
+        answer = answer === 'Y';
+        rl.close();
+        const dir = path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory, component);
+        if (fs.existsSync(dir)) {
+            console.log(`The directory ${dir} already exists.`);
+            return;
+        }
+        
+        fs.mkdirSync(dir);
+        fs.writeFileSync(path.join(dir, 'controller.js'), controllerCode(component, answer));
+        fs.writeFileSync(path.join(dir, 'view.jsx'), viewCode(component, answer));
+        fs.writeFileSync(path.join(dir, 'model.js'), modelCode());
+        console.log(`MvC React Component ${component} generated.`);
+    })
 });
 

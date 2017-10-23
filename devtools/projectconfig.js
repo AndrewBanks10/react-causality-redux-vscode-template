@@ -8,7 +8,15 @@ module.exports = {
   // required in the project.
   useCausalityRedux: true,
   useMaterialUI: true,
-  useReactRouter: true,
+
+  // This feature only makes sense with useCausalityRedux: true.
+  // This implies the same route in different places in the browser history 
+  // may display different store values.
+  useReactRouterWithTimeTravel: true,
+
+  // This feature assumes your routes are views into your causality-redux store.
+  // So, any route component will display your current store values.
+  useReactRouterWithoutTimeTravel: false,
   
   // 
   // useCSSModules = 0; Do not use css modules for any stylesheets.
@@ -75,6 +83,8 @@ module.exports = {
   // these assets. Leave it as an empty array if you do not want to use it.
   assetsDirectory: 'assets', // If you use the url-loader, webpack will put your asset files in this directory
 
+  testDirectory: 'test',
+  
   //
   // The below allows a combination of css modules for some files and not for others. Any that are in a directory
   // named below will not have css module ids applied to the css elements. It does not matter
@@ -90,7 +100,6 @@ module.exports = {
   htmlTemplate: 'index.ejs', // html file in the devtools directory to be used for installing scripts and css for the final built product. This is your source.
   htmlDevTemplate: 'index.dev.ejs', // Used for the development html template. This is built.
 }
-
 
 // TODO: Go into launch.json and correctly set you program location for mocha in all places in the file. It starts as
 // ${workspaceRoot}/node_modules/mocha/bin/_mocha

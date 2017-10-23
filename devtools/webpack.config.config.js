@@ -1,6 +1,3 @@
-// TODO: Go into launch.json and correctly set you program location for mocha in all places in the file. It starts as
-// ${workspaceRoot}/node_modules/mocha/bin/_mocha
-
 const path = require('path');
 const projectConfig = require('./projectconfig');
 const projectDllModules = require('./projectdllmodules');
