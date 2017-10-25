@@ -52,13 +52,16 @@
                 "--require", 
                 "ignore-styles", 
                 "--require", 
-                "test/setup.js",
+                "./test/setup.js",
+                "./test/mountapp.js",
+                "./test/projectsetup.js",
+                "./src/**/*spec.js",
                 "--no-timeouts",
                 "--colors"
             ],
             "cwd": "${workspaceRoot}",
             "runtimeExecutable": null,
-            "env": { "NODE_ENV": "testing"}
+            "env": { "NODE_ENV": "mochaTesting"}
         },
         {
             "name": "Start Debug Mocha Tests",
@@ -78,7 +81,9 @@
                 "ignore-styles",
                 "--require", 
                 "./temp/test/setup.js",
-                "./temp/test/**/*.js",
+                "./temp/test/mountapp.js",
+                "./temp/test/projectsetup.js",
+                "./temp/src/**/*spec.js",
                 "--no-timeouts",
                 "--colors"
             ],
@@ -89,7 +94,7 @@
             "sourceMaps": true,
             "smartStep": true,
             "outFiles": ["${workspaceRoot}/temp/**/*.js"],
-            "env": { "NODE_ENV": "debugTesting"}
+            "env": { "NODE_ENV": "mochaDebugTesting"}
         }
 	]
 }
