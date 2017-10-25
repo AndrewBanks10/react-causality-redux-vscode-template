@@ -3,14 +3,14 @@ import styles from './view.inject';
 
 export default class MonitorComponent extends React.Component {
     componentDidUpdate() {
-        if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting' && process.env.NODE_ENV !== 'mochaDebugTesting') {
             if (!this.props.isDebugging && this.monitorContentContainer)
                 this.monitorContentContainer.scrollTop = this.monitorContentContainer.scrollHeight;
         }
     }
     render() {
-        if (process.env.NODE_ENV === 'production')
-            return null;    
+        if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting')
+            return null;  
         const {startDebug, clickedState, backOneState, forwardOneState, stopDebug, replayStates, beginning, exit, minimize, maximize, setThisState, data, isDebugging, currentState, display, isMinimized} = this.props;
         if (!display)
             return null;

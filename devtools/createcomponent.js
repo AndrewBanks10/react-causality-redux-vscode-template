@@ -1,3 +1,4 @@
+/* eslint no-console:0 */
 const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
@@ -8,6 +9,75 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
+function mkdir(directory) {
+    try {
+        fs.mkdirSync(directory);
+    } catch (ex) {
+        ex;
+    }
+}
+
+const modelTestFileCode = (component) => {
+    return(
+`import assert from 'assert';
+
+describe('Model ${component}', function() {
+    // TODO: Add model test code.
+    it('Sample - validated.', function() {
+        assert(true);
+    });
+});
+`);
+};
+
+const controllerTestFileCode = (component) => {
+    return(
+`import assert from 'assert';
+import CausalityRedux from 'causality-redux';
+import {${component}_Partition} from './controller';
+
+// The controller functions are in the partition store.
+const partitionStore = CausalityRedux.store[${component}_Partition];
+const partitionState = partitionStore.partitionState;
+
+describe('Controller ${component}', function() {
+    // TODO: Add controller test code.
+    it('Sample - validated.', function() {
+        assert(true);
+    });
+});
+`);
+};
+
+const viewTestCode = (dir, component) => {
+    let importPath = '';
+    const c = dir.split(path.sep);
+    for (let i = 0; i < c.length; ++i)
+        importPath += '../';
+    importPath += 'test/projectsetup';
+    return (
+        `
+import assert from 'assert';
+import { testCauseAndEffectWithExists, testCauseAndEffectWithNotExists, testCauseAndEffectWithHtmlString } from '${importPath}';
+
+describe('View ${component}', function() {
+    // TODO: Add view test code.
+    it('Sample - validated.', function() {
+        assert(true);
+    });
+});
+
+`);
+};
+
+const handleTestFiles = (dir, component, doTest) => {
+    if (!doTest)
+        return;
+    fs.writeFileSync(path.join(dir, 'controller.spec.js'), controllerTestFileCode(component));
+    fs.writeFileSync(path.join(dir, 'view.spec.js'), viewTestCode(dir, component));
+    fs.writeFileSync(path.join(dir, 'model.spec.js'), modelTestFileCode(component));
+};
 
 const controllerCode = (component, isMultiple) => {
     let code =
@@ -187,7 +257,7 @@ const modelCode = () =>
       whateveryouneed: [];
       numberType: 0;
   }
-  const moduleData = CausalityRedux.getModuleData(process.env.NODE_ENV === 'development', nonUIData).moduleData;
+  const moduleData = CausalityRedux.getModuleData(process.env.NODE_ENV !== 'production', nonUIData).moduleData;
  
   Then moduleData is a proxy to the redux store partitiondata.
   So, moduleData.whateveryouneed returns a copy to the data. Then to change whateveryouneed do
@@ -205,23 +275,146 @@ const modelCode = () =>
 */
 `;
 
-rl.question('Name of MVC react component: ', (component) => {
-    rl.question('Is this a multiple component (Y/N): ', (answer) => {
-        if (answer === 'y')
-            answer = 'Y'; 
-        answer = answer === 'Y';
-        rl.close();
-        const dir = path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory, component);
-        if (fs.existsSync(dir)) {
+const controllerCodewc = (component, isMultiple) => {
+    let code =
+        `import CausalityRedux from 'causality-redux';
+`;
+    if (isMultiple)
+        code += `import {${component}} from './view';`;
+    else
+        code += `import ${component} from './view';`;    
+
+    code += `
+
+// TODO: Define the partition store definition
+const defaultState = {
+    sampleKey1: ''
+};
+
+// TODO: Define Controller functions available to the UI.
+const controllerFunctions = {
+    sampleFunction1: (url) => {
+        partitionState.sampleKey1 = url;
+    }
+};
+
+`;
+    if (isMultiple)
+        code +=
+`export const ${component}_Partition = '${component}_Partition';
+
+//TODO: Add your UI props connections here.
+const controllerUIConnections = [
+    [${component}, ${component}_Partition, ['sampleFunction1'], ['sampleKey1'], '${component}']
+];
+
+const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+    module, 
+    partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
+    controllerUIConnections
+});
+
+// Export the redux connect component. Use this in the parent component(s).
+export default partitionState.${component};
+`;
+    else    
+        code +=   
+`export const ${component}_Partition = '${component}_Partition';
+
+const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
+    module,
+    partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
+    uiComponent: ${component}, 
+    uiComponentName: '${component}'
+});
+
+export default uiComponent;`;
+    return code;    
+};
+
+const viewCodewc = (component, isMultiple) => {
+    let code = `import React from 'react';
+
+`;
+
+    if (isMultiple)
+        code +=
+            `export const ${component} = (/*{sampleKey1, sampleFunction1}*/) =>
+    <div>
+    TODO: Define your component.
+    </div>;`;
+    else
+        code +=
+            `const ${component} = (/*{sampleKey1, sampleFunction1}*/) =>
+    <div>
+    TODO: Define your component.
+    </div>;
+
+export default ${component};`;
+    return code;    
+};
+
+const modelCodewc = () =>
+`//  TODO: Add your business functions
+`;
+
+const convertToBoolean = (text) => {
+    if (text === 'y')
+        text = 'Y';
+    return text === 'Y';
+};
+
+const makeAllDirectories = (component) => {
+    const arr = component.split('/');
+    let dir = path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory);
+    for (let i = 0; i < arr.length; ++i) {
+        dir = path.join(dir, arr[i]);
+        if (i === arr.length - 1 && fs.existsSync(dir)) {
             console.log(`The directory ${dir} already exists.`);
-            return;
+            return { dir, component: null };
         }
-        
-        fs.mkdirSync(dir);
-        fs.writeFileSync(path.join(dir, 'controller.js'), controllerCode(component, answer));
-        fs.writeFileSync(path.join(dir, 'view.jsx'), viewCode(component, answer));
-        fs.writeFileSync(path.join(dir, 'model.js'), modelCode());
-        console.log(`MvC React Component ${component} generated.`);
-    })
+        mkdir(dir);
+    }
+    return { dir, component: arr[arr.length - 1] };
+};
+
+console.log(`The MVC react component will be generated in the directory ${path.join(configCommon.sourceDir, configCommon.reactcomponentsdirectory)}.`);
+console.log('You may also specify a path below the target directory above. For example: dir1/dir2/componentname');
+
+rl.question('Name of MVC react component: ', (component) => {
+    rl.question('Do you want comments: (Y/N): ', (comments) => {
+        comments = convertToBoolean(comments);
+        rl.question('Is this a multiple component: (Y/N): ', (isMultiple) => {
+            isMultiple = convertToBoolean(isMultiple);
+            rl.question('Do you want to generate test files: (Y/N): ', (doTest) => {
+                doTest = convertToBoolean(doTest);
+                rl.close();
+                const ret = makeAllDirectories(component);
+                const dir = ret.dir;
+                component = ret.component;
+                if (component === null) {
+                    console.log(`The directory ${dir} already exists.`);
+                    return;
+                }
+
+                let view, controller, model;
+                if (comments) {
+                    view = viewCode(component, isMultiple);
+                    controller = controllerCode(component, isMultiple);
+                    model = modelCode();
+                } else {
+                    view = viewCodewc(component, isMultiple);
+                    controller = controllerCodewc(component, isMultiple);
+                    model = modelCodewc();                    
+                }
+
+                fs.writeFileSync(path.join(dir, 'controller.js'), controller);
+                fs.writeFileSync(path.join(dir, 'view.jsx'), view);
+                fs.writeFileSync(path.join(dir, 'model.js'), model);
+                handleTestFiles(dir, component, doTest);
+                console.log(`MVC React Component ${component} generated.`);
+            });
+        });
+    });
 });
 

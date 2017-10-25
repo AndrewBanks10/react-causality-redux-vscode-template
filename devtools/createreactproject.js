@@ -341,10 +341,16 @@ function handleTestDirectory() {
     const setup =
         `const { JSDOM } = require('jsdom');
     
-const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
+const jsdom = new JSDOM('<!doctype html><html><body></body></html>', {
+    url: 'http://localhost',
+});
 const { window } = jsdom;
 global.window = window;
 global.document = window.document;
+
+//
+// Put all of your window features that are missing from jsdom that you need here.
+//
     
 Object.keys(global.window).forEach( property => {
     if (typeof global[property] === 'undefined') {
@@ -358,20 +364,82 @@ global.navigator = {
 
     writeFile(path.join('test', 'setup.js'), setup);  
 
-    const reacttest =
-    `import React from 'react';
-import assert from 'assert';
+    let reacttest = '';
+
+    reacttest =
+        `import React from 'react';
 import { mount } from 'enzyme';
-// Must be included before any react components
-import '../src/causality-redux/init';
-import App from '../src/${config.reactcomponentsdirectory}/App';
+`;
+    if (config.useCSSModules !== 1) {
+        reacttest += 'import \'../src/css\';';
+        reacttest += newLine();
+    }
+        
+    if (config.useCausalityRedux) {
+        reacttest += 'import \'../src/causality-redux/init\';';
+        reacttest += newLine();
+    }    
+
+    reacttest += `import App from '../src/${config.reactcomponentsdirectory}/App';
     
 // Mount the App
 const appMount = mount(<App />);
 
-// TODO: Add your test code below.`;
+export default appMount;`;
 
-    writeFile(path.join('test', 'react-test.js'), reacttest);  
+    writeFile(path.join('test', 'mountapp.js'), reacttest);
+
+    const projectsetup =
+`import appMount from './mountapp';
+
+const waitTime = 2000;
+let intervalID;
+
+//
+// React rendering is asynchronous. Components must be validated asynchronously.
+//
+const handleReactAsync = (done, startTime, waitTime, callbackCheck) => {
+    // The callback checks that the conditions for success have been met
+    if ( callbackCheck() ) {
+        clearInterval(intervalID);
+        done();
+    // Timeout means failure.
+    } else if (new Date() - startTime > waitTime) {
+        clearInterval(intervalID);
+        done(new Error('Timeout'));
+    }
+};
+
+const handleReactAsyncStart = (done, waitTime, callbackCheck) => {
+    intervalID = setInterval(handleReactAsync, 10, done, new Date(), waitTime, callbackCheck);
+};
+
+export const nodeExists = selector => appMount.find(selector).exists();
+export const nodeString = selector => appMount.find(selector).text();
+export const simulateClick = selector => appMount.find(selector).first().simulate('click');
+
+export const testCauseAndEffectWithExists = (causeSelector, effectSelector, done) => {
+    simulateClick(causeSelector);
+    handleReactAsyncStart(done, waitTime, () => 
+        nodeExists(effectSelector)
+    );
+};
+
+export const testCauseAndEffectWithNotExists = (causeSelector, effectSelector, done) => {
+    simulateClick(causeSelector);
+    handleReactAsyncStart(done, waitTime, () => 
+        !nodeExists(effectSelector)
+    );
+};
+
+export const testCauseAndEffectWithHtmlString = (causeSelector, effectSelector, expectedHtmlString, done) => {
+    simulateClick(causeSelector);
+    handleReactAsyncStart(done, waitTime, () =>
+        nodeString(effectSelector) === expectedHtmlString
+    );
+};`;
+
+    writeFile(path.join('test', 'projectsetup.js'), projectsetup);  
 }
 
 function buildProject() {

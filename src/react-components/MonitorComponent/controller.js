@@ -170,7 +170,7 @@ const controllerUIConnections = [
     ]
 ];
 
-const { setState, partitionState, getState } = CausalityRedux.establishControllerConnections({
+const { setState, partitionState, getState, uiComponent } = CausalityRedux.establishControllerConnections({
     module,
     partition: {partitionName: MonitorComponent_Partition, defaultState, controllerFunctions},
     controllerUIConnections
@@ -233,6 +233,7 @@ function onListener(arg) {
     }
 }
 
-CausalityRedux.setOptions({ onStateChange, onListener });
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting' && process.env.NODE_ENV !== 'mochaDebugTesting')
+    CausalityRedux.setOptions({ onStateChange, onListener });
 
-export default partitionState.MonitorComponent;
+export default uiComponent.MonitorComponent;

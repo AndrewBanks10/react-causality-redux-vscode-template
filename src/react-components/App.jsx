@@ -6,7 +6,6 @@ import history from '../history/history';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import MainApp from './MainApp/MainApp';
 
-
 const App = () =>
     <Provider store={CausalityRedux.store}>
         <Router history={history}>

@@ -44,5 +44,9 @@ const { partitionState, setState, uiComponent } = CausalityRedux.establishContro
     uiComponentName: 'NavMenu' // Used for tracing.
 });
 
+// This is required because of a bug in material-ui with mocha/enzyme testing.
+if (process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting')
+    partitionState.mochaTesting = true;
+
 // Export the redux connect component. Use this in parent components.
 export default uiComponent;

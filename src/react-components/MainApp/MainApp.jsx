@@ -15,9 +15,9 @@ import MonitorComponent from '../MonitorComponent/controller';
 
 export const HOMEROUTE = '/';
 export const CAUSALITYCHAINROUTE = '/causalitychain';
-export const NEWSROUTE = '/newscausalityredux';
-export const COUNTERROUTE = '/counterformcausalityredux';
-export const COMMENTSROUTE = '/commentboxcausalityredux';
+export const NEWSROUTE = '/news';
+export const COUNTERROUTE = '/counterform';
+export const COMMENTSROUTE = '/commentbox';
 export const ROUTERDEMOROUTE = '/routerdemo';
 export const TODODEMOROUTE = '/tododemo';
 export const MULTIPARTITIONROUTE = '/multipartition';

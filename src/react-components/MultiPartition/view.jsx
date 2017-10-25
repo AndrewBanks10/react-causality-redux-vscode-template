@@ -16,10 +16,10 @@ const Comment = ({ author, children }) =>
         </div>
     </div>;
 
-const MultiPartitionForm = ({ counter, items }) =>
+const MultiPartitionForm = ({ counter, items, onChange , text}) =>
     <div>
         <AppBar
-            title='One react component has access to data from multiple partitions.'
+            title='One react component has access to data and/or operations from multiple partitions.'
             iconElementLeft={<NavMenu useHome={'useHome'} />}
         />
         <Paper zDepth={4}>
@@ -35,7 +35,7 @@ const MultiPartitionForm = ({ counter, items }) =>
                         </Comment>
                     )}
                 </div>
-            </div>          
+            </div> 
         </Paper>    
     </div>;
 

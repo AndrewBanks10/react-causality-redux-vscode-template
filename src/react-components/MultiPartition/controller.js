@@ -9,13 +9,13 @@ const controllerUIConnections = [
         // Used an array of objects to attach multiple partitions to the component's props 
         [
             { partitionName: CounterForm_Partition, changers: [], stateEntries: ['counter'] },
-            { partitionName: CommentBox_Partition, changers: [], stateEntries: ['items']},
+            { partitionName: CommentBox_Partition, changers: [], stateEntries: ['items'] }
         ],
         'MultiPartitionForm'   // Name of the react component string form
     ]
 ];
 
-const { partitionState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { uiComponent } = CausalityRedux.establishControllerConnections({
     module,
     controllerUIConnections
 });
