@@ -1,6 +1,9 @@
 import CausalityRedux from 'causality-redux';
-import { setHistoryState } from 'react-causality-redux-router';
+import history from '../../history/history';
 import MonitorComponent from './view';
+
+if (typeof history.setMonitorOn === 'function')
+    history.setMonitorOn();
 
 const MonitorComponent_Partition = 'MonitorComponent_Partition';
 
@@ -134,15 +137,25 @@ function maximize() {
 
 function setThisState() {
     const currentState = monitorMirroredState.currentState;
+    if (typeof history.setHistoryState === 'function') {
+        const state = allStates[currentState].store;
+        const stack = state[CausalityRedux.storeHistoryKey].stack;
+        if (stack.length === 1 && history.length > 1) {
+            alert('Not able to set to this state since it means the history current with > 1 entry must be set back to one entry which is not permitted in javascript.');
+            return;
+        }
+    }
+
     monitorMirroredState.isDebugging = false;
+    monitorMirroredState.currentState = -1;
     allStates.length = currentState + 1;
     discloseStates();
     setMonitorState();
     setState({isDebugging:false, currentState:-1});
     allStates[currentState].store[MonitorComponent_Partition] = getState();
     copyStoreState(currentState);
-    if (typeof setHistoryState === 'function') {
-        setHistoryState(allStates[currentState].store);
+    if (typeof history.setHistoryState === 'function') {
+        history.setHistoryState(allStates[currentState].store);
     }
 }
 
@@ -170,7 +183,7 @@ const controllerUIConnections = [
     ]
 ];
 
-const { setState, partitionState, getState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { setState, getState, uiComponent } = CausalityRedux.establishControllerConnections({
     module,
     partition: {partitionName: MonitorComponent_Partition, defaultState, controllerFunctions},
     controllerUIConnections
@@ -189,22 +202,21 @@ const copyHotReloadedComponents = (partitionName, partition) => {
             delete partition[partitionKey];
         }
     });
-};  
+}; 
+
+// First state
+const firstArg = {};
+firstArg.store = CausalityRedux.shallowCopyStorePartitions();
+allStates.push(firstArg);
+setTimeout(discloseStates, 1);
 
 function onStateChange(arg) {
+
     if (arg.partitionName !== MonitorComponent_Partition && monitorMirroredState.isDebugging) {
         setTimeout(stopDebug, 1);
     }
-    if (arg.partitionName !== MonitorComponent_Partition && arg.operation !== CausalityRedux.operations.STATE_FUNCTION_CALL) {
-        arg.store = CausalityRedux.store.getState();
-        // First state
-        if (allStates.length === 0) {
-            const firstArg = CausalityRedux.merge({}, arg);
-            delete firstArg.nextState;
-            allStates.push(firstArg);
-            arg.store = CausalityRedux.shallowCopy(arg.store);
-        }
-
+    if (arg.partitionName !== MonitorComponent_Partition && arg.partitionName !== CausalityRedux.storeHistoryKey && arg.operation !== CausalityRedux.operations.STATE_FUNCTION_CALL) {
+        arg.store = CausalityRedux.shallowCopy(CausalityRedux.store.getState());
         arg.nextState = CausalityRedux.shallowCopy(arg.nextState);
         // Copy the hot reloaded components from arg.nextState down to the stores in the array.
         // This way set state at any index will have the newest hot reloaded components.
@@ -224,7 +236,7 @@ function onStateChange(arg) {
             allStates.push(arg);
             setTimeout(discloseStates, 1);
         }    
-    }   
+    } 
 }
 
 function onListener(arg) {
@@ -237,3 +249,6 @@ if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTest
     CausalityRedux.setOptions({ onStateChange, onListener });
 
 export default uiComponent.MonitorComponent;
+
+if (module.hot)
+    module.hot.decline();

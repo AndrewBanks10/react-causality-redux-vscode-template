@@ -21,12 +21,11 @@ export const COMMENTSROUTE = '/commentbox';
 export const ROUTERDEMOROUTE = '/routerdemo';
 export const TODODEMOROUTE = '/tododemo';
 export const MULTIPARTITIONROUTE = '/multipartition';
-
 const MainApp = () =>
     <div>
         <MonitorComponent />
         <Switch>
-            <Route exact path={HOMEROUTE} component={HomeApp} />
+        <Route exact path={HOMEROUTE} component={HomeApp}  />
             <Route path={CAUSALITYCHAINROUTE} component={AjaxDemoCausalityChain} />
             <Route path={NEWSROUTE} component={NewsForm} />
             <Route path={COUNTERROUTE} component={CounterForm} />
