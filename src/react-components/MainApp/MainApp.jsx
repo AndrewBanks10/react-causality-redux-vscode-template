@@ -13,6 +13,10 @@ import MultiPartition from '../MultiPartition/controller';
 // Import MonitorComponent last so that component initialization is not included
 import MonitorComponent from '../MonitorComponent/controller';
 
+export const convertToLinkId = (route) => {
+    return route.replace(/\\/g, 'xxxlinkid');
+};
+
 export const HOMEROUTE = '/';
 export const CAUSALITYCHAINROUTE = '/causalitychain';
 export const NEWSROUTE = '/news';

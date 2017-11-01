@@ -6,7 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { HOMEROUTE, CAUSALITYCHAINROUTE, NEWSROUTE, COUNTERROUTE, COMMENTSROUTE, ROUTERDEMOROUTE, TODODEMOROUTE, MULTIPARTITIONROUTE } from '../MainApp/MainApp';
+import { convertToLinkId, HOMEROUTE, CAUSALITYCHAINROUTE, NEWSROUTE, COUNTERROUTE, COMMENTSROUTE, ROUTERDEMOROUTE, TODODEMOROUTE, MULTIPARTITIONROUTE } from '../MainApp/MainApp';
 import styles from './view.inject';
 
 // Use the below to get the current theme of material-ui
@@ -14,14 +14,14 @@ const MuiTheme = getMuiTheme();
 
 const MenuEntry = ({ toText, closeMenu, entryText }) =>
 <MenuItem>
-  <Link onClick={closeMenu} className={styles.LinkEntry} to={toText}>{entryText}</Link>
+    <Link onClick={closeMenu} className={styles.LinkEntry} to={toText}>{entryText}</Link>
 </MenuItem>;
 
 const HomeEntry = ({ useHome, closeMenu }) => {
   if (!useHome)
     return null;
   return (
-    <MenuEntry id={HOMEROUTE} closeMenu={closeMenu} toText={HOMEROUTE} entryText='Home'/>
+    <MenuEntry linkid={HOMEROUTE} closeMenu={closeMenu} toText={HOMEROUTE} entryText='Home'/>
   );
 };
 
@@ -38,7 +38,7 @@ const NavMenu = ({ openMenu, closeMenu, open, anchorEl, useHome, mochaTesting })
         targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         onRequestClose={closeMenu}
     >
-      
+    
       <Menu>
         <HomeEntry useHome={useHome} closeMenu={closeMenu} />  
         <MenuEntry id={CAUSALITYCHAINROUTE} closeMenu={closeMenu} toText={CAUSALITYCHAINROUTE} entryText='Causality Chain Demo' />

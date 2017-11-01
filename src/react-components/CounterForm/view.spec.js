@@ -1,34 +1,33 @@
-import assert from 'assert';
-import { testCauseAndEffectWithHtmlString } from '../../../test/projectsetup';
+import { findNodeFunction, update, testCauseAndEffectWithHtmlString } from '../../../test/projectsetup';
 import history from '../../../src/history/history';
 import { COUNTERROUTE } from '../MainApp/MainApp';
 
 describe('View CounterForm', function () {
     this.slow(200);
-    before(function (done) {
+    before(function () {
         history.replace(COUNTERROUTE);
-        done();
-      });
+        update();
+    });
     // Click on the increment button  
-    it('increment cause and effect 1 - validated.', function(done) {
-        testCauseAndEffectWithHtmlString('#onIncrement', '#counter-text', 'The current counter is 1.', done);
+    it('increment cause and effect 1 - validated.', function (done) {
+        testCauseAndEffectWithHtmlString(findNodeFunction('button', 'onIncrement'), '#countertext', 'The current counter is 1.', done);
     });
 
     // Click on the increment button  
-    it('increment cause and effect 2 - validated.', function(done) {
-        testCauseAndEffectWithHtmlString('#onIncrement', '#counter-text', 'The current counter is 2.', done);
+    it('increment cause and effect 2 - validated.', function (done) {
+        testCauseAndEffectWithHtmlString(findNodeFunction('button', 'onIncrement'), '#countertext', 'The current counter is 2.', done);
+
     });
 
      // Click on the decrement button  
     it('decrement cause and effect 1 - validated.', function(done) {
-        testCauseAndEffectWithHtmlString('#onDecrement', '#counter-text', 'The current counter is 1.', done);
+        testCauseAndEffectWithHtmlString(findNodeFunction('button', 'onDecrement'), '#countertext', 'The current counter is 1.', done);
     });
 
      // Click on the decrement button  
     it('decrement cause and effect 2 - validated.', function(done) {
-        testCauseAndEffectWithHtmlString('#onDecrement', '#counter-text', 'The current counter is 0.', done);
+        testCauseAndEffectWithHtmlString(findNodeFunction('button', 'onDecrement'), '#countertext', 'The current counter is 0.', done);
     });
 
 });
 
-const exit = 0;

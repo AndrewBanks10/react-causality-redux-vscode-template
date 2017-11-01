@@ -37,7 +37,7 @@ const controllerFunctions = {
  */
 const NavMenu_Partition = 'NavMenu_Partition';
 
-const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module, // Needed for hot reloading.
     partition: { partitionName: NavMenu_Partition, defaultState, controllerFunctions },
     uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
@@ -49,4 +49,4 @@ if (process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDe
     partitionState.mochaTesting = true;
 
 // Export the redux connect component. Use this in parent components.
-export default uiComponent;
+export default wrappedComponents.NavMenu;

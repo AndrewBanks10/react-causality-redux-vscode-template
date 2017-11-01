@@ -10,12 +10,17 @@ module.exports = {
   useMaterialUI: true,
 
   // This feature only makes sense with useCausalityRedux: true.
+  // Each route has its own view evey if they are the same route.
   // This implies the same route in different places in the browser history 
-  // may display different store values.
-  useReactRouterWithTimeTravel: true,
+  // may display different store values. However, this can be confusing
+  // to the user since the same form/route may have different data as they move
+  // through its different positions in the history.
+  useReactRouterWithTimeTravel: false,
 
   // This feature assumes your routes are views into your causality-redux store.
-  // So, any route component will display your current store values.
+  // So, any route component will display only your current store values.
+  // Any update to a route in the history will also update that same route
+  // anywere else in the history.
   useReactRouterWithoutTimeTravel: false,
   
   // 

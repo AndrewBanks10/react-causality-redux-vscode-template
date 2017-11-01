@@ -18,7 +18,7 @@ export const CounterForm = ({ increment, decrement, counter, CounterFormValue })
         />
         <Paper zDepth={4}>
             <div className={styles['counter-form-text']}>Multiple child components are updated with one state change/event.</div>
-            <div id='counter-text' className={styles['counter-text']}>{`The current counter is ${counter}.`}</div>
+            <div id='countertext' className={styles['counter-text']}>{`The current counter is ${counter}.`}</div>
             <CounterFormValue />
             <CounterFormValue />
             <RaisedButton id='onIncrement' className={styles['counter-form-button']} label="Up" onClick={increment} />

@@ -9,7 +9,7 @@ const MuiTheme = getMuiTheme();
 
 const HomeApp = () =>
     <div className={styles.App} style={{ backgroundColor: MuiTheme.appBar.color, color: MuiTheme.appBar.textColor }}>
-        <NavMenu useHome={false}/>
+        <NavMenu id='homeappNavMenu'  useHome={false}/>
         <TopHeader />
     </div>; 
 

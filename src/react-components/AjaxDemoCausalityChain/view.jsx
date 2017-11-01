@@ -52,7 +52,6 @@ export const AjaxDemoCausalityChain = ({onGet, onAbortGet, clear, data, getIsBus
             <Paper zDepth={4}>
                 <ErrorMessage />
                 <Loader1/>
-
                 <div className={styles['table-container']}>
                     <table>
                         <tbody>

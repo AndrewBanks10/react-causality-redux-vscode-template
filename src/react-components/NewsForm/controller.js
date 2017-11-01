@@ -154,7 +154,7 @@ const hotDisposeHandler = () => {
 // Add the partition definition to CausalityRedux.
 // module is needed to support hot reloading.
 //
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     hotDisposeHandler,
     partition: { partitionName: NewsForm_Partition, defaultState, controllerFunctions },
@@ -166,5 +166,4 @@ const { partitionState, setState } = CausalityRedux.establishControllerConnectio
 // to the react components through the props.
 //
 
-
-export default partitionState.NewsForm;
+export default wrappedComponents.NewsForm;

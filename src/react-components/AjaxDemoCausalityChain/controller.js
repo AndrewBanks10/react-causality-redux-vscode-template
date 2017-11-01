@@ -55,10 +55,10 @@ const controllerUIConnections = [
 
 // This establishes all the connections between the UI and business code.
 // It also supports hot reloading for the business logic.
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     partition: { partitionName: AjaxDemoCausalityChain_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-export default partitionState.AjaxDemoCausalityChain;
+export default wrappedComponents.AjaxDemoCausalityChain;

@@ -81,11 +81,11 @@ const controllerUIConnections = [
     [Todo,     Todo_Partition, ['setFilter'], ['TodoForm', 'filter'], 'Todo']
 ];
 
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module, 
     partition: { partitionName: Todo_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-export default partitionState.Todo;
+export default wrappedComponents.Todo;
 

@@ -173,20 +173,13 @@ const controllerFunctions = {
     setThisState
 };
 
-const controllerUIConnections = [
-    [
-        MonitorComponent, // Wrapped component
-        MonitorComponent_Partition,
-        ['startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'], // Changers made avilable through the props to this component.
-        ['data', 'isDebugging', 'currentState', 'display', 'isMinimized'], //data made available through the props.
-        'MonitorComponent'
-    ]
-];
-
-const { setState, getState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { setState, getState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     partition: {partitionName: MonitorComponent_Partition, defaultState, controllerFunctions},
-    controllerUIConnections
+    uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
+    storeKeys: ['data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
+    changerKeys: ['startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
+    uiComponentName: 'MonitorComponent' // Used for tracing.
 });
 
 const isCausalityReduxComponent = val =>
@@ -248,7 +241,7 @@ function onListener(arg) {
 if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting' && process.env.NODE_ENV !== 'mochaDebugTesting')
     CausalityRedux.setOptions({ onStateChange, onListener });
 
-export default uiComponent.MonitorComponent;
+export default wrappedComponents.MonitorComponent;
 
 if (module.hot)
     module.hot.decline();

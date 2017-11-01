@@ -92,19 +92,19 @@ export const NewSourcesButtons = ({ isBusy, getNewsSources, clear }) =>
 export const NewsForm = ({ getNews, newsSources, NewsContainer, ErrorMessage, LoaderNews, NewSourcesButtons }) => {
     const tlist = newsSources.map( o => {
         return (
-            <tr data-newsRow className={styles['news-row']} key={o.id} onClick={() => getNews(o.id, o.name)}>
+            <tr data-newsrow className={styles['news-row']} key={o.id} onClick={() => getNews(o.id, o.name)}>
                 <td>{o.name}</td>
                 <td>{o.description}</td>
             </tr>
         );
     });
     return(
-        <div>
+        <div id='newsform'>
         <AppBar
             title='Demonstrates a MVC component with asynchronous model functions.'
             iconElementLeft={<NavMenu useHome={'useHome'} />}
         />
-            <Paper zDepth={4}>
+        <Paper zDepth={4}>
                 <NewsContainer/>
                 <ErrorMessage />
                 <LoaderNews/>

@@ -16,15 +16,29 @@ const handleReactAsync = (done, startTime, waitTime, callbackCheck) => {
         clearInterval(intervalID);
         done(new Error('Timeout'));
     }
+    update();
 };
 
 const handleReactAsyncStart = (done, waitTime, callbackCheck) => {
     intervalID = setInterval(handleReactAsync, 10, done, new Date(), waitTime, callbackCheck);
 };
 
-export const nodeExists = selector => appMount.find(selector).exists();
-export const nodeString = selector => appMount.find(selector).text();
-export const simulateClick = selector => appMount.find(selector).first().simulate('click');
+const findNode = selector => {
+    if (typeof selector === 'function')
+        return appMount.findWhere(selector);
+    return appMount.find(selector);
+};
+
+export const findNodeFunction = (type, id) =>
+    n => n.type() === type && n.props().id === id;
+
+export const nodeExists = selector => findNode(selector).first().exists();
+export const nodeString = selector => findNode(selector).first().text();
+export const nodeValue = selector => findNode(selector).get(0).value;
+export const simulateClick = selector => findNode(selector).first().simulate('click');
+export const simulateInput = (selector, value) => findNode(selector).first().simulate('change', {target: {value}});
+export const update = () => appMount.update();
+export { appMount };
 
 export const testCauseAndEffectWithExists = (causeSelector, effectSelector, done) => {
     simulateClick(causeSelector);
@@ -42,10 +56,20 @@ export const testCauseAndEffectWithNotExists = (causeSelector, effectSelector, d
 
 export const testCauseAndEffectWithHtmlString = (causeSelector, effectSelector, expectedHtmlString, done) => {
     simulateClick(causeSelector);
+    update();
     handleReactAsyncStart(done, waitTime, () =>
         nodeString(effectSelector) === expectedHtmlString
     );
 };
+
+export const testCauseAndEffectWithTextField = (causeSelector, inputValue, expectedValue, done) => {
+    simulateInput(causeSelector, inputValue);
+    handleReactAsyncStart(done, waitTime, () =>
+        nodeValue(causeSelector) === expectedValue
+    );
+};
+
+
 
 
 

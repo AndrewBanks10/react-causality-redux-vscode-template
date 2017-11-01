@@ -15,9 +15,9 @@ const controllerUIConnections = [
     ]
 ];
 
-const { uiComponent } = CausalityRedux.establishControllerConnections({
+const { wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     controllerUIConnections
 });
 
-export default uiComponent.MultiPartitionForm;
+export default wrappedComponents.MultiPartitionForm;

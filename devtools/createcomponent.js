@@ -59,7 +59,7 @@ const viewTestCode = (dir, component) => {
     return (
         `
 import assert from 'assert';
-import { testCauseAndEffectWithExists, testCauseAndEffectWithNotExists, testCauseAndEffectWithHtmlString } from '${importPath}';
+import { testCauseAndEffectWithExists, testCauseAndEffectWithNotExists, testCauseAndEffectWithHtmlString, testCauseAndEffectWithTextField } from '${importPath}';
 
 describe('View ${component}', function() {
     // TODO: Add view test code.
@@ -184,15 +184,14 @@ const controllerUIConnections = [
     [${component}, ${component}_Partition, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ];
 
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module, 
     partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-// Export the redux connect component. Use this in the parent component(s).
-export default partitionState.${component};
-`;    
+// Export the redux connected component. Use this in the parent component(s).
+export default wrappedComponents.${component};`;    
     else
         code +=
 `
@@ -207,7 +206,7 @@ export default partitionState.${component};
  to establishControllerConnections.
  */
 export const ${component}_Partition = '${component}_Partition';
-const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module, // Needed for hot reloading.
     partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
     uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
@@ -215,7 +214,7 @@ const { partitionState, setState, uiComponent } = CausalityRedux.establishContro
 });
 
 // Export the redux connect component. Use this in the parent component(s).
-export default uiComponent;`;
+export default wrappedComponents.${component};`;
     return code;    
 };
 
@@ -308,27 +307,26 @@ const controllerUIConnections = [
     [${component}, ${component}_Partition, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ];
 
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module, 
     partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-// Export the redux connect component. Use this in the parent component(s).
-export default partitionState.${component};
-`;
+// Export the redux connected component. Use this in the parent component(s).
+export default wrappedComponents.${component};`;
     else    
         code +=   
 `export const ${component}_Partition = '${component}_Partition';
 
-const { partitionState, setState, uiComponent } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     partition: { partitionName: ${component}_Partition, defaultState, controllerFunctions },
     uiComponent: ${component}, 
     uiComponentName: '${component}'
 });
 
-export default uiComponent;`;
+export default wrappedComponents.${component};`;
     return code;    
 };
 

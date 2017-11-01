@@ -1,12 +1,10 @@
 const { JSDOM } = require('jsdom');
-
 const jsdom = new JSDOM('<!doctype html><html><body></body></html>', {
     url: 'http://localhost',
 });
 const { window } = jsdom;
 global.window = window;
 global.document = window.document;
-
 
 //
 // Put all of your window features that are missing from jsdom that you need here.
@@ -15,6 +13,13 @@ if (typeof window.localStorage === 'undefined' || window.localStorage === null) 
     window.localStorage = require('node-localstorage').LocalStorage;
     window.localStorage = new window.localStorage('./test/temp');
 }
+
+//
+// Testing for react 16.
+//
+global.requestAnimationFrame = function(callback) {
+    setTimeout(callback, 0);
+};
 
 //
 // This copies all the window properties to the global object.

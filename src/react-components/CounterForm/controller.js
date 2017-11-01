@@ -28,11 +28,11 @@ const controllerUIConnections = [
     ]
 ];
 
-const { partitionState } = CausalityRedux.establishControllerConnections({
+const { partitionState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     partition: { partitionName: CounterForm_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-export default partitionState.CounterForm;
+export default wrappedComponents.CounterForm;
 

@@ -90,13 +90,13 @@ const controllerUIConnections = [
     ] 
 ];
 
-const { partitionState, setState } = CausalityRedux.establishControllerConnections({
+const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
     module,
     partition: { partitionName: CommentBox_Partition, defaultState, controllerFunctions },
     controllerUIConnections
 });
 
-export default partitionState.CommentBox;
+export default wrappedComponents.CommentBox;
 
 // Put in some initial comments.
 if ( CausalityRedux.store[CommentBox_Partition].getState().items.length === 0 ) {

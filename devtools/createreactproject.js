@@ -176,8 +176,12 @@ function handleApp() {
     //
     // App.js
     //
-    let App = 'import React from \'react\';';
-    App += newLine(); 
+    let App = `// React 16 requirements.
+import 'core-js/es6/map';
+import 'core-js/es6/set';
+
+import React from 'react';
+`;
 
     if (config.useCausalityRedux) {
         App += `import CausalityRedux from 'causality-redux';
@@ -351,6 +355,13 @@ global.document = window.document;
 //
 // Put all of your window features that are missing from jsdom that you need here.
 //
+
+//
+// Testing for react 16.
+//
+global.requestAnimationFrame = function(callback) {
+    setTimeout(callback, 0);
+};
     
 Object.keys(global.window).forEach( property => {
     if (typeof global[property] === 'undefined') {
@@ -365,10 +376,14 @@ global.navigator = {
     writeFile(path.join('test', 'setup.js'), setup);  
 
     let reacttest = '';
-
+    
     reacttest =
-        `import React from 'react';
-import { mount } from 'enzyme';
+        `import 'core-js/es6/map';
+import 'core-js/es6/set';
+
+import React from 'react';
+import { configure, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 `;
     if (config.useCSSModules !== 1) {
         reacttest += 'import \'../src/css\';';
@@ -381,7 +396,9 @@ import { mount } from 'enzyme';
     }    
 
     reacttest += `import App from '../src/${config.reactcomponentsdirectory}/App';
-    
+
+configure({ adapter: new Adapter() });
+
 // Mount the App
 const appMount = mount(<App />);
 
@@ -408,15 +425,29 @@ const handleReactAsync = (done, startTime, waitTime, callbackCheck) => {
         clearInterval(intervalID);
         done(new Error('Timeout'));
     }
+    update();
 };
 
 const handleReactAsyncStart = (done, waitTime, callbackCheck) => {
     intervalID = setInterval(handleReactAsync, 10, done, new Date(), waitTime, callbackCheck);
 };
 
-export const nodeExists = selector => appMount.find(selector).exists();
-export const nodeString = selector => appMount.find(selector).text();
-export const simulateClick = selector => appMount.find(selector).first().simulate('click');
+const findNode = selector => {
+    if (typeof selector === 'function')
+        return appMount.findWhere(selector);
+    return appMount.find(selector);
+};
+
+export const findNodeFunction = (type, id) =>
+    n => n.type() === type && n.props().id === id;
+
+export const nodeExists = selector => findNode(selector).first().exists();
+export const nodeString = selector => findNode(selector).first().text();
+export const nodeValue = selector => findNode(selector).get(0).value;
+export const simulateClick = selector => findNode(selector).first().simulate('click');
+export const simulateInput = (selector, value) => findNode(selector).first().simulate('change', {target: {value}});
+export const update = () => appMount.update();
+export { appMount };
 
 export const testCauseAndEffectWithExists = (causeSelector, effectSelector, done) => {
     simulateClick(causeSelector);
@@ -437,6 +468,13 @@ export const testCauseAndEffectWithHtmlString = (causeSelector, effectSelector, 
     handleReactAsyncStart(done, waitTime, () =>
         nodeString(effectSelector) === expectedHtmlString
     );
+};
+
+export const testCauseAndEffectWithTextField = (causeSelector, inputValue, expectedValue, done) => {
+  simulateInput(causeSelector, inputValue);
+  handleReactAsyncStart(done, waitTime, () =>
+      nodeValue(causeSelector) === expectedValue
+  );
 };`;
 
     writeFile(path.join('test', 'projectsetup.js'), projectsetup);  
