@@ -2,7 +2,7 @@ import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import NavMenu from '../../react-components/NavMenu/controller'
-import styles from './view.scss'
+import styles from './view.inject'
 import counterstyles from '../../stylesheets/CounterForm'
 import commentStyles from '../../stylesheets/CommentForm'
 
