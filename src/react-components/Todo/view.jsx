@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './view.scss'
+import styles from './view.inject'
 import Paper from 'material-ui/Paper'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import TextField from 'material-ui/TextField'
