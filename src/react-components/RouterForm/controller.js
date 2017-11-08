@@ -1,14 +1,14 @@
-import CausalityRedux from 'causality-redux';
-import RouterForm from './view';
-import { replaceHistory, historyGo, historyForward, historyBack } from './model';
+import CausalityRedux from 'causality-redux'
+import RouterForm from './view'
+import { replaceHistory, historyGo, historyForward, historyBack } from './model'
 
 /*
  Define the partition store definition
 */
 const defaultState = {
-    currentUrl: '',
-    goText: ''
-};
+  currentUrl: '',
+  goText: ''
+}
 
 /*
  Define Controller functions available to the UI.
@@ -19,35 +19,35 @@ const defaultState = {
  To set a key do partitionState.key = value;
  use setState to set multiple keys like setState({key1: val1, key2: val2});
 */
-const RouterForm_Partition = 'RouterForm_Partition';
+const routerFormPartition = 'routerFormPartition'
 
 const controllerFunctions = {
-    onChangeURL: (url) => {
-        partitionState.currentUrl = url;
-    },
+  onChangeURL: (url) => {
+    partitionState.currentUrl = url
+  },
 
-    changeURL: () => {
-        replaceHistory(partitionState.currentUrl);
-        partitionState.currentUrl = '';
-    },
+  changeURL: () => {
+    replaceHistory(partitionState.currentUrl)
+    partitionState.currentUrl = ''
+  },
 
-    onChangeGo: (goText) => {
-        partitionState.goText = goText;
-    },
+  onChangeGo: (goText) => {
+    partitionState.goText = goText
+  },
 
-    onGo: () => {
-        historyGo(partitionState.goText);
-        partitionState.goText = '';
-    },
+  onGo: () => {
+    historyGo(partitionState.goText)
+    partitionState.goText = ''
+  },
 
-    onForward: () => {
-        historyForward();
-    },
+  onForward: () => {
+    historyForward()
+  },
 
-    onBack: () => {
-        historyBack();
-    },
-};
+  onBack: () => {
+    historyBack()
+  }
+}
 
 /*
  This establishes all the connections between the UI and business code.
@@ -56,11 +56,11 @@ const controllerFunctions = {
  to the connect redux component uiComponent: NavMenu.
  */
 const { partitionState, wrappedComponents } = CausalityRedux.establishControllerConnections({
-    module, // Needed for hot reloading.
-    partition: { partitionName: RouterForm_Partition, defaultState, controllerFunctions },
-    uiComponent: RouterForm, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
-    uiComponentName: 'RouterForm' // Used for tracing.
-});
+  module, // Needed for hot reloading.
+  partition: { partitionName: routerFormPartition, defaultState, controllerFunctions },
+  uiComponent: RouterForm, // Redux connect will be called on this component and returned as uiComponent in the returned object.
+  uiComponentName: 'RouterForm' // Used for tracing.
+})
 
 // Export the redux connect component. Use this in parent components.
-export default wrappedComponents.RouterForm;
+export default wrappedComponents.RouterForm

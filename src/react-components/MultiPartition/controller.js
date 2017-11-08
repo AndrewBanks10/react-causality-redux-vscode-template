@@ -1,23 +1,23 @@
-import CausalityRedux from 'causality-redux';
-import { CounterForm_Partition } from '../CounterForm/controller';
-import { CommentBox_Partition } from '../CommentForm/controller';
-import MultiPartitionForm from './view';
+import CausalityRedux from 'causality-redux'
+import { counterFormPartition } from '../CounterForm/controller'
+import { commentBoxPartition } from '../CommentForm/controller'
+import MultiPartitionForm from './view'
 
 const controllerUIConnections = [
+  [
+    MultiPartitionForm, // React Component to wrap with redux connect
+    // Used an array of objects to attach multiple partitions to the component's props
     [
-        MultiPartitionForm,    // React Component to wrap with redux connect
-        // Used an array of objects to attach multiple partitions to the component's props 
-        [
-            { partitionName: CounterForm_Partition, changers: [], stateEntries: ['counter'] },
-            { partitionName: CommentBox_Partition, changers: [], stateEntries: ['items'] }
-        ],
-        'MultiPartitionForm'   // Name of the react component string form
-    ]
-];
+      { partitionName: counterFormPartition, changers: [], stateEntries: ['counter'] },
+      { partitionName: commentBoxPartition, changers: [], stateEntries: ['items'] }
+    ],
+    'MultiPartitionForm' // Name of the react component string form
+  ]
+]
 
 const { wrappedComponents } = CausalityRedux.establishControllerConnections({
-    module,
-    controllerUIConnections
-});
+  module,
+  controllerUIConnections
+})
 
-export default wrappedComponents.MultiPartitionForm;
+export default wrappedComponents.MultiPartitionForm

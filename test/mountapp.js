@@ -1,17 +1,16 @@
-import 'core-js/es6/map';
-import 'core-js/es6/set';
+import 'core-js/es6/map'
+import 'core-js/es6/set'
 
-import React from 'react';
-import '../src/css';
-import '../src/causality-redux/init';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import React from 'react'
+import { configure, mount } from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
+import '../src/css'
+import '../src/causality-redux/init'
+import App from '../src/react-components/App'
 
-import App from '../src/react-components/App';
+configure({ adapter: new Adapter() })
 
-configure({ adapter: new Adapter() });
-    
 // Mount the App
-const appMount = mount(<App />);
+const appMount = mount(<App />)
 
-export default appMount;
+export default appMount

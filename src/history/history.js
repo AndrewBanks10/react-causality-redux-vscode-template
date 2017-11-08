@@ -1,3 +1,3 @@
-import createBrowserHistory from 'react-causality-redux-router';
-const history = createBrowserHistory();
-export default history;
+import createBrowserHistory from 'react-causality-redux-router'
+const history = createBrowserHistory()
+export default history

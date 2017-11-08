@@ -1,4 +1,5 @@
-# React-causality-redux with vscode, perhaps the best environment for developing with react. 
+# React-causality-redux with vscode, perhaps the best environment for developing with react.
+[![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com) 
 
 A complete react-causality-redux es6 jsx boilerplate project for Visual Studio Code based on skolmer [react-hot-boilerplate-vscode](https://github.com/skolmer/react-hot-boilerplate-vscode). Also, some of information below is provided by [skolmer](https://github.com/skolmer/react-hot-boilerplate-vscode).
 
@@ -12,6 +13,7 @@ A complete react-causality-redux es6 jsx boilerplate project for Visual Studio C
 * JSX code analysis (linting) with autofixing support via [vscode-eslint](https://github.com/Microsoft/vscode-eslint) extension
 * [React Hot Loading](https://www.youtube.com/watch?v=xsSnOQynTHs)
 * Hot loading of business logic and demonstrates how it is done for maintainaing the current program state in your business code while debugging.
+* Supports standard javascript code style with eslint. 
 * Major extensions and simplifications to redux.
 * Clean separation between business logic and react components. No entangling program state and business code wiht the UI. Allows react components to be pure UI components. This way when react becomes obsolute, you simply take it out and install a new UI without having to rewrite any program state code or business code.
 * The ability to build independent react web components with the react UI part of the component being free of business logic.

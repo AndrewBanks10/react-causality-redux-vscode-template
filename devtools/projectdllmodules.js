@@ -1,9 +1,13 @@
 module.exports = [
-    'react',
-    'react-dom',
-    'redux',
-    'react-redux',
-    'causality-redux',
-    'react-causality-redux',
-    'material-ui'
-];
+  'react',
+  'react-dom',
+  'react-tap-event-plugin',
+  'redux',
+  'react-redux',
+  'causality-redux',
+  'react-causality-redux',
+  'react-causality-redux-router',
+  'react-router-dom',
+  'history',
+  'material-ui'
+]

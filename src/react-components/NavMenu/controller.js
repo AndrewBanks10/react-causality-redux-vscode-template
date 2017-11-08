@@ -1,14 +1,14 @@
-import CausalityRedux from 'causality-redux';
-import NavMenu from './view';
+import CausalityRedux from 'causality-redux'
+import NavMenu from './view'
 
 /*
   Define the partition store definition
 */
 const defaultState = {
-    open: false,
-    mochaTesting: false,
-    anchorEl: null
-};
+  open: false,
+  mochaTesting: false,
+  anchorEl: null
+}
 
 /*
  Define Controller functions available to the UI.
@@ -20,14 +20,14 @@ const defaultState = {
  use setState to set multiple keys like setState({key1: val1, key2: val2});
 */
 const controllerFunctions = {
-    closeMenu: () => {
-        partitionState.open = false;
-    },
-    
-    openMenu: (event) => {
-        setState({ open: true, anchorEl: event.currentTarget });
-    }
-};
+  closeMenu: () => {
+    partitionState.open = false
+  },
+
+  openMenu: (event) => {
+    setState({ open: true, anchorEl: event.currentTarget })
+  }
+}
 
 /*
  This establishes all the connections between the UI and business code.
@@ -35,18 +35,19 @@ const controllerFunctions = {
  By default, all the function keys and state keys in the partition definition will be made available in the props
  to the connect redux component uiComponent: NavMenu.
  */
-const NavMenu_Partition = 'NavMenu_Partition';
+const navMenuPartition = 'navMenuPartition'
 
 const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
-    module, // Needed for hot reloading.
-    partition: { partitionName: NavMenu_Partition, defaultState, controllerFunctions },
-    uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object. 
-    uiComponentName: 'NavMenu' // Used for tracing.
-});
+  module, // Needed for hot reloading.
+  partition: { partitionName: navMenuPartition, defaultState, controllerFunctions },
+  uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object.
+  uiComponentName: 'NavMenu' // Used for tracing.
+})
 
 // This is required because of a bug in material-ui with mocha/enzyme testing.
-if (process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting')
-    partitionState.mochaTesting = true;
+if (process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting') {
+  partitionState.mochaTesting = true
+}
 
 // Export the redux connect component. Use this in parent components.
-export default wrappedComponents.NavMenu;
+export default wrappedComponents.NavMenu

@@ -1,6 +1,6 @@
-import { React, render, App, reactMountNode } from './index-common';
-    
+import { React, render, App, reactMountNode } from './index-common'
+
 render(
-    <App />,
-    reactMountNode
-);
+  <App />,
+  reactMountNode
+)
