@@ -6,12 +6,22 @@ const isProduction = () => {
   return process.env.NODE_ENV === 'production'
 }
 
+const resolveExtensions = config.resolveExtensions
+if (config.useTypeScript) {
+  if (config.resolveExtensions.indexOf('.ts') === -1) {
+    resolveExtensions.push('.ts')
+  }
+  if (config.resolveExtensions.indexOf('.tsx') === -1) {
+    resolveExtensions.push('.tsx')
+  }
+}
+
 const resolveEntry = {
   modules: [
     config.absoluteSourcePath,
     config.node_modulesPath
   ],
-  extensions: config.resolveExtensions
+  extensions: resolveExtensions
 }
 
 const resolveLoaderEntry = {
@@ -123,14 +133,43 @@ function cssLoader (ExtractTextPlugin, isInline, cssType, sourceMaps, useModules
 }
 
 function allLoaders (ExtractTextPlugin) {
+  const loaders = []
+
   // Default loader for .js and .jsx files
-  const loaders = [
+  loaders.push(
     {
       test: /\.jsx?$/,
       exclude: /node_modules|bower_components/,
       use: ['babel-loader']
     }
-  ]
+  )
+
+  loaders.push(
+    {
+      test: /\.json$/,
+      loader: 'json-loader'
+    }
+  )
+
+  if (config.useTypeScript) {
+    loaders.push(
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules|bower_components/,
+        loader: 'awesome-typescript-loader'
+      }
+    )
+
+    if (!isProduction()) {
+      loaders.push(
+        {
+          enforce: 'pre',
+          test: /\.js$/,
+          loader: 'source-map-loader'
+        }
+      )
+    }
+  }
 
   // Url loader
   if (config.urlLoaderExtensions.length > 0) {

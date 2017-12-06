@@ -18,7 +18,12 @@
         "sourceType": "module"
     },
 
-  "extends": ["standard", "standard-react"],
+  "extends": [
+		"standard", 
+		"standard-react",
+		"plugin:import/warnings",
+		"plugin:import/errors"
+	],
 	"env": {
 		"amd": true,
 		"browser": true,

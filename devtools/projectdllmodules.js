@@ -9,5 +9,7 @@ module.exports = [
   'react-causality-redux-router',
   'react-router-dom',
   'history',
-  'material-ui'
+  'material-ui',
+  'redux-logger',
+  'redux-thunk'
 ]

@@ -8,7 +8,7 @@ const opn = require('opn')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-const port = process.env.PORT || 3002
+const port = process.env.PORT || 3010
 const host = process.env.HOST || 'localhost'
 
 try {

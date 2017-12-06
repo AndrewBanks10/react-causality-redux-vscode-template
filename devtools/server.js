@@ -1,5 +1,4 @@
 /* eslint no-console: 0 */
-/* eslint-disable-line global-require: 0 */
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 
@@ -18,5 +17,5 @@ new WebpackDevServer(webpack(config), config.devServer
   if (err) {
     console.log(err)
   }
-  console.log(`Listening at http://${host}:${port}.`)
+  console.log(`devtools/server.js listening at http://${host}:${port}.`)
 })

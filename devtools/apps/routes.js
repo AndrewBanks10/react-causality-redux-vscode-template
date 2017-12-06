@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 const handleConfigureRoutes = require('./api/configure')
 const handleComponentRoutes = require('./api/component')
+const handleDirectoryRoutes = require('./api/directory')
 const express = require('express')
 const path = require('path')
 
@@ -27,6 +28,7 @@ function handleRoutes (app) {
   // other routes
   handleConfigureRoutes(app)
   handleComponentRoutes(app)
+  handleDirectoryRoutes(app)
 }
 
 module.exports = handleRoutes

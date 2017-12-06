@@ -8,7 +8,9 @@ function handleComponentPost (req, res) {
     config.componentName,
     config.generateTestFiles,
     config.useMultiComponent,
-    config.useComments
+    config.useComments,
+    config.reactComponentType,
+    config.cssFileType
   ]
 
   buildComponent(

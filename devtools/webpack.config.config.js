@@ -9,12 +9,12 @@ config.basePath = process.cwd()
 // At this time, the source directory must be directly below the vscode directory.
 config.absoluteSourcePath = path.join(config.basePath, config.sourceDir)
 
-// At this time, you must have your node_modules directory in or above the vscode directory.
+// At this time, you must have your node_modules directory in or above the project directory.
 // The setting below makes that assumption.
 config.node_modulesPath = 'node_modules'
 
 config.stylesheetTypes = []
-if (config.useuseLess) {
+if (config.useLess) {
   config.stylesheetTypes.push('less')
 }
 if (config.useSass) {
@@ -39,10 +39,18 @@ config.absoluteDevToolsPath = path.join(config.basePath, 'devtools')
 config.absoluteDllPath = path.join(config.basePath, config.dllDir)
 
 // Set the program entry point of your development/debug environents
-if (process.env.NODE_ENV === 'production') {
-  config.entryJs = 'index.js'
+if (config.useTypeScript) {
+  if (process.env.NODE_ENV === 'production') {
+    config.entryJs = 'index.tsx'
+  } else {
+    config.entryJs = 'index.dev.tsx'
+  }
 } else {
-  config.entryJs = 'index.dev.js'
+  if (process.env.NODE_ENV === 'production') {
+    config.entryJs = 'index.js'
+  } else {
+    config.entryJs = 'index.dev.js'
+  }
 }
 
 module.exports = config
