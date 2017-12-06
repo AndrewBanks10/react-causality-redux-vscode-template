@@ -2,6 +2,8 @@ import CausalityRedux from 'causality-redux'
 import { inc, dec } from './model'
 import { CounterFormValue, CounterForm } from './view'
 
+let partitionState, wrappedComponents
+
 const defaultState = { counter: 0 }
 
 const controllerFunctions = {
@@ -28,10 +30,11 @@ const controllerUIConnections = [
   ]
 ]
 
-const { partitionState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: counterFormPartition, defaultState, controllerFunctions },
   controllerUIConnections
-})
+});
+({ partitionState, wrappedComponents } = ret)
 
 export default wrappedComponents.CounterForm

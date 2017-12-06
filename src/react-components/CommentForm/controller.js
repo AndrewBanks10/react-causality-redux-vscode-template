@@ -1,6 +1,8 @@
 import CausalityRedux from 'causality-redux'
 import { CommentList, CommentForm, CommentBoxDeleteForm, CommentBoxChangeForm, CommentBox } from './view'
 
+let partitionState, setState, wrappedComponents
+
 const defaultState = {
   items: [],
   author: '',
@@ -90,11 +92,12 @@ const controllerUIConnections = [
   ]
 ]
 
-const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: commentBoxPartition, defaultState, controllerFunctions },
   controllerUIConnections
-})
+});
+({ partitionState, setState, wrappedComponents } = ret)
 
 export default wrappedComponents.CommentBox
 

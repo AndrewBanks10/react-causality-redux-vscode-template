@@ -1,12 +1,19 @@
 import CausalityRedux from 'causality-redux'
 import 'react-causality-redux'
+import configureStore from '../react-components/RedditRedux/configureStore'
 
 // Use this if you need global data. It survives HMR if you use globalStore to access and change it.
 const globalData = {
   injectTapEventPlugin: false
 }
 
-CausalityRedux.createStore({partitionName: CausalityRedux.globalDataKey, defaultState: globalData})
+// Create the redux store.
+const { reduxStore, reducersObject } = configureStore()
+
+// This must be called here in order to create the CausalityRedux store.
+CausalityRedux.setReduxStore(reduxStore, reducersObject)
+
+CausalityRedux.addPartitions({partitionName: CausalityRedux.globalDataKey, defaultState: globalData})
 const globalStore = CausalityRedux.store[CausalityRedux.globalDataKey]
 
 export default globalStore
@@ -21,4 +28,4 @@ const globalGetState = globalStore.getState
 // If globalStoreKeys == [] or undefined, listen to all keys in the global partition.
 const globalSubscribe = globalStore.subscribe
 
-export { globalPartitionState, globalSetState, globalGetState, globalSubscribe }
+export { globalPartitionState, globalSetState, globalGetState, globalSubscribe, reduxStore }

@@ -2,6 +2,8 @@ import CausalityRedux from 'causality-redux'
 import history from '../../history/history'
 import MonitorComponent from './view'
 
+let setState, getState, wrappedComponents
+
 if (typeof history.setMonitorOn === 'function') {
   history.setMonitorOn()
 }
@@ -16,7 +18,35 @@ const defaultState = {
   isDebugging: false,
   currentState: -1,
   display: true,
-  isMinimized: false
+  isMinimized: false,
+  displayModule: false,
+  moduleName: '',
+  lineNumber: 0
+}
+
+const getStackTrace = () => {
+  const err = new Error()
+  Error.stackTraceLimit = 30
+  Error.captureStackTrace(err)
+  const frames = err.stack.split('\n').slice(1)
+  for (let i = 0; i < frames.length; ++i) {
+    const index = frames[i].indexOf('at executeSetState')
+    if (index !== -1) {
+      for (let j = i; j < frames.length; ++j) {
+        const search = 'webpack-internal:///'
+        const frame = frames[j]
+        let nextIndex = frame.indexOf(search)
+        if (nextIndex !== -1) {
+          let endIndex = frame.search(/:\d/)
+          const moduleName = frame.slice(nextIndex + search.length, endIndex)
+          const lineNumber = parseInt(frame.slice(endIndex + 1))
+          return {moduleName, lineNumber}
+        }
+      }
+      i = -1
+    }
+  }
+  return {moduleName: 'Unknown', lineNumber: 0}
 }
 
 //
@@ -104,7 +134,13 @@ function exit () {
 }
 
 function clickedState (index) {
+  // Display module and linenumber
   if (!monitorMirroredState.isDebugging) {
+    setState({
+      displayModule: true,
+      moduleName: allStates[index].module.moduleName,
+      lineNumber: allStates[index].module.lineNumber
+    })
     return
   }
   copyStoreState(index)
@@ -166,6 +202,9 @@ function setThisState () {
   }
 }
 
+const closeDisplayModule = () =>
+  (setState({displayModule: false}))
+
 const controllerFunctions = {
   startDebug,
   clickedState,
@@ -177,17 +216,19 @@ const controllerFunctions = {
   exit,
   minimize,
   maximize,
-  setThisState
+  setThisState,
+  closeDisplayModule
 }
 
-const { setState, getState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module,
-  partition: {partitionName: monitorComponentPartition, defaultState, controllerFunctions},
+  partition: { partitionName: monitorComponentPartition, defaultState, controllerFunctions },
   uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object.
-  storeKeys: ['data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
-  changerKeys: ['startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
+  storeKeys: ['displayModule', 'moduleName', 'lineNumber', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
+  changerKeys: ['closeDisplayModule', 'startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
   uiComponentName: 'MonitorComponent' // Used for tracing.
-})
+});
+({ setState, getState, wrappedComponents } = ret)
 
 const isCausalityReduxComponent = val =>
   typeof val === 'function' && val.prototype !== 'undefined' && typeof val.prototype.isCausalityReduxComponent !== 'undefined'
@@ -231,6 +272,7 @@ function onStateChange (arg) {
 
     // Only record if changes to state happened that are not hot reloaded components.
     if (CausalityRedux.getKeys(arg.nextState).length > 0) {
+      arg.module = getStackTrace()
       arg.store[arg.partitionName] = CausalityRedux.merge({}, arg.store[arg.partitionName], arg.nextState)
       arg.store[CausalityRedux.storeVersionKey] = arg[CausalityRedux.storeVersionKey]
       allStates.push(arg)

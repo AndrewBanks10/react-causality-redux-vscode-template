@@ -8,7 +8,7 @@ const controllerUIConnections = [
     MultiPartitionForm, // React Component to wrap with redux connect
     // Used an array of objects to attach multiple partitions to the component's props
     [
-      { partitionName: counterFormPartition, changers: [], stateEntries: ['counter'] },
+      { partitionName: counterFormPartition, changers: ['increment'], stateEntries: ['counter'] },
       { partitionName: commentBoxPartition, changers: [], stateEntries: ['items'] }
     ],
     'MultiPartitionForm' // Name of the react component string form

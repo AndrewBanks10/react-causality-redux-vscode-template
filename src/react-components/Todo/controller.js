@@ -3,6 +3,8 @@ import {Todo, TodoForm, TodoEdit, ToDoItem, TodoList, InplaceTextEdit} from './v
 import { fetch, save } from './model'
 import { FILTER_ALL } from './filters.js'
 
+let partitionState, setState, wrappedComponents
+
 const todos = fetch()
 const nextIndex = todos.reduce((accum, entry) => accum < entry.id ? entry.id : accum, 0) + 1
 
@@ -83,10 +85,11 @@ const controllerUIConnections = [
   [Todo, todoPartition, ['setFilter'], ['TodoForm', 'filter'], 'Todo']
 ]
 
-const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: todoPartition, defaultState, controllerFunctions },
   controllerUIConnections
-})
+});
+({ partitionState, setState, wrappedComponents } = ret)
 
 export default wrappedComponents.Todo

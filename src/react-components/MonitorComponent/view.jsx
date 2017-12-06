@@ -1,6 +1,20 @@
 import React from 'react'
 import styles from './view.inject'
 
+const DisplayModule = props => {
+  if (!props.displayModule) {
+    return null
+  }
+  return (
+    <div onClick={props.closeDisplayModule} className={styles.displayModuleContainerBackground}>
+      <div onClick={(e) => { e.stopPropagation() }} className={styles.displayModuleContainer}>
+        <div className={styles.displayModuleText}>Module: {props.moduleName}</div>
+        <div className={styles.displayModuleText}>Line Number: {props.lineNumber}</div>
+      </div>
+    </div>
+  )
+}
+
 export default class MonitorComponent extends React.Component {
   componentDidUpdate () {
     if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting' && process.env.NODE_ENV !== 'mochaDebugTesting') {
@@ -37,6 +51,7 @@ export default class MonitorComponent extends React.Component {
     const display2 = !isDebugging ? 'none' : ''
     return (
       <div>
+        <DisplayModule {...this.props} />
         <div className={styles.monitorContainer}>
           <div>
             <div style={{ display: display1 }}>

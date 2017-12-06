@@ -9,6 +9,7 @@ import RouterForm from '../RouterForm/controller'
 import HomeApp from '../HomeApp/HomeApp'
 import Todo from '../Todo/controller'
 import MultiPartition from '../MultiPartition/controller'
+import AsyncApp from '../RedditRedux/containers/AsyncApp'
 
 // Import MonitorComponent last so that component initialization is not included
 import MonitorComponent from '../MonitorComponent/controller'
@@ -25,11 +26,14 @@ export const COMMENTSROUTE = '/commentbox'
 export const ROUTERDEMOROUTE = '/routerdemo'
 export const TODODEMOROUTE = '/tododemo'
 export const MULTIPARTITIONROUTE = '/multipartition'
+export const ASYNCAPP = '/asyncapp'
+
 const MainApp = () =>
   <div>
     <MonitorComponent />
     <Switch>
       <Route exact path={HOMEROUTE} component={HomeApp} />
+      <Route path={ASYNCAPP} component={AsyncApp} />
       <Route path={CAUSALITYCHAINROUTE} component={AjaxDemoCausalityChain} />
       <Route path={NEWSROUTE} component={NewsForm} />
       <Route path={COUNTERROUTE} component={CounterForm} />

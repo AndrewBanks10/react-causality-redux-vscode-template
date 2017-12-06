@@ -1,6 +1,8 @@
 import CausalityRedux from 'causality-redux'
 import NavMenu from './view'
 
+let partitionState, setState, wrappedComponents
+
 /*
   Define the partition store definition
 */
@@ -37,12 +39,13 @@ const controllerFunctions = {
  */
 const navMenuPartition = 'navMenuPartition'
 
-const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: navMenuPartition, defaultState, controllerFunctions },
   uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object.
   uiComponentName: 'NavMenu' // Used for tracing.
-})
+});
+({ partitionState, setState, wrappedComponents } = ret)
 
 // This is required because of a bug in material-ui with mocha/enzyme testing.
 if (process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting') {

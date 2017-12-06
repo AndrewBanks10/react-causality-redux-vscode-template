@@ -2,6 +2,8 @@ import CausalityRedux from 'causality-redux'
 import RouterForm from './view'
 import { replaceHistory, historyGo, historyForward, historyBack } from './model'
 
+let partitionState, wrappedComponents
+
 /*
  Define the partition store definition
 */
@@ -55,12 +57,13 @@ const controllerFunctions = {
  By default, all the function keys and state keys in the partition definition will be made available in the props
  to the connect redux component uiComponent: NavMenu.
  */
-const { partitionState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: routerFormPartition, defaultState, controllerFunctions },
   uiComponent: RouterForm, // Redux connect will be called on this component and returned as uiComponent in the returned object.
   uiComponentName: 'RouterForm' // Used for tracing.
-})
+});
+({ partitionState, wrappedComponents } = ret)
 
 // Export the redux connect component. Use this in parent components.
 export default wrappedComponents.RouterForm

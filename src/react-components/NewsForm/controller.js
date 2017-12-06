@@ -6,6 +6,8 @@ import { NewSourcesButtons, NewsContainer, ErrorMessage, LoaderNews, NewsForm } 
 // This module demonstrates the MVC controller to model and UI connection with a news reader.
 //
 
+let partitionState, setState, wrappedComponents
+
 // This is for react mocha testing. Can't get clientHeight of the document.body in react mocha test mode.
 const defaultHeight = 600
 const defaultWidth = 600
@@ -154,12 +156,13 @@ const hotDisposeHandler = () => {
 // Add the partition definition to CausalityRedux.
 // module is needed to support hot reloading.
 //
-const { partitionState, setState, wrappedComponents } = CausalityRedux.establishControllerConnections({
+const ret = CausalityRedux.establishControllerConnections({
   module,
   hotDisposeHandler,
   partition: { partitionName: newsFormPartition, defaultState, controllerFunctions },
   controllerUIConnections
-})
+});
+({ partitionState, setState, wrappedComponents } = ret)
 
 //
 // This part of the controller wires state partition values and controller functions
