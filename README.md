@@ -1,12 +1,9 @@
-# Create-react-project with vscode demonstration, perhaps the best environment for developing with react.
-
-Get [create-react-project](https://github.com/AndrewBanks10/create-react-project).
-
+# Create-react-project with vscode, perhaps the best environment for developing with react. 
 [![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com) 
 
-A complete react-causality-redux es6 jsx boilerplate project for Visual Studio Code based on skolmer [react-hot-boilerplate-vscode](https://github.com/skolmer/react-hot-boilerplate-vscode). Also, some of information below is provided by [skolmer](https://github.com/skolmer/react-hot-boilerplate-vscode).
+A complete react-causality-redux es6 jsx react project creator for Visual Studio Code based on skolmer [react-hot-boilerplate-vscode](https://github.com/skolmer/react-hot-boilerplate-vscode). Also, some of information below is provided by [skolmer](https://github.com/skolmer/react-hot-boilerplate-vscode).
 
-(**Please note, this template includes the most advanced technologies and is only compatible with node 8.1.3 or higher.**)
+(**Please note, create-react-project is only compatible with node 8.1.3 or higher.**)
 
 ## Extensive List Of Features
 * **Significantly less coding and debugging than with react alone or with react and redux.**
