@@ -42,7 +42,6 @@ function fetchPosts (subreddit) {
       .then(response => response.json())
       .then(json => dispatch(receivePosts(subreddit, json)))
       .catch(function (reason) {
-        const xxx = 0
       })
   }
 }

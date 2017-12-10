@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import 'react-causality-redux'
 import configureStore from '../react-components/RedditRedux/configureStore'
 
@@ -10,11 +10,11 @@ const globalData = {
 // Create the redux store.
 const { reduxStore, reducersObject } = configureStore()
 
-// This must be called here in order to create the CausalityRedux store.
-CausalityRedux.setReduxStore(reduxStore, reducersObject)
+// This must be called here in order to create the causalityRedux store.
+causalityRedux.setReduxStore(reduxStore, reducersObject)
 
-CausalityRedux.addPartitions({partitionName: CausalityRedux.globalDataKey, defaultState: globalData})
-const globalStore = CausalityRedux.store[CausalityRedux.globalDataKey]
+causalityRedux.addPartitions({partitionName: causalityRedux.globalDataKey, defaultState: globalData})
+const globalStore = causalityRedux.store[causalityRedux.globalDataKey]
 
 export default globalStore
 // globalPartitionState - Access and set individual key values in the global store.

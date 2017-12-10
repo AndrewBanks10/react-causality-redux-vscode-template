@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import RouterForm from './view'
 import { replaceHistory, historyGo, historyForward, historyBack } from './model'
 
@@ -57,7 +57,7 @@ const controllerFunctions = {
  By default, all the function keys and state keys in the partition definition will be made available in the props
  to the connect redux component uiComponent: NavMenu.
  */
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: routerFormPartition, defaultState, controllerFunctions },
   uiComponent: RouterForm, // Redux connect will be called on this component and returned as uiComponent in the returned object.

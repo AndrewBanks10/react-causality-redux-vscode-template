@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import { counterFormPartition } from '../CounterForm/controller'
 import { commentBoxPartition } from '../CommentForm/controller'
 import MultiPartitionForm from './view'
@@ -15,7 +15,7 @@ const controllerUIConnections = [
   ]
 ]
 
-const { wrappedComponents } = CausalityRedux.establishControllerConnections({
+const { wrappedComponents } = causalityRedux.establishControllerConnections({
   module,
   controllerUIConnections
 })

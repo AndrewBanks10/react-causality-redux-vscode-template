@@ -1,9 +1,9 @@
 import assert from 'assert'
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import {counterFormPartition} from './controller'
 
 // The controller functions are in the partition store.
-const partitionStore = CausalityRedux.store[counterFormPartition]
+const partitionStore = causalityRedux.store[counterFormPartition]
 const partitionState = partitionStore.partitionState
 
 describe('Controller CounterForm', function () {

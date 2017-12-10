@@ -12,7 +12,7 @@ import MultiPartition from '../MultiPartition/controller'
 import AsyncApp from '../RedditRedux/containers/AsyncApp'
 
 // Import MonitorComponent last so that component initialization is not included
-import MonitorComponent from '../MonitorComponent/controller'
+import StateMonitor from '../StateMonitor/controller'
 
 export const convertToLinkId = (route) => {
   return route.replace(/\\/g, 'xxxlinkid')
@@ -30,7 +30,7 @@ export const ASYNCAPP = '/asyncapp'
 
 const MainApp = () =>
   <div>
-    <MonitorComponent />
+    <StateMonitor />
     <Switch>
       <Route exact path={HOMEROUTE} component={HomeApp} />
       <Route path={ASYNCAPP} component={AsyncApp} />

@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import { CommentList, CommentForm, CommentBoxDeleteForm, CommentBoxChangeForm, CommentBox } from './view'
 
 let partitionState, setState, wrappedComponents
@@ -92,7 +92,7 @@ const controllerUIConnections = [
   ]
 ]
 
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: commentBoxPartition, defaultState, controllerFunctions },
   controllerUIConnections
@@ -102,7 +102,7 @@ const ret = CausalityRedux.establishControllerConnections({
 export default wrappedComponents.CommentBox
 
 // Put in some initial comments.
-if (CausalityRedux.store[commentBoxPartition].getState().items.length === 0) {
+if (causalityRedux.store[commentBoxPartition].getState().items.length === 0) {
   const initialComments = [
     {author: 'Cory Brown', text: 'My 2 scents'},
     {author: 'Jared Anderson', text: 'Let me put it this way. You`ve heard of Socrates? Aristotle? Plato? Morons!'},
@@ -110,5 +110,5 @@ if (CausalityRedux.store[commentBoxPartition].getState().items.length === 0) {
     {author: 'Bruce Campbell', text: 'Fish in a tree? How can that be?'}
   ]
 
-  initialComments.forEach(comment => CausalityRedux.store[commentBoxPartition].onAddComment(comment))
+  initialComments.forEach(comment => causalityRedux.store[commentBoxPartition].onAddComment(comment))
 }

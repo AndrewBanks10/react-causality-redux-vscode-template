@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import { handleGet, handleAbort } from './model'
 import { Loader1, ErrorMessage, AjaxDemoCausalityChain } from './view'
 
@@ -57,7 +57,7 @@ const controllerUIConnections = [
 
 // This establishes all the connections between the UI and business code.
 // It also supports hot reloading for the business logic.
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: ajaxDemoCausalityChainPartition, defaultState, controllerFunctions },
   controllerUIConnections
