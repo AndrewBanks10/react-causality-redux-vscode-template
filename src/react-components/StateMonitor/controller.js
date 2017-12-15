@@ -20,7 +20,9 @@ const defaultState = {
   isMinimized: false,
   displayModule: false,
   moduleName: '',
-  lineNumber: 0
+  lineNumber: 0,
+  partitionName: '',
+  nextState: {}
 }
 
 const stackTraceLimit = 30
@@ -112,6 +114,7 @@ function beginning () {
 
 function stopDebug () {
   replayStates()
+  monitorMirroredState.displayModule = false
   monitorMirroredState.isDebugging = false
   monitorMirroredState.currentState = -1
   setMonitorState()
@@ -135,11 +138,15 @@ function exit () {
 function clickedState (index) {
   // Display module and linenumber
   if (!monitorMirroredState.isDebugging) {
-    setState({
-      displayModule: true,
-      moduleName: allStates[index].module.moduleName,
-      lineNumber: allStates[index].module.lineNumber
-    })
+    if (typeof allStates[index].module !== 'undefined') {
+      setState({
+        displayModule: true,
+        moduleName: allStates[index].module.moduleName,
+        lineNumber: allStates[index].module.lineNumber,
+        partitionName: allStates[index].partitionName,
+        nextState: allStates[index].nextState
+      })
+    }
     return
   }
   copyStoreState(index)
@@ -159,7 +166,7 @@ function forwardOneState () {
 
 function backOneState () {
   const i = monitorMirroredState.currentState
-  if (i === -1) {
+  if (i === 0) {
     return
   }
   copyStoreState(i - 1)
@@ -201,6 +208,9 @@ function setThisState () {
   }
 }
 
+const endDebug = () =>
+  (setTimeout(stopDebug, 1))
+
 const closeDisplayModule = () =>
   (setState({displayModule: false}))
 
@@ -216,14 +226,15 @@ const controllerFunctions = {
   minimize,
   maximize,
   setThisState,
-  closeDisplayModule
+  closeDisplayModule,
+  endDebug
 }
 
 const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: stateMonitorPartition, defaultState, controllerFunctions },
   uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object.
-  storeKeys: ['displayModule', 'moduleName', 'lineNumber', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
+  storeKeys: ['displayModule', 'nextState', 'partitionName', 'moduleName', 'lineNumber', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
   changerKeys: ['closeDisplayModule', 'startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
   uiComponentName: 'MonitorComponent' // Used for tracing.
 });
@@ -252,10 +263,17 @@ allStates.push(firstArg)
 setTimeout(discloseStates, 1)
 
 function onStateChange (arg) {
+  if (monitorMirroredState.isDebugging) {
+    return
+  }
+  /*
   if (arg.partitionName !== stateMonitorPartition && monitorMirroredState.isDebugging) {
     setTimeout(stopDebug, 1)
   }
-  if (arg.partitionName !== stateMonitorPartition && arg.partitionName !== causalityRedux.storeHistoryKey && arg.operation !== causalityRedux.operations.STATE_FUNCTION_CALL) {
+  */
+  if (arg.partitionName !== stateMonitorPartition &&
+    arg.partitionName !== causalityRedux.storeHistoryKey &&
+    arg.operation !== causalityRedux.operations.STATE_FUNCTION_CALL) {
     arg.store = causalityRedux.shallowCopy(causalityRedux.store.getState())
     arg.nextState = causalityRedux.shallowCopy(arg.nextState)
     // Copy the hot reloaded components from arg.nextState down to the stores in the array.

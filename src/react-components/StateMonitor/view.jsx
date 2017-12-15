@@ -1,15 +1,107 @@
 import React from 'react'
 import styles from './view.inject'
 
-const DisplayModule = props => {
+// {'\u25BC'}
+// {'\u25B2'}
+
+const isBasicType = input =>
+  input === null ||
+  input === undefined ||
+  typeof input === 'string' ||
+  typeof input === 'number' ||
+  typeof input === 'boolean' ||
+  typeof input === 'symbol'
+
+const convertJSON = inputObj => {
+  if (isBasicType(inputObj)) {
+    return JSON.stringify(inputObj)
+  }
+  let str
+  try {
+    str = JSON.stringify(inputObj, null, 2)
+  } catch (ex) {
+    return <div style={{color: 'red', paddingLeft: '4px'}}>[Circular]</div>
+  }
+  let arr = str.split('\n').map((entry, index) => {
+    const len = entry.length - entry.trimLeft().length
+    return (
+      <div style={{paddingLeft: `${len * 2}px`}} key={index}>{entry.trimLeft()}</div>
+    )
+  })
+
+  return arr
+}
+
+const BasicEntry = props =>
+  <div className={styles.stateDetailKey}>
+    <span className={styles.keyValue}>{`${props.objKey}: `}</span><span className={styles.basicValue}>{convertJSON(props.obj)}</span>
+  </div>
+
+export class StateDetailObject extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = { isOpen: false }
+    this.toggleOpen = this.toggleOpen.bind(this)
+  }
+  toggleOpen () {
+    this.setState({ isOpen: !this.state.isOpen })
+  }
+  render () {
+    return (
+      isBasicType(this.props.obj)
+        ? <BasicEntry {...this.props} />
+        : <div className={styles.stateDetailKey}>
+          <div className={styles.complexKey}>{`${this.props.objKey}: `}</div> {
+            this.state.isOpen
+              ? <div onClick={this.toggleOpen} className={styles.complexOpenClose}>{'\u25B2'}</div>
+              : <div onClick={this.toggleOpen} className={styles.complexOpenClose}>{'\u25BC'}</div>
+          }
+          <div className={styles.complexValue}>{this.state.isOpen ? convertJSON(this.props.obj) : null}</div>
+          <div className={styles.floatClear} />
+        </div>
+    )
+  }
+}
+
+const StateDetail = props => {
+  const keyList = Object.keys(props.nextState).sort().map((key, index) => {
+    return (
+      <StateDetailObject
+        objKey={key}
+        key={index}
+        obj={props.nextState[key]}
+      />
+    )
+  })
+  return (
+    <div>
+      {keyList}
+    </div>
+  )
+}
+
+const DisplayStateDetail = props => {
   if (!props.displayModule) {
     return null
   }
   return (
     <div onClick={props.closeDisplayModule} className={styles.displayModuleContainerBackground}>
       <div onClick={(e) => { e.stopPropagation() }} className={styles.displayModuleContainer}>
-        <div className={styles.displayModuleText}>Module: {props.moduleName}</div>
-        <div className={styles.displayModuleText}>Line Number: {props.lineNumber}</div>
+        <div>
+          <div className={styles.stateDetailTitle}>Display State Detail</div>
+          <div title='Exit Display State.' onClick={props.closeDisplayModule} className={styles.transitionExitButton}>
+            {'\u2716'}
+          </div>
+        </div>
+        <div>
+          <div className={styles.displayModuleText}>Module: <span className={styles.displayModuleTextValue}>{props.moduleName}</span></div>
+          <div className={styles.displayModuleText}>Line Number: <span className={styles.displayModuleTextValue}>{props.lineNumber}</span></div>
+          <div className={styles.displayModuleText}>Partition: <span className={styles.displayModuleTextValue}>{props.partitionName}</span></div>
+          <div className={styles.displayModuleText}>Changed Keys:</div>
+        </div>
+        <div className={styles.displayStateObjectContainer}>
+          <StateDetail nextState={props.nextState} />
+        </div>
       </div>
     </div>
   )
@@ -17,8 +109,20 @@ const DisplayModule = props => {
 
 export default class StateMonitor extends React.Component {
   componentDidUpdate () {
-    if (!this.props.isDebugging && this.monitorContentContainer) {
-      this.monitorContentContainer.scrollTop = this.monitorContentContainer.scrollHeight
+    if (this.monitorContentContainer) {
+      if (!this.props.isDebugging) {
+        this.monitorContentContainer.scrollTop = this.monitorContentContainer.scrollHeight
+      } else {
+        const elements = this.monitorContentContainer.getElementsByClassName(styles.dataRowOn)
+        if (elements.length === 1) {
+          // Make sure the on row is on the screen. Scroll if needed.
+          if (elements[0].offsetTop < this.monitorContentContainer.scrollTop) {
+            this.monitorContentContainer.scrollTop = elements[0].offsetTop
+          } else if ((elements[0].offsetTop + elements[0].offsetHeight) > (this.monitorContentContainer.clientHeight + this.monitorContentContainer.scrollTop)) {
+            this.monitorContentContainer.scrollTop = (elements[0].offsetTop + elements[0].offsetHeight) - this.monitorContentContainer.clientHeight
+          }
+        }
+      }
     }
   }
   render () {
@@ -48,8 +152,8 @@ export default class StateMonitor extends React.Component {
     const display1 = isDebugging ? 'none' : ''
     const display2 = !isDebugging ? 'none' : ''
     return (
-      <div>
-        <DisplayModule {...this.props} />
+      <div className={!isDebugging ? {} : styles.monitorContainerBackground}>
+        <DisplayStateDetail {...this.props} />
         <div className={styles.monitorContainer}>
           <div>
             <div style={{ display: display1 }}>
