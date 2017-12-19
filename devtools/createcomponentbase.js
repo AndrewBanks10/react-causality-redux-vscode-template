@@ -56,11 +56,11 @@ const controllerTestFileCode = (component) => {
   }
   code +=
 `/*
-import CausalityRedux from 'causality-redux'
+import causalityRedux from 'causality-redux'
 import { ${makePartitionName(component)} } from './controller'
 
 // The controller functions are in the partition store.
-const partitionStore = CausalityRedux.store[${makePartitionName(component)}]
+const partitionStore = causalityRedux.store[${makePartitionName(component)}]
 const partitionState = partitionStore.partitionState
 */
 
@@ -138,7 +138,7 @@ const handleTestFiles = (dir, component, doTest) => {
 
 const controllerCode = (component, isMultiple) => {
   let code =
-        'import CausalityRedux from \'causality-redux\''
+        'import causalityRedux from \'causality-redux\''
   if (isMultiple) {
     code += `
 import { ${component} } from './view'`
@@ -146,24 +146,10 @@ import { ${component} } from './view'`
     code += `
 import ${component} from './view'`
   }
-  if (configCommon.useTypeScript) {
-    code +=
-      `
 
-let partitionState: any
-let setState: any
-let wrappedComponents: any
+  code +=
 `
-  } else {
-    code +=
-    `
 
-let partitionState
-let setState
-let wrappedComponents
-`
-  }
-  code += `
 /*
   Note: Hot reloading in this controller file only supports changes to the controllerFunctions.
   Any other change requires a refresh.
@@ -190,6 +176,22 @@ const defaultState: IPartitionState = {
   sampleKey1: '',
   sampleKey2: []
 }`
+  }
+
+  if (configCommon.useTypeScript) {
+    code +=
+      `
+
+let partitionState: IPartitionState
+let setState: any
+let wrappedComponents: any`
+  } else {
+    code +=
+    `
+
+let partitionState
+let setState
+let wrappedComponents`
   }
   code +=
 `
@@ -290,7 +292,7 @@ const Child = ({sampleFunction2, sampleKey2}) =>
   <div/>
 
 // Note that Child is included in Parent in controllerUIConnections in the store keys.
-// Then CausalityRedux creates a partition store entry that contains the enhanced redux connected Child component.
+// Then causalityRedux creates a partition store entry that contains the enhanced redux connected Child component.
 // You then use that as a component in the Parent react definition.
 
 // Child below is not the Child defined above but is the redux connected component.
@@ -304,7 +306,7 @@ const controllerUIConnections = [
   [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ]
 
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
@@ -325,7 +327,7 @@ const ret = CausalityRedux.establishControllerConnections({
  to establishControllerConnections.
  */
 export const ${makePartitionName(component)} = '${makePartitionName(component)}'
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object.
@@ -365,7 +367,7 @@ const modelCode = (comments) => {
     whateveryouneed: [];
     numberType: 0;
   }
-  const moduleData = CausalityRedux.getModuleData(process.env.NODE_ENV !== 'production', nonUIData).moduleData;
+  const moduleData = causalityRedux.getModuleData(process.env.NODE_ENV !== 'production', nonUIData).moduleData;
 
   Then moduleData is a proxy to the redux store partitiondata.
   So, moduleData.whateveryouneed returns a copy to the data. Then to change whateveryouneed do
@@ -391,29 +393,16 @@ const modelCode = (comments) => {
 
 const controllerCodewc = (component, isMultiple) => {
   let code =
-        `import CausalityRedux from 'causality-redux'
+        `import causalityRedux from 'causality-redux'
 `
   if (isMultiple) {
     code += `import { ${component} } from './view'`
   } else {
     code += `import ${component} from './view'`
   }
-  if (configCommon.useTypeScript) {
-    code +=
-      `
 
-let partitionState: any
-let wrappedComponents: any
-`
-  } else {
-    code +=
-    `
-
-let partitionState
-let wrappedComponents
-`
-  }
   code += `
+
 // TODO: Define the partition store definition
 `
   if (configCommon.useTypeScript) {
@@ -428,7 +417,21 @@ const defaultState: IPartitionState = {`
   code += `
   sampleKey1: ''
 }
-
+`
+  if (configCommon.useTypeScript) {
+    code +=
+    `
+let partitionState: IPartitionState
+let wrappedComponents: any
+`
+  } else {
+    code +=
+`
+let partitionState
+let wrappedComponents
+`
+  }
+  code += `
 // TODO: Define Controller functions available to the UI.
 `
   if (configCommon.useTypeScript) {
@@ -459,7 +462,7 @@ const controllerUIConnections = [
   [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ]
 
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
@@ -471,7 +474,7 @@ const ret = CausalityRedux.establishControllerConnections({
     code +=
 `export const ${makePartitionName(component)} = '${makePartitionName(component)}'
 
-const ret = CausalityRedux.establishControllerConnections({
+const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component},
