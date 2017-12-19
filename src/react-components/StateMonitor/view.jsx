@@ -1,8 +1,5 @@
-import React from 'react'
+import * as React from 'react'
 import styles from './view.inject'
-
-// {'\u25BC'}
-// {'\u25B2'}
 
 const isBasicType = input =>
   input === null ||
@@ -20,12 +17,12 @@ const convertJSON = inputObj => {
   try {
     str = JSON.stringify(inputObj, null, 2)
   } catch (ex) {
-    return <div style={{color: 'red', paddingLeft: '4px'}}>[Circular]</div>
+    return <div style={{ color: 'red', paddingLeft: '4px' }}>[Circular]</div>
   }
   let arr = str.split('\n').map((entry, index) => {
     const len = entry.length - entry.trimLeft().length
     return (
-      <div style={{paddingLeft: `${len * 2}px`}} key={index}>{entry.trimLeft()}</div>
+      <div style={{ paddingLeft: `${len * 2}px` }} key={index}>{entry.trimLeft()}</div>
     )
   })
 
@@ -95,7 +92,7 @@ const DisplayStateDetail = props => {
         </div>
         <div>
           <div className={styles.displayModuleText}>Module: <span className={styles.displayModuleTextValue}>{props.moduleName}</span></div>
-          <div className={styles.displayModuleText}>Line Number: <span className={styles.displayModuleTextValue}>{props.lineNumber}</span></div>
+          <div className={styles.displayModuleText}>Line Number: <span className={styles.displayModuleTextValue}>{props.line}</span></div>
           <div className={styles.displayModuleText}>Partition: <span className={styles.displayModuleTextValue}>{props.partitionName}</span></div>
           <div className={styles.displayModuleText}>Changed Keys:</div>
         </div>
@@ -126,10 +123,10 @@ export default class StateMonitor extends React.Component {
     }
   }
   render () {
-    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'mochaTesting' || process.env.NODE_ENV === 'mochaDebugTesting') {
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'mochaTesting') {
       return null
     }
-    const {startDebug, clickedState, backOneState, forwardOneState, stopDebug, replayStates, beginning, exit, minimize, maximize, setThisState, data, isDebugging, currentState, display, isMinimized} = this.props
+    const { startDebug, clickedState, backOneState, forwardOneState, stopDebug, replayStates, beginning, exit, minimize, maximize, setThisState, data, isDebugging, currentState, display, isMinimized } = this.props
     if (!display) {
       return null
     }

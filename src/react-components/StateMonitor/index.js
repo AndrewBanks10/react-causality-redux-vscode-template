@@ -1,0 +1,21 @@
+import * as React from 'react'
+
+// Set this to false to turn off the monitor.
+const showMonitor = true
+
+let StateMonitor
+let handleTSSourceMaps
+if (!showMonitor || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'mochaTesting') {
+  class NullComponent extends React.Component {
+    render () {
+      return null
+    }
+  }
+  StateMonitor = NullComponent
+  handleTSSourceMaps = () => { }
+} else {
+  StateMonitor = require('./controller').default
+  handleTSSourceMaps = require('./controller').handleTSSourceMaps
+}
+
+export { StateMonitor, handleTSSourceMaps }

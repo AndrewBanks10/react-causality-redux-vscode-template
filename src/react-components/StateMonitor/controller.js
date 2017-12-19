@@ -1,7 +1,11 @@
 import causalityRedux from 'causality-redux'
-import MonitorComponent from './view'
+import MonitorComponent from './view.jsx'
+import getStackTrace from './model'
+import { loadSourceMaps, mapModule } from './sourcemaps'
 
-let setState, getState, wrappedComponents
+let setState
+let getState
+let wrappedComponents
 
 if (typeof history !== 'undefined' && typeof history.setMonitorOn === 'function') {
   history.setMonitorOn()
@@ -20,35 +24,9 @@ const defaultState = {
   isMinimized: false,
   displayModule: false,
   moduleName: '',
-  lineNumber: 0,
+  line: 0,
   partitionName: '',
   nextState: {}
-}
-
-const stackTraceLimit = 30
-const getStackTrace = () => {
-  const err = new Error()
-  Error.stackTraceLimit = stackTraceLimit
-  Error.captureStackTrace(err)
-  const frames = err.stack.split('\n').slice(1)
-  for (let i = 0; i < frames.length; ++i) {
-    const index = frames[i].indexOf('at executeSetState')
-    if (index !== -1) {
-      for (let j = i; j < frames.length; ++j) {
-        const search = 'webpack-internal:///'
-        const frame = frames[j]
-        let nextIndex = frame.indexOf(search)
-        if (nextIndex !== -1) {
-          let endIndex = frame.search(/:\d/)
-          const moduleName = frame.slice(nextIndex + search.length, endIndex)
-          const lineNumber = parseInt(frame.slice(endIndex + 1))
-          return {moduleName, lineNumber}
-        }
-      }
-      i = -1
-    }
-  }
-  return {moduleName: 'Unknown', lineNumber: 0}
 }
 
 //
@@ -136,13 +114,13 @@ function exit () {
 }
 
 function clickedState (index) {
-  // Display module and linenumber
+  // Display module and line
   if (!monitorMirroredState.isDebugging) {
     if (typeof allStates[index].module !== 'undefined') {
       setState({
         displayModule: true,
         moduleName: allStates[index].module.moduleName,
-        lineNumber: allStates[index].module.lineNumber,
+        line: allStates[index].module.line,
         partitionName: allStates[index].partitionName,
         nextState: allStates[index].nextState
       })
@@ -234,7 +212,7 @@ const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: stateMonitorPartition, defaultState, controllerFunctions },
   uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object.
-  storeKeys: ['displayModule', 'nextState', 'partitionName', 'moduleName', 'lineNumber', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
+  storeKeys: ['displayModule', 'nextState', 'partitionName', 'moduleName', 'line', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
   changerKeys: ['closeDisplayModule', 'startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
   uiComponentName: 'MonitorComponent' // Used for tracing.
 });
@@ -254,6 +232,22 @@ const copyHotReloadedComponents = (partitionName, partition) => {
       delete partition[partitionKey]
     }
   })
+}
+
+// Translate all ts modules on the stack that have not been translated.
+const handleTSSourceMapsComplete = () => {
+  const len = allStates.length
+  for (let i = 0; i < len; ++i) {
+    if (allStates[i].module && !allStates[i].module.translated) {
+      allStates[i].module = mapModule(allStates[i].module)
+    }
+  }
+}
+
+// Typescript does not translate the error stack line numbers correctly.
+// So, we have to do this translation for now.
+export const handleTSSourceMaps = () => {
+  loadSourceMaps(handleTSSourceMapsComplete)
 }
 
 // First state
@@ -289,7 +283,7 @@ function onStateChange (arg) {
 
     // Only record if changes to state happened that are not hot reloaded components.
     if (causalityRedux.getKeys(arg.nextState).length > 0) {
-      arg.module = getStackTrace()
+      arg.module = mapModule(getStackTrace())
       arg.store[arg.partitionName] = causalityRedux.merge({}, arg.store[arg.partitionName], arg.nextState)
       arg.store[causalityRedux.storeVersionKey] = arg[causalityRedux.storeVersionKey]
       allStates.push(arg)
@@ -304,7 +298,7 @@ function onListener (arg) {
   }
 }
 
-if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting' && process.env.NODE_ENV !== 'mochaDebugTesting') {
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'mochaTesting') {
   causalityRedux.setOptions({ onStateChange, onListener })
 }
 

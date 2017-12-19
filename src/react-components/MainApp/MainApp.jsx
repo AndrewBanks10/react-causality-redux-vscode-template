@@ -12,7 +12,7 @@ import MultiPartition from '../MultiPartition/controller'
 import AsyncApp from '../RedditRedux/containers/AsyncApp'
 
 // Import MonitorComponent last so that component initialization is not included
-import StateMonitor from '../StateMonitor/controller'
+import { StateMonitor } from '../StateMonitor/index'
 
 export const convertToLinkId = (route) => {
   return route.replace(/\\/g, 'xxxlinkid')
