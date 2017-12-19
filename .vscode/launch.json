@@ -62,39 +62,6 @@
             "cwd": "${workspaceRoot}",
             "runtimeExecutable": null,
             "env": { "NODE_ENV": "mochaTesting"}
-        },
-        {
-            "name": "Start Debug Mocha Tests",
-            "type": "node",
-            "request": "launch",
-            "preLaunchTask": "(Internal)BuildMochaDebug"
-        },
-        {
-            "name": "Debug Mocha Tests",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceRoot}",
-            //TODO: Change this to your correct location for mocha. 
-            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-            "args": [
-                "--require", 
-                "ignore-styles",
-                "--require", 
-                "./temp/test/setup.js",
-                "./temp/test/mountapp.js",
-                "./temp/test/projectsetup.js",
-                "./temp/src/**/*spec.js",
-                "--no-timeouts",
-                "--colors"
-            ],
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "stopOnEntry": false,
-            "sourceMaps": true,
-            "smartStep": true,
-            "outFiles": ["${workspaceRoot}/temp/**/*.js"],
-            "env": { "NODE_ENV": "mochaDebugTesting"}
-        }
+        }        
 	]
 }
