@@ -26,7 +26,8 @@ const defaultState = {
   moduleName: '',
   line: 0,
   partitionName: '',
-  nextState: {}
+  nextState: {},
+  clipBoard: ''
 }
 
 //
@@ -119,6 +120,7 @@ function clickedState (index) {
     if (typeof allStates[index].module !== 'undefined') {
       setState({
         displayModule: true,
+        clipBoard: JSON.stringify({file: allStates[index].module.moduleName, line: allStates[index].module.line}),
         moduleName: allStates[index].module.moduleName,
         line: allStates[index].module.line,
         partitionName: allStates[index].partitionName,
@@ -212,7 +214,7 @@ const ret = causalityRedux.establishControllerConnections({
   module,
   partition: { partitionName: stateMonitorPartition, defaultState, controllerFunctions },
   uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object.
-  storeKeys: ['displayModule', 'nextState', 'partitionName', 'moduleName', 'line', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
+  storeKeys: ['clipBoard', 'displayModule', 'nextState', 'partitionName', 'moduleName', 'line', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
   changerKeys: ['closeDisplayModule', 'startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],
   uiComponentName: 'MonitorComponent' // Used for tracing.
 });

@@ -1,4 +1,4 @@
-import CausalityRedux from 'causality-redux'
+import { establishControllerConnections } from 'react-causality-redux'
 import NavMenu from './view'
 
 let partitionState, setState, wrappedComponents
@@ -39,7 +39,7 @@ const controllerFunctions = {
  */
 const navMenuPartition = 'navMenuPartition'
 
-const ret = CausalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: navMenuPartition, defaultState, controllerFunctions },
   uiComponent: NavMenu, // Redux connect will be called on this component and returned as uiComponent in the returned object.

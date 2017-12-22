@@ -102,7 +102,7 @@
     "eslint-plugin-standard": "^3.0.1"
   },
   "dependencies": {
-    "causality-redux": "^2.1.20",
+    "causality-redux": "^2.1.21",
     "history": "^4.7.2",
     "material-ui": "^0.19.4",
     "react": "^16.0.0",

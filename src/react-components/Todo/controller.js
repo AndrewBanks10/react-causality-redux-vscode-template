@@ -1,4 +1,4 @@
-import causalityRedux from 'causality-redux'
+import { establishControllerConnections } from 'react-causality-redux'
 import {Todo, TodoForm, TodoEdit, ToDoItem, TodoList, InplaceTextEdit} from './view'
 import { fetch, save } from './model'
 import { FILTER_ALL } from './filters.js'
@@ -85,7 +85,7 @@ const controllerUIConnections = [
   [Todo, todoPartition, ['setFilter'], ['TodoForm', 'filter'], 'Todo']
 ]
 
-const ret = causalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module,
   partition: { partitionName: todoPartition, defaultState, controllerFunctions },
   controllerUIConnections

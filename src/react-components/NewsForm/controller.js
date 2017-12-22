@@ -1,4 +1,4 @@
-import causalityRedux from 'causality-redux'
+import { establishControllerConnections } from 'react-causality-redux'
 import { getSources, getNewsFromSource } from './model'
 import { NewSourcesButtons, NewsContainer, ErrorMessage, LoaderNews, NewsForm } from './view'
 
@@ -156,7 +156,7 @@ const hotDisposeHandler = () => {
 // Add the partition definition to CausalityRedux.
 // module is needed to support hot reloading.
 //
-const ret = causalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module,
   hotDisposeHandler,
   partition: { partitionName: newsFormPartition, defaultState, controllerFunctions },

@@ -138,7 +138,7 @@ const handleTestFiles = (dir, component, doTest) => {
 
 const controllerCode = (component, isMultiple) => {
   let code =
-        'import causalityRedux from \'causality-redux\''
+        'import { establishControllerConnections } from \'react-causality-redux\''
   if (isMultiple) {
     code += `
 import { ${component} } from './view'`
@@ -300,13 +300,20 @@ const Parent = ({ sampleFunction1, sampleKey1, Child }) =>
   <Child/>
 */
 
-export const ${makePartitionName(component)} = '${makePartitionName(component)}'
+`
+    if (configCommon.useTypeScript) {
+      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
+    } else {
+      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
+    }
+
+    code += `
 
 const controllerUIConnections = [
   [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ]
 
-const ret = causalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
@@ -326,8 +333,17 @@ const ret = causalityRedux.establishControllerConnections({
  To override the defaultState keys, define an array of defaultState key strings at storeKeys in the input object
  to establishControllerConnections.
  */
-export const ${makePartitionName(component)} = '${makePartitionName(component)}'
-const ret = causalityRedux.establishControllerConnections({
+
+`
+    if (configCommon.useTypeScript) {
+      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
+    } else {
+      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
+    }
+
+    code += `
+
+const ret = establishControllerConnections({
   module, // Needed for hot reloading.
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object.
@@ -393,7 +409,7 @@ const modelCode = (comments) => {
 
 const controllerCodewc = (component, isMultiple) => {
   let code =
-        `import causalityRedux from 'causality-redux'
+        `import { establishControllerConnections } from 'react-causality-redux'
 `
   if (isMultiple) {
     code += `import { ${component} } from './view'`
@@ -454,15 +470,20 @@ const controllerFunctions: IControllerFunctions = {
 
 `
   if (isMultiple) {
-    code +=
-          `export const ${makePartitionName(component)} = '${makePartitionName(component)}'
+    if (configCommon.useTypeScript) {
+      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
+    } else {
+      code +=
+        `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
+    }
+    code += `
 
 // TODO: Add your UI props connections here.
 const controllerUIConnections = [
   [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ]
 
-const ret = causalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
@@ -471,10 +492,14 @@ const ret = causalityRedux.establishControllerConnections({
 
 `
   } else {
-    code +=
-`export const ${makePartitionName(component)} = '${makePartitionName(component)}'
+    if (configCommon.useTypeScript) {
+      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
+    } else {
+      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
+    }
+    code += `
 
-const ret = causalityRedux.establishControllerConnections({
+const ret = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component},
