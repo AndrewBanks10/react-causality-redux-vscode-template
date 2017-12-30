@@ -3,7 +3,7 @@ import styles from './view.inject'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import RaisedButton from 'material-ui/RaisedButton'
-import NavMenu from '../../react-components/NavMenu/controller'
+import NavMenu from '../NavMenu'
 
 export const LoaderNews = ({isBusy}) => {
   let className = ''

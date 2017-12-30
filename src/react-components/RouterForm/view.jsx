@@ -1,7 +1,7 @@
 import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
-import NavMenu from '../../react-components/NavMenu/controller'
+import NavMenu from '../NavMenu'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 

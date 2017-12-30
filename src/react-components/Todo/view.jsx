@@ -7,7 +7,7 @@ import Checkbox from 'material-ui/Checkbox'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
 import ContentClear from 'material-ui/svg-icons/content/clear'
 import AppBar from 'material-ui/AppBar'
-import NavMenu from '../../react-components/NavMenu/controller'
+import NavMenu from '../NavMenu'
 import { FILTER_ALL, FILTER_ACTIVE, FILTER_COMPLETE } from './filters.js'
 
 const RED = 'RGB(255,0,0)'

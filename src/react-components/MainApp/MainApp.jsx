@@ -1,18 +1,17 @@
 import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 
-import CommentForm from '../CommentForm/controller'
-import CounterForm from '../CounterForm/controller'
-import NewsForm from '../NewsForm/controller'
-import AjaxDemoCausalityChain from '../AjaxDemoCausalityChain/controller'
-import RouterForm from '../RouterForm/controller'
+import Todo from '../Todo'
+import NewsForm from '../NewsForm'
+import RouterForm from '../RouterForm'
 import HomeApp from '../HomeApp/HomeApp'
-import Todo from '../Todo/controller'
-import MultiPartition from '../MultiPartition/controller'
+import CommentForm from '../CommentForm'
+import CounterForm from '../CounterForm'
+import MultiPartition from '../MultiPartition'
 import AsyncApp from '../RedditRedux/containers/AsyncApp'
-
-// Import MonitorComponent last so that component initialization is not included
-import { StateMonitor } from '../StateMonitor/index'
+import AjaxDemoCausalityChain from '../AjaxDemoCausalityChain'
+// Import MonitorComponent last so that any component initialization is not included
+import { StateMonitor } from '../StateMonitor'
 
 export const convertToLinkId = (route) => {
   return route.replace(/\\/g, 'xxxlinkid')

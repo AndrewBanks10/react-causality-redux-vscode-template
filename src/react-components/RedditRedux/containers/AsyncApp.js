@@ -8,7 +8,7 @@ import {
 } from '../actions'
 import Picker from '../components/Picker'
 import Posts from '../components/Posts'
-import NavMenu from '../../../react-components/NavMenu/controller'
+import NavMenu from '../../NavMenu'
 import AppBar from 'material-ui/AppBar'
 
 class AsyncApp extends Component {

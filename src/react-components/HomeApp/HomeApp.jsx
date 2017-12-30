@@ -1,7 +1,7 @@
 
 import React from 'react'
 import styles from '../../stylesheets/HomeApp'
-import NavMenu from '../NavMenu/controller'
+import NavMenu from '../NavMenu'
 import TopHeader from '../TopHeader/TopHeader'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 // Use the below to get the current theme of material-ui

@@ -1,9 +1,6 @@
-import { establishControllerConnections } from 'react-causality-redux'
-import {Todo, TodoForm, TodoEdit, ToDoItem, TodoList, InplaceTextEdit} from './view'
 import { fetch, save } from './model'
 import { FILTER_ALL } from './filters.js'
-
-let partitionState, setState, wrappedComponents
+import { partitionState, setState } from './index'
 
 const todos = fetch()
 const nextIndex = todos.reduce((accum, entry) => accum < entry.id ? entry.id : accum, 0) + 1
@@ -14,7 +11,7 @@ const hasCompleted = (arr) =>
 const numOutstanding = (arr) =>
   arr.filter(entry => !entry.completed).length
 
-const defaultState = {
+export const defaultState = {
   nextIndex,
   todos,
   text: '',
@@ -45,7 +42,7 @@ const saveTodoEdit = (arr, text, id) => {
 const findTodo = (todos, id) =>
   todos.findIndex(e => e.id === id)
 
-const controllerFunctions = {
+export const controllerFunctions = {
   clearCompleted: () =>
     saveTodos(partitionState.todos.filter(entry => !entry.completed)),
   updateText: (text) =>
@@ -73,23 +70,3 @@ const controllerFunctions = {
   setFilter: (filter) =>
     (partitionState.filter = filter)
 }
-
-export const todoPartition = 'todoPartition'
-
-const controllerUIConnections = [
-  [InplaceTextEdit, todoPartition, ['updateEditText', 'saveEdit', 'endEdit'], ['editText', 'editID'], 'InplaceTextEdit'],
-  [ToDoItem, todoPartition, ['deleteTodo', 'onCheck', 'startEdit'], ['editID', 'InplaceTextEdit'], 'ToDoItem'],
-  [TodoList, todoPartition, [], ['todos', 'ToDoItem'], 'TodoList'],
-  [TodoEdit, todoPartition, ['saveTodo', 'updateText', 'clearCompleted'], ['text', 'hasCompleted', 'numOutstanding'], 'TodoEdit'],
-  [TodoForm, todoPartition, [], ['TodoEdit', 'TodoList'], 'TodoForm'],
-  [Todo, todoPartition, ['setFilter'], ['TodoForm', 'filter'], 'Todo']
-]
-
-const ret = establishControllerConnections({
-  module,
-  partition: { partitionName: todoPartition, defaultState, controllerFunctions },
-  controllerUIConnections
-});
-({ partitionState, setState, wrappedComponents } = ret)
-
-export default wrappedComponents.Todo
