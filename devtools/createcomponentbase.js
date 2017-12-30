@@ -57,7 +57,7 @@ const controllerTestFileCode = (component) => {
   code +=
 `/*
 import causalityRedux from 'causality-redux'
-import { ${makePartitionName(component)} } from './controller'
+import { ${makePartitionName(component)} } from './index'
 
 // The controller functions are in the partition store.
 const partitionStore = causalityRedux.store[${makePartitionName(component)}]
@@ -136,136 +136,32 @@ const handleTestFiles = (dir, component, doTest) => {
   fs.writeFileSync(path.join(dir, codeFileName('model.spec')), modelTestFileCode(component))
 }
 
-const controllerCode = (component, isMultiple) => {
-  let code =
-        'import { establishControllerConnections } from \'react-causality-redux\''
-  if (isMultiple) {
-    code += `
-import { ${component} } from './view'`
-  } else {
-    code += `
-import ${component} from './view'`
+const establishControllerConnectionsComments = (component, comments) => {
+  if (!comments) {
+    return ''
   }
-
-  code +=
-`
-
-/*
-  Note: Hot reloading in this controller file only supports changes to the controllerFunctions.
-  Any other change requires a refresh.
-*/
-
-/*
- TODO: Define the partition store definition
+  return (
+    `/*
+This establishes all the connections between the UI and defaultState/controllerFunctions.
+It also supports hot reloading for the business logic, UI component and the controller functions.
+By default, all the function keys in controllerFunctions and state keys in defaultState will be made available
+in the props of the connect redux component uiComponent: ${component}.
+To override the function keys, define an array of function key strings at changerKeys in the input object
+to establishControllerConnections.
+To override the defaultState keys, define an array of defaultState key strings at storeKeys in the input object
+to establishControllerConnections.
 */
 `
-  if (configCommon.useTypeScript) {
-    code +=
-      `interface IPartitionState {
-  sampleKey1?: string,
-  sampleKey2?: number[]
+  )
 }
 
-const defaultState: IPartitionState = {
-  sampleKey1: '',
-  sampleKey2: []
-}`
-  } else {
-    code +=
-    `const defaultState = {
-  sampleKey1: '',
-  sampleKey2: []
-}`
-  }
-
-  if (configCommon.useTypeScript) {
-    code +=
-      `
-
-let partitionState: IPartitionState
-let setState: any
-let wrappedComponents: any`
-  } else {
-    code +=
-    `
-
-let partitionState
-let setState
-let wrappedComponents`
-  }
-  code +=
-`
-
-/*
- TODO: Define Controller functions which will be made available by causality-redux to the react
- UI component in the props. The fundamental role of a controller function is to set values in the redux
- partition defaultState. This may be done based on changes from the UI or may also be done as
- a result of a call to a synchronous or asynchronous operation in the business code (model.js or model.ts).
- Based on changes in defaultState, causality-redux will re-render the react component with these
- new values set correctly in the props so that the react UI is updated correctly.
-
- Use partitionState to access the keys of default state in these functions.
- partitionState is a proxy that returns a copy of the value at the selected key.
- Example:
- let value = partitionState.key;
-
- To set a key do partitionState.key = value;
- use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
- Using partitionState to set multiple keys will cause multiple renders of the react component(s).
-*/
-`
-  if (configCommon.useTypeScript) {
-    code +=
-      `interface IControllerFunctions {
-  sampleFunction1? (url: string): void
-  sampleFunction2? (n: number): void
-  sampleFunction3? (url: string, arr: number[]): void
-}
-
-const controllerFunctions = {
-  sampleFunction1: (url: string) => {
-    partitionState.sampleKey1 = url
-  },
-  sampleFunction2: (n: number) => {
-    // Note partitionState returns a copy of the value at the key.
-    // So, the below must be done to correctly change objects, which are pointers in javascript.
-    const arr = partitionState.sampleKey2
-    arr.push(n)
-    partitionState.sampleKey2 = arr
-  },
-  sampleFunction3: (url: string, arr: number[]) => {
-    // Each assignment by partitionState causes a component render
-    // So use the below to change multiple keys with one render.
-    setState({ sampleKey1: url, sampleKey2: arr })
-  }
-}
-`
-  } else {
-    code +=
-    `const controllerFunctions = {
-  sampleFunction1: (url) => {
-    partitionState.sampleKey1 = url
-  },
-  sampleFunction2: (e) => {
-    // Note partitionState returns a copy of the value at the key.
-    // So, the below must be done to correctly change objects, which are pointers in javascript.
-    const arr = partitionState.sampleKey2
-    arr.push(e)
-    partitionState.sampleKey2 = arr
-  },
-  sampleFunction3: (url, arr) => {
-    // Each assignment by partitionState causes a component render
-    // So use the below to change multiple keys with one render.
-    setState({ sampleKey1: url, sampleKey2: arr })
-  }
-}
+const multipleComponentComments = (component, comments) => {
+  if (!comments) {
+    return `// TODO: Add your UI props connections here.
 `
   }
-
-  if (isMultiple) {
-    code +=
-          `
-/*
+  return (
+    `/*
   TODO: Add your UI props connections here.
   Each child component of ${component} that requires contoller functions or values in the defaultState above
   needs to be listed in the controllerUIConnections below as an array.
@@ -299,74 +195,261 @@ const Child = ({sampleFunction2, sampleKey2}) =>
 const Parent = ({ sampleFunction1, sampleKey1, Child }) =>
   <Child/>
 */
+`
+  )
+}
+
+const controllerIndexJS = (component, isMultiple, comments) => {
+  let code = `import { establishControllerConnections } from 'react-causality-redux'`
+  if (isMultiple) {
+    code += `
+import { ${component} } from './view'`
+  } else {
+    code += `
+import ${component} from './view'`
+  }
+
+  code += `
+import { defaultState, controllerFunctions } from './controller'
+
+const ${makePartitionName(component)} = '${makePartitionName(component)}'
 
 `
-    if (configCommon.useTypeScript) {
-      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
-    } else {
-      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
-    }
-
-    code += `
-
+  if (isMultiple) {
+    code += `// TODO: Add your UI props connections here.
 const controllerUIConnections = [
   [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
 ]
 
-const ret = establishControllerConnections({
+`
+    code += establishControllerConnectionsComments(component, comments)
+    code += `const { partitionState, setState, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
-});
-({ partitionState, setState, wrappedComponents } = ret)
-`
+})`
   } else {
-    code +=
-          `
-/*
- This establishes all the connections between the UI and defaultState/controllerFunctions.
- It also supports hot reloading for the business logic, UI component and the controller functions.
- By default, all the function keys in controllerFunctions and state keys in defaultState will be made available
- in the props of the connect redux component uiComponent: ${component}.
- To override the function keys, define an array of function key strings at changerKeys in the input object
- to establishControllerConnections.
- To override the defaultState keys, define an array of defaultState key strings at storeKeys in the input object
- to establishControllerConnections.
- */
-
-`
-    if (configCommon.useTypeScript) {
-      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
-    } else {
-      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
-    }
-
-    code += `
-
-const ret = establishControllerConnections({
-  module, // Needed for hot reloading.
+    code += establishControllerConnectionsComments(component, comments)
+    code += `const { partitionState, setState, wrappedComponents } = establishControllerConnections({
+  module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
-  uiComponent: ${component}, // Redux connect will be called on this component and returned as uiComponent in the returned object.
-  uiComponentName: '${component}' // Used for tracing.
-});
-({ partitionState, setState, wrappedComponents } = ret)
-`
+  uiComponent: ${component},
+  uiComponentName: '${component}'
+})`
   }
+  code += `
 
-  if (configCommon.useTypeScript) {
+export { ${makePartitionName(component)}, partitionState, setState }
+export default wrappedComponents.${component}
+`
+  return code
+}
+
+const controllerIndexTS = (component, isMultiple, comments) => {
+  let code = `import { establishControllerConnections } from 'react-causality-redux'`
+  if (isMultiple) {
     code += `
-// Export the redux connect component. Use this in the parent component(s).
+import { ${component} } from './view'`
+  } else {
+    code += `
+import ${component} from './view'`
+  }
+  code += `
+import { IPartitionState, defaultState, IControllerFunctions, controllerFunctions } from './controller'
+
+const ${makePartitionName(component)}: string = '${makePartitionName(component)}'
+
+`
+  if (isMultiple) {
+    code += multipleComponentComments(component, comments)
+
+    code += `const controllerUIConnections = [
+  [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
+]
+
+let partitionState: IPartitionState
+let setState: any
+let wrappedComponents: any
+({ partitionState, setState, wrappedComponents } = establishControllerConnections({
+  module,
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  controllerUIConnections
+}))`
+  } else {
+    code += `let partitionState: IPartitionState
+let setState: any
+let wrappedComponents: any
+({ partitionState, setState, wrappedComponents } = establishControllerConnections({
+  module,
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  uiComponent: ${component},
+  uiComponentName: '${component}'
+}))`
+  }
+  code += `
+
+export { ${makePartitionName(component)}, partitionState, setState }
 export default wrappedComponents.${component} as '${component}'
 declare global {namespace JSX {interface IntrinsicElements {'${component}': any}}}
 export interface I${component}Props extends IPartitionState, IControllerFunctions { }
 `
-  } else {
-    code += `
-// Export the redux connect component. Use this in the parent component(s).
-export default wrappedComponents.${component}
-`
-  }
   return code
+}
+
+const controllerIndex = (component, isMultiple, comments) => {
+  if (configCommon.useTypeScript) {
+    return controllerIndexTS(component, isMultiple, comments)
+  }
+  return controllerIndexJS(component, isMultiple, comments)
+}
+
+const controllerCodeJS = () => {
+  return (`import { partitionState } from './index'
+
+// TODO: Define the partition store definition
+export const defaultState = {
+  sampleKey1: ''
+}
+
+// TODO: Define Controller functions available to the UI.
+export const controllerFunctions = {
+  sampleFunction1: (url) => {
+    partitionState.sampleKey1 = url
+  }
+}
+`
+  )
+}
+
+const controllerCodeJSWithComments = () => {
+  return (`import { partitionState, setState } from './index'
+
+// TODO: Define the partition store definition
+export const defaultState = {
+  sampleKey1: '',
+  sampleKey2: []
+}
+
+/*
+ TODO: Define Controller functions which will be made available by causality-redux to the react
+ UI component in the props. The fundamental role of a controller function is to set values in the redux
+ partition defaultState. This may be done based on changes from the UI or may also be done as
+ a result of a call to a synchronous or asynchronous operation in the business code (model.js or model.ts).
+ Based on changes in defaultState, causality-redux will re-render the react component with these
+ new values set correctly in the props so that the react UI is updated correctly.
+
+ Use partitionState to access the keys of default state in these functions.
+ partitionState is a proxy that returns a copy of the value at the selected key.
+ Example:
+ let value = partitionState.key;
+
+ To set a key do partitionState.key = value;
+ use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
+ Using partitionState to set multiple keys will cause multiple renders of the react component(s).
+*/
+export const controllerFunctions = {
+  sampleFunction1: (url) => {
+    partitionState.sampleKey1 = url
+  },
+  sampleFunction2: (e) => {
+    // Note partitionState returns a copy of the value at the key.
+    // So, the below must be done to correctly change objects, which are pointers in javascript.
+    const arr = partitionState.sampleKey2
+    arr.push(e)
+    partitionState.sampleKey2 = arr
+  },
+  sampleFunction3: (url, arr) => {
+    // Each assignment by partitionState causes a component render
+    // So use the below to change multiple keys with one render.
+    setState({ sampleKey1: url, sampleKey2: arr })
+  }
+}
+`
+  )
+}
+
+const controllerCodeTS = () => {
+  return (`import { partitionState } from './index'
+
+// TODO: Define the partition store definition
+export interface IPartitionState {
+  sampleKey1?: string
+}
+
+export const defaultState: IPartitionState = {
+  sampleKey1: ''
+}
+
+// TODO: Define Controller functions available to the UI.
+export interface IControllerFunctions {
+  sampleFunction1? (url: string): void
+}
+
+export const controllerFunctions: IControllerFunctions = {
+  sampleFunction1: (url: string) => {
+    partitionState.sampleKey1 = url
+  }
+}
+`
+  )
+}
+
+const controllerCodeTSWithComments = () => {
+  return (`import { partitionState, setState } from './index'
+
+// TODO: Define the partition store definition
+export interface IPartitionState {
+  sampleKey1?: string,
+  sampleKey2?: number[]
+}
+
+export const defaultState: IPartitionState = {
+  sampleKey1: '',
+  sampleKey2: []
+}
+
+/*
+ TODO: Define Controller functions which will be made available by causality-redux to the react
+ UI component in the props. The fundamental role of a controller function is to set values in the redux
+ partition defaultState. This may be done based on changes from the UI or may also be done as
+ a result of a call to a synchronous or asynchronous operation in the business code (model.js or model.ts).
+ Based on changes in defaultState, causality-redux will re-render the react component with these
+ new values set correctly in the props so that the react UI is updated correctly.
+
+ Use partitionState to access the keys of default state in these functions.
+ partitionState is a proxy that returns a copy of the value at the selected key.
+ Example:
+ let value = partitionState.key;
+
+ To set a key do partitionState.key = value;
+ use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
+ Using partitionState to set multiple keys will cause multiple renders of the react component(s).
+*/
+export interface IControllerFunctions {
+  sampleFunction1? (url: string): void,
+  sampleFunction2? (e: number): void,
+  sampleFunction3? (url: string, arr: number[]): void
+}
+
+export const controllerFunctions: IControllerFunctions = {
+  sampleFunction1: (url: string) => {
+    partitionState.sampleKey1 = url
+  },
+  sampleFunction2: (e: number) => {
+    // Note partitionState returns a copy of the value at the key.
+    // So, the below must be done to correctly change objects, which are pointers in javascript.
+    const arr = partitionState.sampleKey2
+    arr.push(e)
+    partitionState.sampleKey2 = arr
+  },
+  sampleFunction3: (url: string, arr: number[]) => {
+    // Each assignment by partitionState causes a component render
+    // So use the below to change multiple keys with one render.
+    setState({ sampleKey1: url, sampleKey2: arr })
+  }
+}
+`
+  )
 }
 
 const modelCode = (comments) => {
@@ -407,120 +490,6 @@ const modelCode = (comments) => {
   return code
 }
 
-const controllerCodewc = (component, isMultiple) => {
-  let code =
-        `import { establishControllerConnections } from 'react-causality-redux'
-`
-  if (isMultiple) {
-    code += `import { ${component} } from './view'`
-  } else {
-    code += `import ${component} from './view'`
-  }
-
-  code += `
-
-// TODO: Define the partition store definition
-`
-  if (configCommon.useTypeScript) {
-    code += `interface IPartitionState {
-  sampleKey1?: string
-}
-
-const defaultState: IPartitionState = {`
-  } else {
-    code += `const defaultState = {`
-  }
-  code += `
-  sampleKey1: ''
-}
-`
-  if (configCommon.useTypeScript) {
-    code +=
-    `
-let partitionState: IPartitionState
-let wrappedComponents: any
-`
-  } else {
-    code +=
-`
-let partitionState
-let wrappedComponents
-`
-  }
-  code += `
-// TODO: Define Controller functions available to the UI.
-`
-  if (configCommon.useTypeScript) {
-    code += `interface IControllerFunctions {
-  sampleFunction1? (url: string): void
-}
-
-const controllerFunctions: IControllerFunctions = {
-  sampleFunction1: (url: string) => {
-`
-  } else {
-    code += `const controllerFunctions = {
-  sampleFunction1: (url) => {
-`
-  }
-  code +=
-    `    partitionState.sampleKey1 = url
-  }
-}
-
-`
-  if (isMultiple) {
-    if (configCommon.useTypeScript) {
-      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
-    } else {
-      code +=
-        `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
-    }
-    code += `
-
-// TODO: Add your UI props connections here.
-const controllerUIConnections = [
-  [${component}, ${makePartitionName(component)}, ['sampleFunction1'], ['sampleKey1'], '${component}']
-]
-
-const ret = establishControllerConnections({
-  module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
-  controllerUIConnections
-});
-({ partitionState, wrappedComponents } = ret)
-
-`
-  } else {
-    if (configCommon.useTypeScript) {
-      code += `export const ${makePartitionName(component)}: string = '${makePartitionName(component)}'`
-    } else {
-      code += `export const ${makePartitionName(component)} = '${makePartitionName(component)}'`
-    }
-    code += `
-
-const ret = establishControllerConnections({
-  module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
-  uiComponent: ${component},
-  uiComponentName: '${component}'
-});
-({ partitionState, wrappedComponents } = ret)
-
-`
-  }
-  if (configCommon.useTypeScript) {
-    code += `export default wrappedComponents.${component} as '${component}'
-declare global {namespace JSX {interface IntrinsicElements {'${component}': any}}}
-export interface I${component}Props extends IPartitionState, IControllerFunctions { }
-`
-  } else {
-    code += `export default wrappedComponents.${component}
-`
-  }
-  return code
-}
-
 const viewCode = (component, isMultiple, reactComponentType, cssFileType, comments) => {
   let code = ''
   if (configCommon.useTypeScript) {
@@ -537,7 +506,7 @@ const viewCode = (component, isMultiple, reactComponentType, cssFileType, commen
   }
 
   if (configCommon.useTypeScript) {
-    code += `import { I${component}Props } from './controller'
+    code += `import { I${component}Props } from './index'
 `
   } else {
     code += `
@@ -755,21 +724,29 @@ const generateReactMVC = (component, doTest, isMultiple, comments, reactComponen
 
   component = ret.component
 
-  let view, controller, model
+  const model = modelCode(comments)
+  const view = viewCode(component, isMultiple, reactComponentType, cssFileType, comments)
+  const indexCode = controllerIndex(component, isMultiple, comments)
+  let controller
   if (comments) {
-    view = viewCode(component, isMultiple, reactComponentType, cssFileType, comments)
-    controller = controllerCode(component, isMultiple)
-    model = modelCode(comments)
+    if (configCommon.useTypeScript) {
+      controller = controllerCodeTSWithComments()
+    } else {
+      controller = controllerCodeJSWithComments()
+    }
   } else {
-    view = viewCode(component, isMultiple, reactComponentType, cssFileType, comments)
-    controller = controllerCodewc(component, isMultiple, cssFileType)
-    model = modelCode(comments)
+    if (configCommon.useTypeScript) {
+      controller = controllerCodeTS()
+    } else {
+      controller = controllerCodeJS()
+    }
   }
 
   if (cssFileType !== '') {
     fs.writeFileSync(path.join(dir, cssFileName(cssFileType)), '')
   }
 
+  fs.writeFileSync(path.join(dir, codeFileName('index')), indexCode)
   fs.writeFileSync(path.join(dir, codeFileName('controller')), controller)
   fs.writeFileSync(path.join(dir, viewName), view)
   fs.writeFileSync(path.join(dir, codeFileName('model')), model)
