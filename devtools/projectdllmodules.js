@@ -11,5 +11,9 @@ module.exports = [
   'history',
   'material-ui',
   'redux-logger',
-  'redux-thunk'
+  'redux-thunk',
+  'whatwg-fetch',
+  'object.assign',
+  'es6-promise',
+  'array.from'
 ]

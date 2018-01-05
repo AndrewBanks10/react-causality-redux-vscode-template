@@ -102,9 +102,12 @@
     "eslint-plugin-standard": "^3.0.1"
   },
   "dependencies": {
-    "causality-redux": "^2.1.21",
+    "array.from": "^1.0.3",
+    "causality-redux": "^2.1.22",
     "history": "^4.7.2",
     "material-ui": "^0.19.4",
+    "object.assign": "^4.1.0",
+    "promise-polyfill": "^7.0.0",
     "react": "^16.0.0",
     "react-causality-redux": "^2.0.16",
     "react-causality-redux-router": "0.0.6",
@@ -114,7 +117,8 @@
     "react-tap-event-plugin": "^3.0.2",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "whatwg-fetch": "^2.0.3"
   },
   "config": {
     "host": "localhost",
