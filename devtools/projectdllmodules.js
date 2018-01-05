@@ -14,6 +14,6 @@ module.exports = [
   'redux-thunk',
   'whatwg-fetch',
   'object.assign',
-  'es6-promise',
+  'promise-polyfill',
   'array.from'
 ]
