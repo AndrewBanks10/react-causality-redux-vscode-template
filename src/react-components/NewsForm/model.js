@@ -22,7 +22,7 @@ const getSources = (getNewsSourcesSuccess, getNewsSourcesFail) => {
   http.getJSON(
     sourceURL,
     // Set the cache below
-    (data) => { getNewsSourcesSuccess(moduleData.newsSourcesCache = data.sources) },
+    data => { getNewsSourcesSuccess(moduleData.newsSourcesCache = data.sources) },
     getNewsSourcesFail
   )
 }

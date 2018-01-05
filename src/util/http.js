@@ -13,6 +13,12 @@ const Http = (function () {
       response = evt.target.response
       status = evt.target.status
     }
+    // ie
+    if (this.responseType === 'json') {
+      if (typeof response === 'string') {
+        response = JSON.parse(response)
+      }
+    }
     this.req = null
     if (status !== 200) {
       if (typeof this._fail === 'function') {
@@ -34,6 +40,7 @@ const Http = (function () {
   function httpRequest (request) {
     this._success = request.success
     this._fail = request.fail
+    this.responseType = request.responseType
 
     const req = new XMLHttpRequest()
     req.open(request.verb, request.url, true)

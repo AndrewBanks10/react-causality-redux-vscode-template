@@ -1,4 +1,4 @@
-import { React, render, App, reactMountNode } from './index-common'
+import { React, render, App, reactMountNode } from './bootstrap/index-common'
 
 render(
   <App />,

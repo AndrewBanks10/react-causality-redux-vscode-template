@@ -28,7 +28,7 @@ const HomeEntry = ({ useHome, closeMenu }) => {
 
 // The controller puts these values below in the props
 const NavMenu = ({ openMenu, closeMenu, open, anchorEl, useHome, mochaTesting }) =>
-  <div className='NavMenu'>
+  <div className={styles.NavMenu}>
     <IconButton tooltip='Menu' iconStyle={{ color: MuiTheme.appBar.textColor }} onClick={openMenu}>
       {!mochaTesting ? <NavigationMenu /> : <div />}
     </IconButton>

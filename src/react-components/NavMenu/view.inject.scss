@@ -1,11 +1,14 @@
 $dark-gray: #606060;
 
+.NavMenu {
+    height: 32px;
+}
+
 .LinkEntry {
     display:inline-block;
     width: 100%;
     height: 100%;
 }
-
 
 .LinkEntry:visited {
     color: $dark-gray;

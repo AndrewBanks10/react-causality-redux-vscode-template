@@ -1,7 +1,10 @@
 $single-gray-border: 1px solid #c0c0c0;
 
-body {
-    margin: 0px;
+body, html {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
 }
 
 .center-div

@@ -4,6 +4,9 @@ import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import RaisedButton from 'material-ui/RaisedButton'
 import NavMenu from '../NavMenu'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+
+const MuiTheme = getMuiTheme()
 
 export const LoaderNews = ({isBusy}) => {
   let className = ''
@@ -75,7 +78,7 @@ export const NewsContainer = ({ closeNews, newsObj }) => {
       <div className={styles['news-container']} style={style}>
         <div>
           <div id='closeNews' className={styles['news-exit']} onClick={() => { closeNews() }}>X</div>
-          <div className={styles['news-title']}>
+          <div className={styles['news-title']} style={{ backgroundColor: MuiTheme.appBar.color, color: MuiTheme.appBar.textColor }}>
             { newsObj.newsSource }
           </div>
         </div>

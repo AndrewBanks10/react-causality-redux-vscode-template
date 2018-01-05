@@ -1,4 +1,4 @@
-import { React, render, App, reactMountNode } from './index-common'
+import { React, render, App, reactMountNode } from './bootstrap/index-common'
 import { AppContainer } from 'react-hot-loader'
 
 //
@@ -21,10 +21,10 @@ renderRoot(App)
 // hot reload all changed components and then re-render the root
 //
 if (module.hot) {
-  module.hot.accept('./index-common', () => {
+  module.hot.accept('./bootstrap/index-common', () => {
     // The below requires the location of App or whatever is used for the root component
-    // The require('./index-common') brings in a new copy of the App module.
+    // The require('./bootstrap/index-common') brings in a new copy of the App module.
     // react will handle keeping the props and state the same after the load.
-    renderRoot(require('./index-common').default)
+    renderRoot(require('./bootstrap/index-common').default)
   })
 }

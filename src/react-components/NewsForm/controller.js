@@ -38,8 +38,8 @@ export const controllerFunctions =
     partitionState.isBusy = true
     // Call into the business code.
     getSources(
-      (sources) => { setState({ isBusy: false, newsSources: sources }) },
-      (errorMsg) => { setState({ isBusy: false, errorMsg }) }
+      sources => { setState({ isBusy: false, newsSources: sources }) },
+      errorMsg => { setState({ isBusy: false, errorMsg }) }
     )
   },
   getNews: (source, name) => {

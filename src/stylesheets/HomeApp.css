@@ -1,9 +1,15 @@
-
 .App {
     font-family:arial;
     font-size:16px;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+}
+
+.Content {
+    height: calc(100% - 32px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media screen and (max-width: 720px) {

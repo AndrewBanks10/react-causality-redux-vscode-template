@@ -1,6 +1,6 @@
 import { establishControllerConnections } from 'react-causality-redux'
-import { counterFormPartition } from '../CounterForm/controller'
-import { commentBoxPartition } from '../CommentForm/controller'
+import { counterFormPartition } from '../CounterForm'
+import { commentBoxPartition } from '../CommentForm'
 import MultiPartitionForm from './view'
 
 const controllerUIConnections = [
