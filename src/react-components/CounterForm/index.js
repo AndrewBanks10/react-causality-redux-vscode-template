@@ -21,12 +21,12 @@ const controllerUIConnections = [
   ]
 ]
 
-const { partitionState, wrappedComponents } = establishControllerConnections({
+const { partitionState, getState, setState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: counterFormPartition, defaultState, controllerFunctions },
   controllerUIConnections
 })
 
-export { partitionState }
+export { partitionState, getState, setState, subscribe, controllerFunctions }
 
 export default wrappedComponents.CounterForm
