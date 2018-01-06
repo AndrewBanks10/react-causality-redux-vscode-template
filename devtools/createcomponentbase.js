@@ -218,14 +218,14 @@ const controllerUIConnections = [
 
 `
     code += establishControllerConnectionsComments(component, comments)
-    code += `const { partitionState, setState, wrappedComponents } = establishControllerConnections({
+    code += `const { partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
 })`
   } else {
     code += establishControllerConnectionsComments(component, comments)
-    code += `const { partitionState, setState, wrappedComponents } = establishControllerConnections({
+    code += `const { partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component},
@@ -234,7 +234,7 @@ const controllerUIConnections = [
   }
   code += `
 
-export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState }
+export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState, getState, subscribe }
 export default wrappedComponents.${component}
 `
   return code
@@ -264,8 +264,10 @@ const ${makePartitionName(component)}: string = '${makePartitionName(component)}
 
 let partitionState: IPartitionState
 let setState: any
+let getState: any
+let subscribe: any
 let wrappedComponents: any
-({ partitionState, setState, wrappedComponents } = establishControllerConnections({
+({ partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   controllerUIConnections
@@ -273,8 +275,10 @@ let wrappedComponents: any
   } else {
     code += `let partitionState: IPartitionState
 let setState: any
+let getState: any
+let subscribe: any
 let wrappedComponents: any
-({ partitionState, setState, wrappedComponents } = establishControllerConnections({
+({ partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
   uiComponent: ${component},
@@ -283,7 +287,7 @@ let wrappedComponents: any
   }
   code += `
 
-export { ${makePartitionName(component)}, partitionState, setState }
+export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState, getState, subscribe }
 export default wrappedComponents.${component} as '${component}'
 declare global {namespace JSX {interface IntrinsicElements {'${component}': any}}}
 export interface I${component}Props extends IPartitionState, IControllerFunctions { }

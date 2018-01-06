@@ -4,7 +4,7 @@ import 'core-js/es6/set'
 import React from 'react'
 import { configure, mount } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import '../src/css'
+import '../src/bootstrap/css'
 import '../src/causality-redux/init'
 import App from '../src/react-components/App'
 
