@@ -14,8 +14,9 @@ if (!showMonitor || process.env.NODE_ENV === 'production' || process.env.NODE_EN
   StateMonitor = NullComponent
   handleTSSourceMaps = () => { }
 } else {
-  StateMonitor = require('./controller').default
-  handleTSSourceMaps = require('./controller').handleTSSourceMaps
+  const controller = require('./controller')
+  StateMonitor = controller.default
+  handleTSSourceMaps = controller.handleTSSourceMaps
 }
 
 export { StateMonitor, handleTSSourceMaps }
