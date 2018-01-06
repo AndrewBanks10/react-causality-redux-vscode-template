@@ -56,12 +56,7 @@ const controllerTestFileCode = (component) => {
   }
   code +=
 `/*
-import causalityRedux from 'causality-redux'
-import { ${makePartitionName(component)} } from './index'
-
-// The controller functions are in the partition store.
-const partitionStore = causalityRedux.store[${makePartitionName(component)}]
-const partitionState = partitionStore.partitionState
+import { partitionState, controllerFunctions } from './'
 */
 
 describe('Controller ${component}', function () {
@@ -239,7 +234,7 @@ const controllerUIConnections = [
   }
   code += `
 
-export { ${makePartitionName(component)}, partitionState, setState }
+export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState }
 export default wrappedComponents.${component}
 `
   return code
