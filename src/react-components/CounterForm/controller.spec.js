@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { partitionState, getState, setState, subscribe, controllerFunctions } from './'
+import { partitionStore, partitionState, getState, setState, subscribe } from './'
 
 let checkedCounter
 const listener = obj => {
@@ -12,7 +12,7 @@ describe('Controller CounterForm', function () {
     // Call the controller function
     const val = partitionState.counter
     for (let i = 0; i < numIterations; ++i) {
-      controllerFunctions.increment()
+      partitionStore.increment()
     }
     assert(partitionState.counter === val + numIterations)
   })
@@ -22,7 +22,7 @@ describe('Controller CounterForm', function () {
     // Call the controller function
     const val = partitionState.counter
     for (let i = 0; i < numIterations; ++i) {
-      controllerFunctions.decrement()
+      partitionStore.decrement()
     }
     assert(partitionState.counter === val - numIterations)
   })
