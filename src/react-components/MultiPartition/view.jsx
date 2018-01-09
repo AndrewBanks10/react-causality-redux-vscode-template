@@ -17,17 +17,19 @@ const Comment = ({ author, children }) =>
     </div>
   </div>
 
-const MultiPartitionForm = ({counter, items, onChange, text, increment}) =>
+const MultiPartitionForm = ({fixedValue, counter, items, increment}) =>
   <div>
     <AppBar
       title='One react component has access to data and/or operations from multiple partitions.'
       iconElementLeft={<NavMenu useHome={'useHome'} />}
     />
     <Paper zDepth={4}>
-      <div className={styles.TextTitle}>The counter value below is from the CounterForm_Partition.</div>
+      <div className={styles.TextTitle}>The fixed value below is from this partition.</div>
+      <div id='counter-text' className={counterstyles['counter-text']}>{`The fixed value is ${fixedValue}.`}</div>
+      <div className={styles.TextTitle}>The counter value below is from the counterFormPartition.</div>
       <div id='counter-text' className={counterstyles['counter-text']}>{`The current counter is ${counter}.`}</div>
       <div className={styles.increment}><RaisedButton primary={true} label='Increment' onClick={increment} /></div>
-      <p className={styles.TextTitle}>The list below is from the CommentBox_Partition.</p>
+      <p className={styles.TextTitle}>The list below is from the commentBoxPartition.</p>
       <div className={commentStyles['comment-form-list-container']}>
         <div className={commentStyles['comment-text']}>Comments</div>
         <div className={commentStyles['comment-form-list']}>
