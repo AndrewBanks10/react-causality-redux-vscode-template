@@ -13,7 +13,6 @@ const initialNewsObj = {
 }
 
 export const defaultState = {
-  newsSourcesCache: [],
   newsSources: [],
   errorMsg: '',
   isBusy: false,
@@ -35,18 +34,11 @@ const setNewsObjDimensions = () => {
 export const controllerFunctions =
 {
   getNewsSources: () => {
-    // Cache
-    if (partitionState.newsSources.length > 0) {
-      return
-    } else if (partitionState.newsSourcesCache.length > 0) {
-      partitionState.newsSources = partitionState.newsSourcesCache
-      return
-    }
     // This simple assignment will cause a busy indicator to display in the UI.
     partitionState.isBusy = true
     // Call into the business code.
     getSources(
-      sources => { setState({ isBusy: false, newsSources: sources, newsSourcesCache: sources }) },
+      sources => { setState({ isBusy: false, newsSources: sources }) },
       errorMsg => { setState({ isBusy: false, errorMsg }) }
     )
   },

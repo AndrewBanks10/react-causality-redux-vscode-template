@@ -9,6 +9,8 @@ const getStackTrace = () => {
   let moduleName = unKnown
   let isTS = false
   let fullModule = unKnown
+  let caller = unKnown
+  let stack = []
   const frames = err.stack.split('\n').slice(1)
   for (let i = 0; i < frames.length; ++i) {
     const index = frames[i].indexOf('at executeSetState')
@@ -19,7 +21,9 @@ const getStackTrace = () => {
         let nextIndex = frame.indexOf(search)
         if (nextIndex !== -1) {
           try {
-            frame = frame.match(/\(([^()]+)\)/)[1]
+            const wholeThing = frame.match(/([^]*)\(([^()]+)\)/)
+            caller = wholeThing[1].trim()
+            frame = wholeThing[2]
             const matchArray = frame.match(/(webpack-internal:[^:]*):([0-9]+):([0-9]+)$/)
             fullModule = matchArray[1]
             moduleName = fullModule.match(/webpack-internal:\/\/\/([^]*)$/)[1]
@@ -27,13 +31,13 @@ const getStackTrace = () => {
             line = parseInt(matchArray[2])
             column = parseInt(matchArray[3])
           } catch (e) { }
-          return {moduleName, line, column, isTS, fullModule, translated: !isTS}
+          stack.unshift({moduleName, line, column, isTS, fullModule, caller, translated: !isTS})
         }
       }
-      i = -1
+      return stack
     }
   }
-  return {moduleName, line, column, isTS, fullModule, translated: true}
+  return [{moduleName, line, column, isTS, fullModule, caller, translated: true}]
 }
 
 export default getStackTrace

@@ -36,6 +36,13 @@ const defaultState = {
 //
 const monitorMirroredState = causalityRedux.merge({}, defaultState)
 
+function mapModulesOnStack (stack) {
+  for (let i = 0; i < stack.length; ++i) {
+    stack[i] = mapModule(stack[i])
+  }
+  return stack
+}
+
 const MAXOBJSTRING = 23
 function toString (e) {
   let str = e.toString()
@@ -117,12 +124,13 @@ function exit () {
 function clickedState (index) {
   // Display module and line
   if (!monitorMirroredState.isDebugging) {
-    if (typeof allStates[index].module !== 'undefined') {
+    if (typeof allStates[index].callStack !== 'undefined') {
+      const tos = allStates[index].callStack.length - 1
       setState({
         displayModule: true,
-        clipBoard: JSON.stringify({file: allStates[index].module.moduleName, line: allStates[index].module.line}),
-        moduleName: allStates[index].module.moduleName,
-        line: allStates[index].module.line,
+        clipBoard: JSON.stringify({ file: allStates[index].callStack[tos].moduleName, line: allStates[index].callStack[tos].line, stack: allStates[index].callStack }),
+        moduleName: allStates[index].callStack[tos].moduleName,
+        line: allStates[index].callStack[tos].line,
         partitionName: allStates[index].partitionName,
         nextState: allStates[index].nextState
       })
@@ -240,8 +248,9 @@ const copyHotReloadedComponents = (partitionName, partition) => {
 const handleTSSourceMapsComplete = () => {
   const len = allStates.length
   for (let i = 0; i < len; ++i) {
-    if (allStates[i].module && !allStates[i].module.translated) {
-      allStates[i].module = mapModule(allStates[i].module)
+    const tos = allStates[i].callStack.length - 1
+    if (allStates[i].callStack[tos].module && !allStates[i].callStack[tos].translated) {
+      allStates[i].callStack = mapModulesOnStack(allStates[i].callStack)
     }
   }
 }
@@ -285,7 +294,7 @@ function onStateChange (arg) {
 
     // Only record if changes to state happened that are not hot reloaded components.
     if (causalityRedux.getKeys(arg.nextState).length > 0) {
-      arg.module = mapModule(getStackTrace())
+      arg.callStack = mapModulesOnStack(getStackTrace())
       arg.store[arg.partitionName] = causalityRedux.merge({}, arg.store[arg.partitionName], arg.nextState)
       arg.store[causalityRedux.storeVersionKey] = arg[causalityRedux.storeVersionKey]
       allStates.push(arg)
