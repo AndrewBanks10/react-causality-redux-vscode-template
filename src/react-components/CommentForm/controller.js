@@ -13,7 +13,7 @@ export const defaultState = {
 const digitsOnly = (str) =>
   str.replace(/\D/g, '')
 
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   onResetAuthorDefault: () =>
     (partitionState.author = ''),
   onAuthorChange: (author) =>

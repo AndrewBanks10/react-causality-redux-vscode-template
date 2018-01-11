@@ -1,5 +1,5 @@
 import { establishControllerConnections } from 'react-causality-redux'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 import { Todo, TodoForm, TodoEdit, ToDoItem, TodoList, InplaceTextEdit } from './view'
 
 export const todoPartition = 'todoPartition'
@@ -15,7 +15,7 @@ const controllerUIConnections = [
 
 const { partitionState, setState, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: todoPartition, defaultState, controllerFunctions },
+  partition: { partitionName: todoPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 

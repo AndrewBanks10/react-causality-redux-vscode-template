@@ -1,7 +1,7 @@
 import { establishControllerConnections } from 'react-causality-redux'
 import { counterFormPartition } from '../CounterForm'
 import { commentBoxPartition } from '../CommentForm'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 import MultiPartitionForm from './view'
 
 const multiFormPartition = 'multiFormPartition'
@@ -21,7 +21,7 @@ const controllerUIConnections = [
 
 const { wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: multiFormPartition, defaultState, controllerFunctions },
+  partition: { partitionName: multiFormPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 

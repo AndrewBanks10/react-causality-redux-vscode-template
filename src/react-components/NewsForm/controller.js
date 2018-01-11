@@ -32,8 +32,7 @@ const setNewsObjDimensions = () => {
   return newsObj
 }
 
-export const controllerFunctions =
-{
+export const uiServiceFunctions = {
   getNewsSources: () => {
     // Cache
     if (partitionState.newsSources.length > 0) {

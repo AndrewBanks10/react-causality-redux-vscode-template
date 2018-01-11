@@ -202,7 +202,7 @@ const endDebug = () =>
 const closeDisplayModule = () =>
   (setState({displayModule: false}))
 
-const controllerFunctions = {
+const uiServiceFunctions = {
   startDebug,
   clickedState,
   forwardOneState,
@@ -220,7 +220,7 @@ const controllerFunctions = {
 
 const ret = causalityRedux.establishControllerConnections({
   module,
-  partition: { partitionName: stateMonitorPartition, defaultState, controllerFunctions },
+  partition: { partitionName: stateMonitorPartition, defaultState, uiServiceFunctions },
   uiComponent: MonitorComponent, // Redux connect will be called on this component and returned as uiComponent in the returned object.
   storeKeys: ['clipBoard', 'displayModule', 'nextState', 'partitionName', 'moduleName', 'line', 'data', 'isDebugging', 'currentState', 'display', 'isMinimized'],
   changerKeys: ['closeDisplayModule', 'startDebug', 'clickedState', 'backOneState', 'forwardOneState', 'stopDebug', 'replayStates', 'beginning', 'exit', 'minimize', 'maximize', 'setThisState'],

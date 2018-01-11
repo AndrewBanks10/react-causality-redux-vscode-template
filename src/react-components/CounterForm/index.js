@@ -1,5 +1,5 @@
 import { establishControllerConnections } from 'react-causality-redux'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 import { CounterFormValue, CounterForm } from './view'
 
 export const counterFormPartition = 'counterFormPartition'
@@ -23,7 +23,7 @@ const controllerUIConnections = [
 
 const { partitionStore, partitionState, getState, setState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: counterFormPartition, defaultState, controllerFunctions },
+  partition: { partitionName: counterFormPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 

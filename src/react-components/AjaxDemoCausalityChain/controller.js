@@ -8,7 +8,7 @@ export const defaultState = {
   getIsBusy: false
 }
 
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   onGet: () => {
     partitionState.getIsBusy = true
     handleGet(

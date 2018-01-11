@@ -1,5 +1,5 @@
 import { establishControllerConnections } from 'react-causality-redux'
-import { defaultState, controllerFunctions, hotDisposeHandler } from './controller'
+import { defaultState, uiServiceFunctions, hotDisposeHandler } from './controller'
 import { NewSourcesButtons, NewsContainer, ErrorMessage, LoaderNews, NewsForm } from './view'
 
 const newsFormPartition = 'newsFormPartition'
@@ -49,7 +49,7 @@ const controllerUIConnections = [
 const { partitionState, setState, wrappedComponents } = establishControllerConnections({
   module,
   hotDisposeHandler,
-  partition: { partitionName: newsFormPartition, defaultState, controllerFunctions },
+  partition: { partitionName: newsFormPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 

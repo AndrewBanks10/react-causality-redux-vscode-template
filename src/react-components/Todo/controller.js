@@ -42,7 +42,7 @@ const saveTodoEdit = (arr, text, id) => {
 const findTodo = (todos, id) =>
   todos.findIndex(e => e.id === id)
 
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   clearCompleted: () =>
     saveTodos(partitionState.todos.filter(entry => !entry.completed)),
   updateText: (text) =>

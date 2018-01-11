@@ -10,7 +10,7 @@ export const defaultState = {
   goText: ''
 }
 
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   onChangeURL: (url) => {
     partitionState.currentUrl = url
   },

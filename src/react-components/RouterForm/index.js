@@ -1,12 +1,12 @@
 import { establishControllerConnections } from 'react-causality-redux'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 import RouterForm from './view'
 
 const routerFormPartition = 'routerFormPartition'
 
 const { partitionState, wrappedComponents } = establishControllerConnections({
   module, // Needed for hot reloading.
-  partition: { partitionName: routerFormPartition, defaultState, controllerFunctions },
+  partition: { partitionName: routerFormPartition, defaultState, uiServiceFunctions },
   uiComponent: RouterForm, // Redux connect will be called on this component and returned as uiComponent in the returned object.
   uiComponentName: 'RouterForm' // Used for tracing.
 })

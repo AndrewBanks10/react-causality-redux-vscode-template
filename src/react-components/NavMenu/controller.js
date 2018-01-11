@@ -6,11 +6,10 @@ export const defaultState = {
   anchorEl: null
 }
 
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   closeMenu: () => {
     partitionState.open = false
   },
-
   openMenu: (event) => {
     setState({ open: true, anchorEl: event.currentTarget })
   }

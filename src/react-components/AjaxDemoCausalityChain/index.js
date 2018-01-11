@@ -1,6 +1,6 @@
 import { establishControllerConnections } from 'react-causality-redux'
 import { Loader1, ErrorMessage, AjaxDemoCausalityChain } from './view'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 
 const ajaxDemoCausalityChainPartition = 'ajaxDemoCausalityChainPartition'
 
@@ -32,7 +32,7 @@ const controllerUIConnections = [
 // It also supports hot reloading for the business logic.
 const { partitionState, setState, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: ajaxDemoCausalityChainPartition, defaultState, controllerFunctions },
+  partition: { partitionName: ajaxDemoCausalityChainPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 

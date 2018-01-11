@@ -9,7 +9,7 @@ const listener = obj => {
 describe('Controller CounterForm', function () {
   const numIterations = 10
   it('increment - validated.', function () {
-    // Call the controller function
+    // Call the UI service function
     const val = partitionState.counter
     for (let i = 0; i < numIterations; ++i) {
       partitionStore.increment()
@@ -19,7 +19,7 @@ describe('Controller CounterForm', function () {
 
   // Click on the decrement button
   it('decrement validated.', function () {
-    // Call the controller function
+    // Call the UI service function
     const val = partitionState.counter
     for (let i = 0; i < numIterations; ++i) {
       partitionStore.decrement()

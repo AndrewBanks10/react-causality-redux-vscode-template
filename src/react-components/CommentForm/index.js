@@ -1,5 +1,5 @@
 import causalityRedux from 'causality-redux'
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 import { CommentList, CommentForm, CommentBoxDeleteForm, CommentBoxChangeForm, CommentBox } from './view'
 
 // Comment partition entry
@@ -45,7 +45,7 @@ const controllerUIConnections = [
 
 const { partitionState, setState, wrappedComponents, getState } = causalityRedux.establishControllerConnections({
   module,
-  partition: { partitionName: commentBoxPartition, defaultState, controllerFunctions },
+  partition: { partitionName: commentBoxPartition, defaultState, uiServiceFunctions },
   controllerUIConnections
 })
 
@@ -61,5 +61,5 @@ if (getState().items.length === 0) {
     {author: 'Bruce Campbell', text: 'Fish in a tree? How can that be?'}
   ]
 
-  initialComments.forEach(comment => controllerFunctions.onAddComment(comment))
+  initialComments.forEach(comment => uiServiceFunctions.onAddComment(comment))
 }
