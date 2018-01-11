@@ -248,9 +248,11 @@ const copyHotReloadedComponents = (partitionName, partition) => {
 const handleTSSourceMapsComplete = () => {
   const len = allStates.length
   for (let i = 0; i < len; ++i) {
-    const tos = allStates[i].callStack.length - 1
-    if (allStates[i].callStack[tos].module && !allStates[i].callStack[tos].translated) {
-      allStates[i].callStack = mapModulesOnStack(allStates[i].callStack)
+    if (typeof allStates[i].callStack !== 'undefined') {
+      const tos = allStates[i].callStack.length - 1
+      if (allStates[i].callStack[tos].moduleName && !allStates[i].callStack[tos].translated) {
+        allStates[i].callStack = mapModulesOnStack(allStates[i].callStack)
+      }
     }
   }
 }
