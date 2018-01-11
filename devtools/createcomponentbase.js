@@ -56,7 +56,7 @@ const controllerTestFileCode = (component) => {
   }
   code +=
 `/*
-import { partitionState, controllerFunctions } from './'
+import { partitionStore, partitionState } from './'
 */
 
 describe('Controller ${component}', function () {
@@ -137,9 +137,9 @@ const establishControllerConnectionsComments = (component, comments) => {
   }
   return (
     `/*
-This establishes all the connections between the UI and defaultState/controllerFunctions.
+This establishes all the connections between the UI and defaultState/uiServiceFunctions.
 It also supports hot reloading for the business logic, UI component and the controller functions.
-By default, all the function keys in controllerFunctions and state keys in defaultState will be made available
+By default, all the function keys in uiServiceFunctions and state keys in defaultState will be made available
 in the props of the connect redux component uiComponent: ${component}.
 To override the function keys, define an array of function key strings at changerKeys in the input object
 to establishControllerConnections.
@@ -158,10 +158,10 @@ const multipleComponentComments = (component, comments) => {
   return (
     `/*
   TODO: Add your UI props connections here.
-  Each child component of ${component} that requires contoller functions or values in the defaultState above
+  Each child component of ${component} that requires uiServiceFunctions or values in the defaultState above
   needs to be listed in the controllerUIConnections below as an array.
   Entry1 - The component. Must be imported from ../view
-  Entry2 - Array of controllerFunctions keys that this component needs provided in the props.
+  Entry2 - Array of uiServiceFunctions keys that this component needs provided in the props.
   Entry3 - Array of defaultState keys (store keys) that this component needs provided in the props.
   Entry4 - String name of the component.
 
@@ -205,7 +205,7 @@ import ${component} from './view'`
   }
 
   code += `
-import { defaultState, controllerFunctions } from './controller'
+import { defaultState, uiServiceFunctions } from './controller'
 
 const ${makePartitionName(component)} = '${makePartitionName(component)}'
 
@@ -218,23 +218,23 @@ const controllerUIConnections = [
 
 `
     code += establishControllerConnectionsComments(component, comments)
-    code += `const { partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
+    code += `const { partitionStore, partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, uiServiceFunctions },
   controllerUIConnections
 })`
   } else {
     code += establishControllerConnectionsComments(component, comments)
-    code += `const { partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
+    code += `const { partitionStore, partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, uiServiceFunctions },
   uiComponent: ${component},
   uiComponentName: '${component}'
 })`
   }
   code += `
 
-export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState, getState, subscribe }
+export { ${makePartitionName(component)}, partitionStore, partitionState, setState, getState, subscribe }
 export default wrappedComponents.${component}
 `
   return code
@@ -250,7 +250,7 @@ import { ${component} } from './view'`
 import ${component} from './view'`
   }
   code += `
-import { IPartitionState, defaultState, IControllerFunctions, controllerFunctions } from './controller'
+import { IPartitionState, defaultState, IUIServiceFunctions, uiServiceFunctions } from './controller'
 
 const ${makePartitionName(component)}: string = '${makePartitionName(component)}'
 
@@ -263,34 +263,36 @@ const ${makePartitionName(component)}: string = '${makePartitionName(component)}
 ]
 
 let partitionState: IPartitionState
+let partitionStore: any
 let setState: any
 let getState: any
 let subscribe: any
 let wrappedComponents: any
-({ partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
+({ partitionStore, partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, uiServiceFunctions },
   controllerUIConnections
 }))`
   } else {
     code += `let partitionState: IPartitionState
+let partitionStore: any
 let setState: any
 let getState: any
 let subscribe: any
 let wrappedComponents: any
-({ partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
+({ partitionStore, partitionState, setState, getState, subscribe, wrappedComponents } = establishControllerConnections({
   module,
-  partition: { partitionName: ${makePartitionName(component)}, defaultState, controllerFunctions },
+  partition: { partitionName: ${makePartitionName(component)}, defaultState, uiServiceFunctions },
   uiComponent: ${component},
   uiComponentName: '${component}'
 }))`
   }
   code += `
 
-export { controllerFunctions, ${makePartitionName(component)}, partitionState, setState, getState, subscribe }
+export { ${makePartitionName(component)}, partitionStore, partitionState, setState, getState, subscribe }
 export default wrappedComponents.${component} as '${component}'
 declare global {namespace JSX {interface IntrinsicElements {'${component}': any}}}
-export interface I${component}Props extends IPartitionState, IControllerFunctions { }
+export interface I${component}Props extends IPartitionState, IUIServiceFunctions { }
 `
   return code
 }
@@ -303,15 +305,15 @@ const controllerIndex = (component, isMultiple, comments) => {
 }
 
 const controllerCodeJS = () => {
-  return (`import { partitionState } from './index'
+  return (`import { partitionState } from './'
 
 // TODO: Define the partition store definition
 export const defaultState = {
   sampleKey1: ''
 }
 
-// TODO: Define Controller functions available to the UI.
-export const controllerFunctions = {
+// TODO: Define service functions available to the UI.
+export const uiServiceFunctions = {
   sampleFunction1: (url) => {
     partitionState.sampleKey1 = url
   }
@@ -321,7 +323,7 @@ export const controllerFunctions = {
 }
 
 const controllerCodeJSWithComments = () => {
-  return (`import { partitionState, setState } from './index'
+  return (`import { partitionState, setState } from './'
 
 // TODO: Define the partition store definition
 export const defaultState = {
@@ -330,8 +332,20 @@ export const defaultState = {
 }
 
 /*
- TODO: Define Controller functions which will be made available by causality-redux to the react
- UI component in the props. The fundamental role of a controller function is to set values in the redux
+  Define controller service functions for external events here and export them.
+  Then import them into ./index and also export them there so that other parts
+  of your program can import them from the ./index file. Although you can export them
+  as individual functions, you can also use a controller object as below. This
+  makes it easier to maintain the code since all external service functions
+  are contained in one controller object.
+
+export const externalServiceFunctions {
+}
+*/
+
+/*
+ TODO: Define UI service functions which will be made available by causality-redux to the react
+ UI component in the props. The fundamental role of a UI service function is to set values in the redux
  partition defaultState. This may be done based on changes from the UI or may also be done as
  a result of a call to a synchronous or asynchronous operation in the business code (model.js or model.ts).
  Based on changes in defaultState, causality-redux will re-render the react component with these
@@ -346,7 +360,7 @@ export const defaultState = {
  use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
  Using partitionState to set multiple keys will cause multiple renders of the react component(s).
 */
-export const controllerFunctions = {
+export const uiServiceFunctions = {
   sampleFunction1: (url) => {
     partitionState.sampleKey1 = url
   },
@@ -368,7 +382,7 @@ export const controllerFunctions = {
 }
 
 const controllerCodeTS = () => {
-  return (`import { partitionState } from './index'
+  return (`import { partitionState } from './'
 
 // TODO: Define the partition store definition
 export interface IPartitionState {
@@ -380,11 +394,11 @@ export const defaultState: IPartitionState = {
 }
 
 // TODO: Define Controller functions available to the UI.
-export interface IControllerFunctions {
+export interface IUIServiceFunctions {
   sampleFunction1? (url: string): void
 }
 
-export const controllerFunctions: IControllerFunctions = {
+export const uiServiceFunctions: IUIServiceFunctions = {
   sampleFunction1: (url: string) => {
     partitionState.sampleKey1 = url
   }
@@ -394,7 +408,7 @@ export const controllerFunctions: IControllerFunctions = {
 }
 
 const controllerCodeTSWithComments = () => {
-  return (`import { partitionState, setState } from './index'
+  return (`import { partitionState, setState } from './'
 
 // TODO: Define the partition store definition
 export interface IPartitionState {
@@ -408,8 +422,20 @@ export const defaultState: IPartitionState = {
 }
 
 /*
- TODO: Define Controller functions which will be made available by causality-redux to the react
- UI component in the props. The fundamental role of a controller function is to set values in the redux
+  Define controller service functions for external events here and export them.
+  Then import them into ./index and also export them there so that other parts
+  of your program can import them from the ./index file. Although you can export them
+  as individual functions, you can also use a controller object as below. This
+  makes it easier to maintain the code since all external service functions
+  are contained in one controller object.
+
+export const externalServiceFunctions {
+}
+*/
+
+/*
+ TODO: Define UI service functions which will be made available by causality-redux to the react
+ UI component in the props. The fundamental role of a UI service function is to set values in the redux
  partition defaultState. This may be done based on changes from the UI or may also be done as
  a result of a call to a synchronous or asynchronous operation in the business code (model.js or model.ts).
  Based on changes in defaultState, causality-redux will re-render the react component with these
@@ -424,13 +450,13 @@ export const defaultState: IPartitionState = {
  use setState to set multiple keys simultaenously like setState({sampleKey1: val1, sampleKey2: val2});
  Using partitionState to set multiple keys will cause multiple renders of the react component(s).
 */
-export interface IControllerFunctions {
+export interface IUIServiceFunctions {
   sampleFunction1? (url: string): void,
   sampleFunction2? (e: number): void,
   sampleFunction3? (url: string, arr: number[]): void
 }
 
-export const controllerFunctions: IControllerFunctions = {
+export const uiServiceFunctions: IUIServiceFunctions = {
   sampleFunction1: (url: string) => {
     partitionState.sampleKey1 = url
   },
@@ -505,7 +531,7 @@ const viewCode = (component, isMultiple, reactComponentType, cssFileType, commen
   }
 
   if (configCommon.useTypeScript) {
-    code += `import { I${component}Props } from './index'
+    code += `import { I${component}Props } from './'
 `
   } else {
     code += `
@@ -514,7 +540,7 @@ const viewCode = (component, isMultiple, reactComponentType, cssFileType, commen
 
   if (reactComponentType === '0') {
     if (comments && !configCommon.useTypeScript) {
-      code += `// TODO: Add your defaultState keys and controllerFunctions keys from ./controller
+      code += `// TODO: Add your defaultState keys and uiServiceFunctions keys from ./controller
 // as shown below.
 
 `

@@ -3,24 +3,39 @@
 const path = require('path')
 const fs = require('fs')
 const config = require('./webpack.config.config')
+let dirsToCreate = []
 
 function writeFile (path, strFile) {
   fs.writeFileSync(path, strFile)
 }
 
-function readFile (path) {
-  try {
-    return fs.readFileSync(path, 'utf8')
-  } catch (ex) {
-    return ''
-  }
+function writeJSON (path, jsonFile) {
+  writeFile(path, JSON.stringify(jsonFile, null, 2))
 }
 
-function mkdir (directory) {
-  try {
-    fs.mkdirSync(directory)
-  } catch (ex) {
+function readFile (path) {
+  return fs.readFileSync(path, 'utf8')
+}
 
+function readJSON (path) {
+  return JSON.parse(readFile(path))
+}
+
+function copyFile (srcPath, destPath) {
+  writeFile(destPath, readFile(srcPath))
+}
+
+const numRetries = 20
+function mkdir (directory) {
+  for (let i = 0; i < numRetries; ++i) {
+    try {
+      fs.mkdirSync(directory)
+      return
+    } catch (ex) {
+      if (ex.code === 'EEXIST') {
+        return
+      }
+    }
   }
 }
 
@@ -36,6 +51,7 @@ const spaces = (amt) => {
 }
 
 const reactComponentsPath = path.join(config.sourceDir, config.reactComponentsDirectory)
+const bootPath = path.join(config.sourceDir, 'bootstrap')
 
 const useReactRouter = () =>
   config.useReactRouterWithTimeTravel || config.useReactRouterWithoutTimeTravel
@@ -46,15 +62,29 @@ const codeFileName = templateName =>
 const reactFileName = templateName =>
   config.useTypeScript ? `${templateName}.tsx` : `${templateName}.jsx`
 
-function handleDirectories () {
-  mkdir(config.sourceDir)
-  mkdir(config.testDirectory)
-
-  mkdir(reactComponentsPath)
-  mkdir(path.join(config.sourceDir, config.assetsDirectory))
-  if (config.useCSSModules === 2) {
-    mkdir(path.join(config.sourceDir, config.noCSSModulesName))
+function makeDirectories () {
+  if (!fs.existsSync(dirsToCreate[0])) {
+    throw new Error(`Failed to create the directory: /${dirsToCreate[0]}/`)
   }
+  dirsToCreate.shift()
+  if (dirsToCreate.length === 0) {
+    finishConfiguration()
+    return
+  }
+  fs.mkdir(dirsToCreate[0], makeDirectories)
+}
+
+function handleDirectories () {
+  dirsToCreate.push(config.sourceDir)
+  dirsToCreate.push(config.testDirectory)
+  dirsToCreate.push(config.buildDir)
+  dirsToCreate.push(reactComponentsPath)
+  dirsToCreate.push(bootPath)
+  dirsToCreate.push(path.join(config.sourceDir, config.assetsDirectory))
+  if (config.useCSSModules === 2) {
+    dirsToCreate.push(path.join(config.sourceDir, config.noCSSModulesName))
+  }
+  fs.mkdir(dirsToCreate[0], makeDirectories)
 }
 
 function handleTsConfig () {
@@ -63,44 +93,44 @@ function handleTsConfig () {
   }
   const tsLintFile =
 `{
-  "extends": "tslint-config-standard"
+  "extends": "tslint-config-standard",
+  "rules": {
+    "strict-type-predicates": false
+  }
 }
 `
 
   const tsConfigFile =
 `{
   "compilerOptions": {
-      "outDir": "./${config.buildDir}/",
-      "sourceMap": true,
-      "module": "commonjs",
-      "target": "es5",
-      "jsx": "react",
-      "baseUrl": "."
+    "outDir": "./${config.buildDir}/",
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["dom", "es2015.promise", "es2015"],
+    "jsx": "react",
+    "baseUrl": "."
   },
   "include": [
-      "./${config.sourceDir}/**/*.ts",
-      "./${config.sourceDir}/**/*.tsx"
+    "./${config.sourceDir}/**/*.ts",
+    "./${config.sourceDir}/**/*.tsx"
   ]
 }
 `
   const testTsConfigFile =
 `{
   "compilerOptions": {
-      "sourceMap": true,
-      "module": "commonjs",
-      "target": "es5",
-      "jsx": "react",
-      "baseUrl": "."
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "baseUrl": "."
   },
   "include": [
-      "../${config.sourceDir}/**/*.ts",
-      "../${config.sourceDir}/**/*.tsx",
-      "./**/*.ts",
-      "./**/*.tsx"
   ]
 }
 `
-
   writeFile(path.join('./', 'tslint.json'), tsLintFile)
   writeFile(path.join('./', 'tsconfig.json'), tsConfigFile)
   writeFile(path.join('./test', 'tsconfig.json'), testTsConfigFile)
@@ -118,31 +148,39 @@ function handleStylesheets () {
 // Note. If you do not import them here then they will not be included in the build.
 //
 
-// Example import './${config.noCSSModulesName}/header.1';
+// Example import '../${config.noCSSModulesName}/header.1';
 
 // hot re-load support for the css above.
 if (module.hot) {
   module.hot.accept()
 }
 `
-    writeFile(path.join(config.sourceDir, codeFileName('css')), cssFile)
+    writeFile(path.join(bootPath, codeFileName('css')), cssFile)
   }
 }
 
 function handleIndexFile () {
-  const indexFile =
+  let indexFile =
 `<!doctype html>
 <html lang="en">
 <head>
   <title>React Project</title>
   <meta charset="utf-8">
   <meta name="author" content="Andrew Banks">
-  <link rel="icon" href="data:,">
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff"/>
+`
+  if (config.isProgressiveWebApp) {
+    indexFile += `  <link rel="manifest" href="./manifest.json">
+`
+  }
+  indexFile +=
+`</head>
 
 <body>
   <div id="${config.reactRootId}">
   </div>
+  <noscript>Your browser does not support JavaScript!</noscript>
 </body>
 
 </html>
@@ -154,7 +192,8 @@ function handleIndexCommon () {
   //
   // index-common.js
   //
-  let indexCommon = ''
+  let indexCommon = `import './libs'
+`
   if (config.useTypeScript) {
     indexCommon += `import * as React from 'react'
 import * as injectTapEventPlugin from 'react-tap-event-plugin'`
@@ -168,21 +207,21 @@ import { render } from 'react-dom'
 `
 
   if (config.useCSSModules !== 1) {
-    indexCommon += 'import \'css\''
+    indexCommon += 'import \'./css\''
     indexCommon += newLine()
   }
 
   if (config.useCausalityRedux) {
-    indexCommon += 'import { globalPartitionState } from \'./causality-redux/init\''
+    indexCommon += 'import { globalPartitionState } from \'../causality-redux/init\''
     indexCommon += newLine()
   }
 
-  indexCommon += `import App from './${config.reactComponentsDirectory}/App'`
+  indexCommon += `import App from '../${config.reactComponentsDirectory}/App'`
   indexCommon += newLine()
   indexCommon += newLine()
+
   if (config.useCausalityRedux) {
-    indexCommon +=
-            `if (!globalPartitionState.injectTapEventPlugin) {
+    indexCommon += `if (!globalPartitionState.injectTapEventPlugin) {
   globalPartitionState.injectTapEventPlugin = true
   injectTapEventPlugin()
 }
@@ -201,12 +240,37 @@ export { App, React, render, reactMountNode }
 export default App
 `
 
-  writeFile(path.join(config.sourceDir, codeFileName('index-common')), indexCommon)
+  writeFile(path.join(bootPath, codeFileName('index-common')), indexCommon)
+
+  let code = `// Put your polyfills here.
+// Also list them using the configuration program in the dll library section
+// so that debug compilation is faster.
+
+// React 16 requirements.
+import 'core-js/es6/map'
+import 'core-js/es6/set'
+
+import 'whatwg-fetch'
+import { shim as assignShim } from 'object.assign'
+import { shim as fromShim } from 'array.from'
+import Promise from 'promise-polyfill'
+
+if (!window['Promise']) {
+  window['Promise'] = Promise
+}
+
+assignShim()
+fromShim()
+`
+  writeFile(path.join(bootPath, codeFileName('libs')), code)
 }
 
 function handleDllLibraries () {
   const dllFiles = ['react', 'react-dom', 'react-tap-event-plugin']
   if (config.useCausalityRedux) {
+    if (config.useTypeScript) {
+      dllFiles.push('source-map')
+    }
     dllFiles.push('redux')
     dllFiles.push('react-redux')
     dllFiles.push('causality-redux')
@@ -274,29 +338,27 @@ function handleCausalityRedux () {
   }
   const dir = path.join(config.sourceDir, 'causality-redux')
   fs.mkdirSync(dir)
-  const cr =
-`import CausalityRedux from 'causality-redux'
+  let cr =
+`import causalityRedux from 'causality-redux'
 import 'react-causality-redux'
 
-// Use this if you need global data. It survives HMR if you use globalStore to access and change it.
+// Use this if you need global data. It survives HMR.
 const globalData = {
-  injectTapEventPlugin: false
+`
+  if (config.useTypeScript) {
+    cr += `  isTypescript: true,
+`
+  }
+  cr += `  injectTapEventPlugin: false
 }
 
-CausalityRedux.createStore({ partitionName: CausalityRedux.globalDataKey, defaultState: globalData })
-const globalStore = CausalityRedux.store[CausalityRedux.globalDataKey]
-
-export default globalStore
 // globalPartitionState - Access and set individual key values in the global store.
-const globalPartitionState = globalStore.partitionState
 // globalSetState = Set multiple key values in the global store.
-const globalSetState = globalStore.setState
 // globalGetState - Get global store object.
-const globalGetState = globalStore.getState
 // globalSubscribe - Subscribe to changes to key values in the global store.
 // globalSubscribe(listener: function, globalStoreKeys = [], listenerName = '')
 // If globalStoreKeys == [] or undefined, listen to all keys in the global partition.
-const globalSubscribe = globalStore.subscribe
+const { globalPartitionState, globalSetState, globalGetState, globalSubscribe } = causalityRedux.createGlobalStore(globalData)
 
 export { globalPartitionState, globalSetState, globalGetState, globalSubscribe }
 `
@@ -307,11 +369,7 @@ function handleApp () {
   //
   // App.js
   //
-  let App = `// React 16 requirements.
-import 'core-js/es6/map'
-import 'core-js/es6/set'
-
-`
+  let App = ''
   if (config.useTypeScript) {
     App += `import * as React from 'react'
 `
@@ -321,7 +379,7 @@ import 'core-js/es6/set'
   }
 
   if (config.useCausalityRedux) {
-    App += `import CausalityRedux from 'causality-redux'
+    App += `import causalityRedux from 'causality-redux'
 import { Provider } from 'react-redux'
 `
   }
@@ -349,7 +407,7 @@ const App = () =>
 
   if (config.useCausalityRedux) {
     tagstack.push({
-      str: `<Provider store={CausalityRedux.store}>
+      str: `<Provider store={causalityRedux.store}>
 `,
       indentSpaces
     })
@@ -450,14 +508,25 @@ const MainApp = () =>
 }
 
 function buildServerIndexFiles () {
-  const index =
-`import { React, render, App, reactMountNode } from './index-common'
+  let index =
+`import { React, render, App, reactMountNode } from './bootstrap/index-common'
+`
+  if (config.isProgressiveWebApp) {
+    index += `import registerServiceWorker from './bootstrap/registerServiceWorker'
+`
+  }
 
+  index += `
 render(
   <App />,
   reactMountNode
 )
 `
+
+  if (config.isProgressiveWebApp) {
+    index += `registerServiceWorker()
+`
+  }
   if (config.useTypeScript) {
     writeFile(path.join(config.sourceDir, 'index.tsx'), index)
   } else {
@@ -465,7 +534,7 @@ render(
   }
 
   const indexDev =
-        `import { React, render, App, reactMountNode } from './index-common'
+        `import { React, render, App, reactMountNode } from './bootstrap/index-common'
 import { AppContainer } from 'react-hot-loader'
 
 //
@@ -488,11 +557,11 @@ renderRoot(App)
 // hot reload all changed components and then re-render the root
 //
 if (module.hot) {
-  module.hot.accept('./index-common', () => {
+  module.hot.accept('./bootstrap/index-common', () => {
     // The below requires the location of App or whatever is used for the root component
-    // The require('./index-common') brings in a new copy of the App module.
+    // The require('./bootstrap/index-common') brings in a new copy of the App module.
     // react will handle keeping the props and state the same after the load.
-    renderRoot(require('./index-common').default)
+    renderRoot(require('./bootstrap/index-common').default)
   })
 }
 `
@@ -530,6 +599,11 @@ global.document = window.document
 //
 // Put all of your window features that are missing from jsdom that you need here.
 //
+if (typeof window.fetch === 'undefined') {
+  global['self'] = window
+  require('whatwg-fetch')
+  delete global['self']
+}
 
 //
 // Testing for react 16.
@@ -551,33 +625,10 @@ global.navigator = {
 
   writeFile(path.join('test', codeFileName('setup')), setup)
 
-  let reactImports = `import React from 'react'
-import Adapter from 'enzyme-adapter-react-16'`
-  if (config.useTypeScript) {
-    reactImports = `import * as React from 'react'
-import * as Adapter from 'enzyme-adapter-react-16'`
-  }
-
-  let reacttest = ''
-
-  reacttest =
-        `import 'core-js/es6/map'
-import 'core-js/es6/set'
-
-${reactImports}
+  let reacttest = `
+import { React, App } from '../${config.sourceDir}/bootstrap/index-common'
+import Adapter from 'enzyme-adapter-react-16'
 import { configure, mount } from 'enzyme'
-`
-  if (config.useCSSModules !== 1) {
-    reacttest += 'import \'../src/css\''
-    reacttest += newLine()
-  }
-
-  if (config.useCausalityRedux) {
-    reacttest += 'import \'../src/causality-redux/init\''
-    reacttest += newLine()
-  }
-
-  reacttest += `import App from '../src/${config.reactComponentsDirectory}/App'
 
 configure({ adapter: new Adapter() })
 
@@ -670,6 +721,9 @@ export const testCauseAndEffectWithTextField = (causeSelector, inputValue, expec
 }
 
 const handleLaunchJson = () => {
+  const launchPath = path.join('.vscode', 'launch.json')
+  const launchJSON = readJSON(launchPath)
+
   let mochaLocation = config.mochaPath
   mochaLocation = mochaLocation.replace(/\\/g, '/')
   if (mochaLocation.charAt(0) !== '/') {
@@ -681,106 +735,85 @@ const handleLaunchJson = () => {
     }
     mochaLocation = '$' + '{workspaceRoot}/' + mochaLocation
   }
-  const launchPath = path.join('.vscode', 'launch.json')
-  let file = readFile(launchPath)
-  file = file.replace('$MOCHAPATH$', mochaLocation)
-  file = file.replace('$MOCHAPATH$', mochaLocation)
 
-  let mochaTestArgs =
-`"--require", 
-                "babel-register",
-                "--require", 
-                "ignore-styles", 
-                "--require", 
-                "./test/setup.js",
-                "./test/mountapp.jsx",
-                "./test/projectsetup.js",
-                "./src/**/*spec.js",
-                "--no-timeouts",
-                "--colors"`
+  let mochaTestArgs = [
+    '--require',
+    'babel-register',
+    '--require',
+    'ignore-styles',
+    '--require',
+    './test/setup.js',
+    './test/mountapp.jsx',
+    './test/projectsetup.js',
+    './src/**/*spec.js',
+    '--no-timeouts',
+    '--colors'
+  ]
 
   if (config.useTypeScript) {
-    mochaTestArgs =
-`"--require", 
-                "ts-node/register",
-                "--require", 
-                "ignore-styles", 
-                "--require", 
-                "./test/setup.ts",
-                "./test/mountapp.tsx",
-                "./test/projectsetup.ts",
-                "./src/**/*spec.ts",
-                "--no-timeouts",
-                "--colors"`
+    mochaTestArgs = [
+      '--require',
+      'ts-node/register',
+      '--require',
+      'ignore-styles',
+      '--require',
+      './test/setup.ts',
+      './test/mountapp.tsx',
+      './test/projectsetup.ts',
+      './src/**/*spec.ts',
+      '--no-timeouts',
+      '--colors'
+    ]
   }
 
-  let mochaDebugArgs =
-`"--require", 
-                "ignore-styles",
-                "--require", 
-                "./temp/test/setup.js",
-                "./temp/test/mountapp.js",
-                "./temp/test/projectsetup.js",
-                "./temp/src/**/*spec.js",
-                "--no-timeouts",
-                "--colors"`
+  launchJSON.configurations.forEach(entry => {
+    if (entry.name === 'Run Mocha Tests') {
+      entry.program = mochaLocation
+      entry.args = mochaTestArgs
+    }
+  })
 
-  if (config.useTypeScript) {
-    mochaDebugArgs =
-`"--require", 
-                "ignore-styles",
-                "--require", 
-                "./temp/test/setup.js",
-                "./temp/test/mountapp.js",
-                "./temp/test/projectsetup.js",
-                "./temp/src/**/*spec.js",
-                "--no-timeouts",
-                "--colors"`
-  }
-
-  file = file.replace('"$MOCHATESTARGS$"', mochaTestArgs)
-  file = file.replace('"$MOCHADEBUGARGS$"', mochaDebugArgs)
-
-  writeFile(launchPath, file)
+  writeJSON(launchPath, launchJSON)
 }
 
 const handlePackageJson = () => {
   const filePath = path.join('./', 'package.json')
-  let file = readFile(filePath)
+  let packageObj = readJSON(filePath)
 
   let testEntry = 'cross-env NODE_ENV=mochaTesting mocha --require babel-register --require ignore-styles --require test/setup.js test/projectsetup.js test/mountapp.jsx src/**/*.spec.js --no-timeouts'
   if (config.useTypeScript) {
-    testEntry = 'cross-env NODE_ENV=mochaTesting mocha --require ts-node/register --require ignore-styles --require test/setup.ts test/projectsetup.ts test/mountapp.tsx src/**/*.spec.ts --no-timeouts'
+    testEntry = 'cross-env NODE_ENV=mochaTesting TS_NODE_PROJECT=./test/tsconfig.json mocha --require ts-node/register --require ignore-styles --require test/setup.ts test/projectsetup.ts test/mountapp.tsx src/**/*.spec.ts --no-timeouts'
   }
-
-  file = file.replace('$TESTENTRY$', testEntry)
+  packageObj.scripts.test = testEntry
 
   let compileSrc = 'babel ./test/**/*.js ./test/**/*.jsx ./src/**/*.js ./src/**/*.jsx --out-dir temp --source-maps --watch'
-
   if (config.useTypeScript) {
-    compileSrc = 'tsc --project ./test/tsconfig.json --outDir temp --sourceMap --watch'
+    compileSrc = 'tsc --outDir temp --sourceMap --watch'
   }
-  file = file.replace('$COMPILESRC$', compileSrc)
+  packageObj.scripts['compile:src'] = compileSrc
 
-  let packageObj = JSON.parse(file)
   if (config.useTypeScript) {
     packageObj.scripts.lint = 'tslint --project tsconfig.json src/**/*.ts?(x)'
   } else {
     packageObj.scripts.lint = 'eslint src/**'
   }
-  writeFile(filePath, JSON.stringify(packageObj, null, 2))
+
+  writeJSON(filePath, packageObj)
 }
 
 const handleProductionServer = () => {
   const code = `/* eslint no-console: 0 */
 const express = require('express')
-const app = express.express()
-const path = require('path')
+const app = express()
 
 const port = process.env.PORT || 3001
 const host = process.env.HOST || 'localhost'
 
-app.use(express.static(path.join(process.cwd(), '${config.buildDir}')))
+if (typeof process.env.PUBLIC_PATH === 'undefined') {
+  throw new Error('process.env.PUBLIC_PATH is not set.')
+}
+
+app.use(express.static(process.env.PUBLIC_PATH))
 
 // Remove the STARTPROXY comment below if you customized your proxy definitions so that the configure program
 // does not overwrite it.
@@ -800,6 +833,9 @@ try {
 
 const handleProductionProxies = () => {
   const pserverPath = path.join('devtools', 'pserver.js')
+  if (!fs.existsSync(pserverPath)) {
+    return
+  }
   let file = readFile(pserverPath)
 
   const index1 = file.indexOf('// STARTPROXY')
@@ -861,17 +897,16 @@ endPoints.forEach(e =>
 
 const handleDevelopmentProxies = () => {
   let filePath = path.join('./', 'package.json')
-  let file = readFile(filePath)
-  let packageObj = JSON.parse(file)
+  let packageObj = readJSON(filePath)
   if (!config.devProxyServerPathName) {
     packageObj.scripts.start = 'cross-env NODE_ENV=development node devtools/server.js'
   } else {
     packageObj.scripts.start = `cross-env NODE_ENV=development node devtools/runservers.js devtools/server.js ${config.devProxyServerPathName}`
   }
-  writeFile(filePath, JSON.stringify(packageObj, null, 2))
+  writeJSON(filePath, packageObj)
 
   filePath = path.join('devtools', 'webpack.config.dev.js')
-  file = readFile(filePath)
+  let file = readFile(filePath)
   const index1 = file.indexOf('    // STARTPROXY')
   if (index1 === -1) {
     return
@@ -912,9 +947,64 @@ const handleDevelopmentProxies = () => {
   writeFile(filePath, firstPart + code + lastPart)
 }
 
+const handleProgressiveApp = () => {
+  if (!config.isProgressiveWebApp) {
+    return
+  }
+  const fileName = 'registerServiceWorker.js'
+  const srcPath = path.join('devtools', fileName)
+  const destPath = path.join(bootPath, fileName)
+
+  if (!fs.existsSync(destPath)) {
+    copyFile(srcPath, destPath)
+  }
+
+  const filePath = path.join(config.buildDir, 'manifest.json')
+  const code = `{
+  "short_name": "React PWA",
+  "name": "React PWA",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}
+`
+  writeFile(filePath, code)
+}
+
+function finishConfiguration () {
+  try {
+    handlePackageJson()
+    handleProductionServer()
+    handleStylesheets()
+    handleIndexFile()
+    handleIndexCommon()
+    handleDllLibraries()
+    handleCausalityRedux()
+    handleApp()
+    handleMainApp()
+    buildServerIndexFiles()
+    handleHistoryFile()
+    handleTestDirectory()
+    handleTsConfig()
+    handleProductionProxies()
+    handleProgressiveApp()
+  } catch (msg) {
+    console.log(`Create Error: ${msg}`)
+  }
+}
+
 module.exports = function buildProject (isUI) {
   handleProductionProxies()
   handleDevelopmentProxies()
+  handleLaunchJson()
 
   if (fs.existsSync(config.sourceDir)) {
     if (!isUI) {
@@ -923,22 +1013,11 @@ module.exports = function buildProject (isUI) {
     return false
   }
   console.log('Creating the react project...')
-
-  handleLaunchJson()
-  handlePackageJson()
-  handleDirectories()
-  handleStylesheets()
-  handleIndexFile()
-  handleIndexCommon()
-  handleDllLibraries()
-  handleCausalityRedux()
-  handleApp()
-  handleMainApp()
-  buildServerIndexFiles()
-  handleHistoryFile()
-  handleTestDirectory()
-  handleTsConfig()
-  handleProductionServer()
+  try {
+    handleDirectories()
+  } catch (msg) {
+    console.log(`Create Error: ${msg}`)
+  }
 
   console.log('React project created.')
   return true
