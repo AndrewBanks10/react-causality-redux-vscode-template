@@ -1,17 +1,24 @@
 /* eslint no-console: 0 */
 import { SourceMapConsumer } from 'source-map'
-import causalityRedux from 'causality-redux'
 
-const isTypescript = causalityRedux.globalStore.partitionState.isTypescript
+//
+// This module only exists because the chrome stack trace does not
+// properly map line numbers for typescript.
+//
+
 // Set this to false if chrome fixes their line number translation error for typescript.
 const doTSSourceMaps = true
 
-let sourcemapsValid = false
-
 const loadedScripts = {}
 const loadedSourceMaps = {}
+let isTypescript = false
+let sourcemapsValid = false
 let currentScriptIndex = 0
 let scriptUrls = []
+
+// This is set to true if the project is typescript.
+export const setIsTypeScript = val =>
+  (isTypescript = val)
 
 export function mapModule (frameModule) {
   // If the source maps are not valid do not translate yet.
@@ -105,6 +112,7 @@ export function loadSourceMaps (completionHandler) {
   loadNextScript(completionHandler)
 }
 
+// This module has private module data and hence cannot be hot loaded while maintaining state.
 if (module.hot) {
   module.hot.decline()
 }

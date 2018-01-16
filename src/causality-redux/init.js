@@ -4,7 +4,8 @@ import configureStore from '../react-components/RedditRedux/configureStore'
 
 // Use this if you need global data. It survives HMR if you use globalStore to access and change it.
 const globalData = {
-  injectTapEventPlugin: false
+  injectTapEventPlugin: false,
+  srcRoot: 'src'
 }
 
 // Create the redux store.
