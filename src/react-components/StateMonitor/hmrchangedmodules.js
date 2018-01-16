@@ -2,7 +2,7 @@ import { handleHMRLoadedModules } from './controller'
 
 const webpackHotUpdate = 'webpackHotUpdate'
 if (module.hot) {
-  var parentHotUpdateCallback = window[webpackHotUpdate]
+  const parentHotUpdateCallback = window[webpackHotUpdate]
   // Webpack uses window[webpackHotUpdate] as the function to call on a hmr.
   // So, save that function and replace it with one of our own so we
   // can determine which module source files changed. Then
