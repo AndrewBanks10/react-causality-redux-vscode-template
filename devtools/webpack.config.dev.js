@@ -1,6 +1,9 @@
 const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// The below can be used to look at the dev bundle and hmr patches. Normally
+// these are not written to disk. Also, uncomment in the plugins and npm download it.
+// const WriteFilePlugin = require('write-file-webpack-plugin')
 
 const configCommon = require('./webpack.config.common')
 
@@ -41,6 +44,7 @@ module.exports = {
       context: configCommon.absoluteDllPath,
       manifest: require(path.join(configCommon.absoluteDllPath, `${configCommon.dllBundleName}.json`))
     }),
+    // new WriteFilePlugin(),
     new HtmlWebpackPlugin({
       template: configCommon.htmlDevTemplate,
       inject: 'body'
