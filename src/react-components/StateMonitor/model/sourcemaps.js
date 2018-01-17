@@ -111,8 +111,3 @@ export function loadSourceMaps (completionHandler) {
   }
   loadNextScript(completionHandler)
 }
-
-// This module has private module data and hence cannot be hot loaded while maintaining state.
-if (module.hot) {
-  module.hot.decline()
-}
