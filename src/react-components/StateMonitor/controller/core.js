@@ -140,7 +140,7 @@ export const uiServiceFunctions = {
   },
   beginning: () => {
     copyStoreState(0)
-    monitorMirroredState.currentState = -1
+    monitorMirroredState.currentState = 0
     setMonitorState()
   },
   exit: () => {
