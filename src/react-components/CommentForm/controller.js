@@ -37,12 +37,16 @@ export const uiServiceFunctions = {
     setState({ idToDelete: '', items: arr.filter(e => e.id !== id) })
   },
   onChangeComment: () => {
+    // Get a copy of the array items.
     const arr = partitionState.items
     const id = parseInt(partitionState.idToChange)
     const index = arr.findIndex(e => e.id === id)
     if (index >= 0) {
-      // Note we have to change the pointer at rr[index].
+      // Note we have to change the pointer at arr[index] since arr[index] is an object (pointer).
+      // Otherwise, with redux we do not have a state transition for this array item.
       arr[index] = { author: partitionState.authorToChange, text: arr[index].text, id: arr[index].id }
+      // Now set the redux partition state. We have a copy of the array with arr
+      // and a copy of the array item at index in arr which contains the new entry.
       setState({ idToChange: '', authorToChange: '', items: arr })
     }
   }
