@@ -53,7 +53,7 @@ export const uiServiceFunctions = {
 }
 
 // Put in some initial comments.
-export function initController () {
+export const initController = () => {
   if (getState().items.length === 0) {
     const initialComments = [
       { author: 'Cory Brown', text: 'My 2 scents' },
