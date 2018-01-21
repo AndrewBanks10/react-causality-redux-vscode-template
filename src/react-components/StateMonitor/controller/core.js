@@ -208,8 +208,7 @@ causalityRedux.setOptions({
       return
     }
     if (arg.partitionName !== stateMonitorPartition &&
-      arg.partitionName !== causalityRedux.storeHistoryKey &&
-      arg.operation !== causalityRedux.operations.STATE_FUNCTION_CALL) {
+      arg.partitionName !== causalityRedux.storeHistoryKey) {
       arg.store = causalityRedux.shallowCopy(causalityRedux.store.getState())
       arg.nextState = causalityRedux.shallowCopy(arg.nextState)
       // Copy the hot reloaded components from arg.nextState down to the stores in the array.

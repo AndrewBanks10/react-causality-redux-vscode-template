@@ -7,16 +7,21 @@ import MultiPartitionForm from './view'
 const multiFormPartition = 'multiFormPartition'
 
 const controllerUIConnections = [
-  [
-    MultiPartitionForm, // React Component to wrap with redux connect
-    // Used an array of objects to attach multiple partitions to the component's props
-    [
+  {
+    uiComponent: MultiPartitionForm, // React Component to wrap with redux connect
+    // Use an array of objects to attach multiple partitions to the component's props
+    partitions: [
+      // The entry below is from this partition.
       { partitionName: multiFormPartition, storeKeys: ['fixedValue'] },
+      // Include the increment function and counter state variable from
+      // the counterFormPartition component.
       { partitionName: counterFormPartition, changerKeys: ['increment'], storeKeys: ['counter'] },
-      { partitionName: commentBoxPartition, storeKeys: ['items'] }
+      // Include items from the commentBoxPartition component. changerKeys: [] means
+      // do not include any uiServiceFunctions from commentBoxPartition.
+      { partitionName: commentBoxPartition, changerKeys: [], storeKeys: ['items'] }
     ],
-    'MultiPartitionForm' // Name of the react component string form
-  ]
+    uiComponentName: 'MultiPartitionForm' // Name of the react component string form
+  }
 ]
 
 const { wrappedComponents } = establishControllerConnections({

@@ -1,4 +1,4 @@
-import { partitionState, setState } from './index'
+import { partitionState, setState, getState } from './index'
 
 export const defaultState = {
   items: [],
@@ -49,5 +49,19 @@ export const uiServiceFunctions = {
       // and a copy of the array item at index in arr which contains the new entry.
       setState({ idToChange: '', authorToChange: '', items: arr })
     }
+  }
+}
+
+// Put in some initial comments.
+export function initController () {
+  if (getState().items.length === 0) {
+    const initialComments = [
+      { author: 'Cory Brown', text: 'My 2 scents' },
+      { author: 'Jared Anderson', text: 'Let me put it this way. You`ve heard of Socrates? Aristotle? Plato? Morons!' },
+      { author: 'Matt Poulson', text: 'It`s just a function!' },
+      { author: 'Bruce Campbell', text: 'Fish in a tree? How can that be?' }
+    ]
+
+    initialComments.forEach(comment => uiServiceFunctions.onAddComment(comment))
   }
 }

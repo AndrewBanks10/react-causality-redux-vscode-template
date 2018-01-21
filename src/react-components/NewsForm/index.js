@@ -5,41 +5,41 @@ import { NewSourcesButtons, NewsContainer, ErrorMessage, LoaderNews, NewsForm } 
 const newsFormPartition = 'newsFormPartition'
 
 const controllerUIConnections = [
-  [
-    LoaderNews, // React Component to wrap with redux connect
-    newsFormPartition,
-    [], // Function keys that you want passed into the props of the react component.
-    ['isBusy'], // Partition keys that you want passed into the props of the react component.
-    'LoaderNews' // Name of the react component string form
-  ],
-  [
-    ErrorMessage,
-    newsFormPartition,
-    ['clearError'],
-    ['errorMsg'],
-    'ErrorMessage'
-  ],
-  [
-    NewsContainer,
-    newsFormPartition,
-    ['closeNews'],
-    ['newsObj'],
-    'NewsContainer'
-  ],
-  [
-    NewSourcesButtons,
-    newsFormPartition,
-    ['getNewsSources', 'clear'],
-    ['isBusy'],
-    'NewSourcesButtons'
-  ],
-  [
-    NewsForm,
-    newsFormPartition,
-    ['getNews'],
-    ['newsSources', 'NewsContainer', 'ErrorMessage', 'LoaderNews', 'NewSourcesButtons'],
-    'NewsForm'
-  ]
+  {
+    uiComponent: LoaderNews, // React Component to wrap with redux connect
+    partitionName: newsFormPartition,
+    changerKeys: [], // Function keys that you want passed into the props of the react component.
+    storeKeys: ['isBusy'], // Partition keys that you want passed into the props of the react component.
+    uiComponentName: 'LoaderNews' // Name of the react component string form
+  },
+  {
+    uiComponent: ErrorMessage,
+    partitionName: newsFormPartition,
+    changerKeys: ['clearError'],
+    storeKeys: ['errorMsg'],
+    uiComponentName: 'ErrorMessage'
+  },
+  {
+    uiComponent: NewsContainer,
+    partitionName: newsFormPartition,
+    changerKeys: ['closeNews'],
+    storeKeys: ['newsObj'],
+    uiComponentName: 'NewsContainer'
+  },
+  {
+    uiComponent: NewSourcesButtons,
+    partitionName: newsFormPartition,
+    changerKeys: ['getNewsSources', 'clear'],
+    storeKeys: ['isBusy'],
+    uiComponentName: 'NewSourcesButtons'
+  },
+  {
+    uiComponent: NewsForm,
+    partitionName: newsFormPartition,
+    changerKeys: ['getNews'],
+    storeKeys: ['newsSources', 'NewsContainer', 'ErrorMessage', 'LoaderNews', 'NewSourcesButtons'],
+    uiComponentName: 'NewsForm'
+  }
 ]
 
 //

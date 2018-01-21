@@ -5,12 +5,48 @@ import { Todo, TodoForm, TodoEdit, ToDoItem, TodoList, InplaceTextEdit } from '.
 export const todoPartition = 'todoPartition'
 
 const controllerUIConnections = [
-  [InplaceTextEdit, todoPartition, ['updateEditText', 'saveEdit', 'endEdit'], ['editText', 'editID'], 'InplaceTextEdit'],
-  [ToDoItem, todoPartition, ['deleteTodo', 'onCheck', 'startEdit'], ['editID', 'InplaceTextEdit'], 'ToDoItem'],
-  [TodoList, todoPartition, [], ['todos', 'ToDoItem'], 'TodoList'],
-  [TodoEdit, todoPartition, ['saveTodo', 'updateText', 'clearCompleted'], ['text', 'hasCompleted', 'numOutstanding'], 'TodoEdit'],
-  [TodoForm, todoPartition, [], ['TodoEdit', 'TodoList'], 'TodoForm'],
-  [Todo, todoPartition, ['setFilter'], ['TodoForm', 'filter'], 'Todo']
+  {
+    uiComponent: InplaceTextEdit,
+    partitionName: todoPartition,
+    changerKeys: ['updateEditText', 'saveEdit', 'endEdit'],
+    storeKeys: ['editText', 'editID'],
+    uiComponentName: 'InplaceTextEdit'
+  },
+  {
+    uiComponent: ToDoItem,
+    partitionName: todoPartition,
+    changerKeys: ['deleteTodo', 'onCheck', 'startEdit'],
+    storeKeys: ['editID', 'InplaceTextEdit'],
+    uiComponentName: 'ToDoItem'
+  },
+  {
+    uiComponent: TodoList,
+    partitionName: todoPartition,
+    changerKeys: [],
+    storeKeys: ['todos', 'ToDoItem'],
+    uiComponentName: 'TodoList'
+  },
+  {
+    uiComponent: TodoEdit,
+    partitionName: todoPartition,
+    changerKeys: ['saveTodo', 'updateText', 'clearCompleted'],
+    storeKeys: ['text', 'hasCompleted', 'numOutstanding'],
+    uiComponentName: 'TodoEdit'
+  },
+  {
+    uiComponent: TodoForm,
+    partitionName: todoPartition,
+    changerKeys: [],
+    storeKeys: ['TodoEdit', 'TodoList'],
+    uiComponentName: 'TodoForm'
+  },
+  {
+    uiComponent: Todo,
+    partitionName: todoPartition,
+    changerKeys: ['setFilter'],
+    storeKeys: ['TodoForm', 'filter'],
+    uiComponentName: 'Todo'
+  }
 ]
 
 const { partitionState, setState, wrappedComponents } = establishControllerConnections({

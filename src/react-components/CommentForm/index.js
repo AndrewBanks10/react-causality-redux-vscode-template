@@ -1,46 +1,46 @@
 import causalityRedux from 'causality-redux'
-import { defaultState, uiServiceFunctions } from './controller'
+import { defaultState, uiServiceFunctions, initController } from './controller'
 import { CommentList, CommentForm, CommentBoxDeleteForm, CommentBoxChangeForm, CommentBox } from './view'
 
 // Comment partition entry
 const commentBoxPartition = 'commentBoxPartition'
 
 const controllerUIConnections = [
-  [
-    CommentList, // React Component to wrap with redux connect
-    commentBoxPartition,
-    [], // Function keys that you want passed into the props of the react component.
-    ['items'], // Partition keys that you want passed into the props of the react component.
-    'CommentList' // Name of the react component string form
-  ],
-  [
-    CommentForm, // Wrapped component
-    commentBoxPartition,
-    ['onAuthorChange', 'onTextChange', 'onAddComment'],
-    ['author', 'text'],
-    'CommentForm'
-  ],
-  [
-    CommentBoxDeleteForm, // Wrapped component
-    commentBoxPartition,
-    ['onDeleteComment', 'onIdChange'],
-    ['idToDelete'],
-    'CommentBoxDeleteForm'
-  ],
-  [
-    CommentBoxChangeForm, // Wrapped component
-    commentBoxPartition,
-    ['onChangeComment', 'onIdChangeForChange', 'onAuthorChangeForChange'],
-    ['idToChange', 'authorToChange'],
-    'CommentBoxChangeForm'
-  ],
-  [
-    CommentBox, // Wrapped component
-    commentBoxPartition,
-    [],
-    ['CommentList', 'CommentForm', 'CommentBoxDeleteForm', 'CommentBoxChangeForm'],
-    'CommentBox'
-  ]
+  {
+    uiComponent: CommentList, // React Component to wrap with redux connect
+    partitionName: commentBoxPartition,
+    changerKeys: [], // Function keys that you want passed into the props of the react component.
+    storeKeys: ['items'], // Partition keys that you want passed into the props of the react component.
+    uiComponentName: 'CommentList' // Name of the react component string form
+  },
+  {
+    uiComponent: CommentForm,
+    partitionName: commentBoxPartition,
+    changerKeys: ['onAuthorChange', 'onTextChange', 'onAddComment'],
+    storeKeys: ['author', 'text'],
+    uiComponentName: 'CommentForm'
+  },
+  {
+    uiComponent: CommentBoxDeleteForm,
+    partitionName: commentBoxPartition,
+    changerKeys: ['onDeleteComment', 'onIdChange'],
+    storeKeys: ['idToDelete'],
+    uiComponentName: 'CommentBoxDeleteForm'
+  },
+  {
+    uiComponent: CommentBoxChangeForm,
+    partitionName: commentBoxPartition,
+    changerKeys: ['onChangeComment', 'onIdChangeForChange', 'onAuthorChangeForChange'],
+    storeKeys: ['idToChange', 'authorToChange'],
+    uiComponentName: 'CommentBoxChangeForm'
+  },
+  {
+    uiComponent: CommentBox,
+    partitionName: commentBoxPartition,
+    changerKeys: [],
+    storeKeys: ['CommentList', 'CommentForm', 'CommentBoxDeleteForm', 'CommentBoxChangeForm'],
+    uiComponentName: 'CommentBox'
+  }
 ]
 
 const { partitionState, setState, wrappedComponents, getState } = causalityRedux.establishControllerConnections({
@@ -49,17 +49,8 @@ const { partitionState, setState, wrappedComponents, getState } = causalityRedux
   controllerUIConnections
 })
 
-export { commentBoxPartition, partitionState, setState }
+export { commentBoxPartition, partitionState, setState, getState }
 export default wrappedComponents.CommentBox
 
-// Put in some initial comments.
-if (getState().items.length === 0) {
-  const initialComments = [
-    {author: 'Cory Brown', text: 'My 2 scents'},
-    {author: 'Jared Anderson', text: 'Let me put it this way. You`ve heard of Socrates? Aristotle? Plato? Morons!'},
-    {author: 'Matt Poulson', text: 'It`s just a function!'},
-    {author: 'Bruce Campbell', text: 'Fish in a tree? How can that be?'}
-  ]
-
-  initialComments.forEach(comment => uiServiceFunctions.onAddComment(comment))
-}
+// Perform controller initialization here that needs partitionState, setState or getState.
+initController()
