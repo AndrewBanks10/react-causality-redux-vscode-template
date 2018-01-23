@@ -176,42 +176,13 @@
 			],
 			"taskName": "(Internal)BuildMochaDebug"
 		},
-		/*
 		{
 			"args": [
 				"run",
-				"createcomponent"
+				"config",
+				"--silent"
 			],
-			"presentation": {
-				"reveal": "always",
-				"focus": true
-			},
-			"type": "shell",
-			"taskName": "Create Component",
-			"problemMatcher": []
-		},
-		{
-			"args": [
-				"run",
-				"createcomponentwc"
-			],
-			"presentation": {
-				"reveal": "always",
-				"focus": true
-			},
-			"type": "shell",
-			"taskName": "Create Component w/o Comments",
-			"problemMatcher": []
-		},
-
-		*/
-		{
-			"args": [
-				"run",
-				"createreactproject"
-			],
-			"taskName": "Create React Project",
-			"problemMatcher": []
+			"taskName": "Run Project Configuration"
 		},
 		{
 			"args": [
