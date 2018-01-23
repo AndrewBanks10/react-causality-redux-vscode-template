@@ -627,7 +627,14 @@ global.navigator = {
 
   let reacttest = `
 import { React, App } from '../${config.sourceDir}/bootstrap/index-common'
-import Adapter from 'enzyme-adapter-react-16'
+`
+  if (config.useTypeScript) {
+    reacttest += `import * as Adapter from 'enzyme-adapter-react-16'`
+  } else {
+    reacttest += `import Adapter from 'enzyme-adapter-react-16'`
+  }
+
+  reacttest += `
 import { configure, mount } from 'enzyme'
 
 configure({ adapter: new Adapter() })
