@@ -13,14 +13,7 @@
     "startprod": "cross-env NODE_ENV=production node devtools/server.js",
     "lint": "eslint src/**",
     "test": "cross-env NODE_ENV=mochaTesting mocha --require babel-register --require ignore-styles --require test/setup.js test/projectsetup.js test/mountapp.js src/**/*.spec.js --no-timeouts",
-    "compile:del": "rimraf temp",
-    "compile:copy": "copyfiles src/**/*.* temp",
-    "compile:src": "babel ./test/**/*.js ./src/**/*.js ./src/**/*.jsx --out-dir temp --source-maps --watch",
-    "buildmochadebug": "npm run compile:del && npm run compile:copy && npm run compile:src",
-    "createcomponent": "node devtools/createcomponent.js",
-    "createcomponentwc": "node devtools/createcomponentwc.js",
-    "createreactproject": "node devtools/createreactproject.js",
-    "mochadebug": "npm run compile:del && npm run compile:copy && npm run compile:src"
+    "config": "node devtools/apps/server.js"
   },
   "repository": {
     "type": "git",
