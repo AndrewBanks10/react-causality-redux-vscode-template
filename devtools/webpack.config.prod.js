@@ -3,22 +3,24 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const configCommon = require('./webpack.config.common')
 
 const buildScriptDir = configCommon.buildScriptDir === '' ? '' : `${configCommon.buildScriptDir}/`
 const buildCSSDir = configCommon.buildCSSDir === '' ? '' : `${configCommon.buildCSSDir}/`
 
+const serviceWorkerFileName = 'service-worker.js'
+
 const exportObject = {
   cache: true,
   watch: configCommon.useWatch,
   watchOptions: {
-    aggregateTimeout: 1000,
-    ignored: /node_modules/
+    aggregateTimeout: 1000
   },
   entry: path.join(configCommon.absoluteSourcePath, configCommon.entryJs),
   output: {
     path: configCommon.absoluteBuildPath,
-    filename: `${buildScriptDir}${configCommon.bundleName}.js`
+    filename: path.join(configCommon.buildScriptDir, `[name]${configCommon.bundleName}.js`)
   },
   devServer: {
     contentBase: configCommon.absoluteBuildPath,
@@ -71,7 +73,7 @@ if (configCommon.useDllLibraryForProduction) {
       filename: path.join(configCommon.absoluteBuildPath, configCommon.htmlOutputFileName),
       template: path.join(configCommon.absoluteBuildPath, configCommon.htmlTemplate),
       inject: 'body',
-      hash: true
+      hash: !configCommon.isProgressiveWebApp
     })
   )
 } else {
@@ -80,7 +82,35 @@ if (configCommon.useDllLibraryForProduction) {
       filename: path.join(configCommon.absoluteBuildPath, configCommon.htmlOutputFileName),
       template: path.join(configCommon.absoluteDevToolsPath, configCommon.htmlTemplate),
       inject: 'body',
-      hash: true
+      hash: !configCommon.isProgressiveWebApp
+    })
+  )
+}
+
+if (configCommon.isProgressiveWebApp) {
+  let staticFileGlobs = []
+  if (configCommon.useDllLibraryForProduction) {
+    // Production dll library
+    staticFileGlobs = [`${configCommon.buildDir}/${configCommon.buildScriptDir}/${configCommon.dllBundleName}.js`]
+  }
+  staticFileGlobs = staticFileGlobs.concat(configCommon.progressiveWebAppCacheFiles)
+
+  exportObject.plugins.push(
+    new SWPrecacheWebpackPlugin({
+      dontCacheBustUrlsMatching: /\.\w{8}\./,
+      filename: serviceWorkerFileName,
+      logger (message) {
+        if (message.indexOf('Total precache size is') === 0) {
+          return
+        }
+        console.log(message)
+      },
+      staticFileGlobs,
+      stripPrefix: `${configCommon.buildDir}/`,
+      mergeStaticsConfig: true,
+      minify: true, // minify and uglify the script
+      navigateFallback: `/${configCommon.htmlOutputFileName}`,
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/]
     })
   )
 }

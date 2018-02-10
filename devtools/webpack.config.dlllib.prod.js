@@ -39,7 +39,7 @@ module.exports = {
       template: path.join(configCommon.absoluteDevToolsPath, configCommon.htmlTemplate),
       filename: path.join(configCommon.absoluteBuildPath, configCommon.htmlTemplate),
       inject: 'body',
-      hash: true
+      hash: !configCommon.isProgressiveWebApp
     })
   ],
   resolve: configCommon.resolveEntry,

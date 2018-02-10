@@ -159,16 +159,6 @@ function allLoaders (ExtractTextPlugin) {
         loader: 'awesome-typescript-loader'
       }
     )
-
-    if (!isProduction()) {
-      loaders.push(
-        {
-          enforce: 'pre',
-          test: /\.js$/,
-          loader: 'source-map-loader'
-        }
-      )
-    }
   }
 
   // Url loader

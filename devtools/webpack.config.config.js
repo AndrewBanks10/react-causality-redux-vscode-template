@@ -26,8 +26,23 @@ if (config.useCss) {
 
 config.urlLoaderExtensions = config.strUrlLoaderExtensions.split(', ')
 config.resolveExtensions = config.strResolveExtensions.split(', ')
-config.dllModules = config.strDllModule.split('\n').map(e => e.trim().toLowerCase()).filter(e => e !== '')
+config.dllModules = config.strDllModule.split('\n').map(e => e.trim()).filter(e => e !== '')
 config.dllModules = config.dllModules.concat(projectDllModules)
+
+config.libraryFiles = config.strLibraryFiles.split('\n').map(e => e.trim()).filter(e => e !== '')
+
+if (!config.strProgressiveWebAppCacheFiles) {
+  config.progressiveWebAppCacheFiles = []
+} else {
+  config.progressiveWebAppCacheFiles = config.strProgressiveWebAppCacheFiles.split('\n').map(e => e.trim()).filter(e => e !== '')
+  config.progressiveWebAppCacheFiles = config.progressiveWebAppCacheFiles.map(e => {
+    if (e.charAt(0) === '/') {
+      return `${config.buildDir}${e}`
+    }
+    return `${config.buildDir}/${e}`
+  })
+}
+
 config.testDirectory = 'test'
 
 // At this time, the build directory must be directly below the vscode directory.
