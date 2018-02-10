@@ -22,7 +22,7 @@ export const defaultState = {
   numOutstanding: numOutstanding(todos)
 }
 
-const saveTodos = (todos) => {
+const saveTodos = todos => {
   setState({ editID: -1, text: '', editText: '', todos, hasCompleted: hasCompleted(todos), numOutstanding: numOutstanding(todos) })
   save(todos)
 }
@@ -45,28 +45,28 @@ const findTodo = (todos, id) =>
 export const uiServiceFunctions = {
   clearCompleted: () =>
     saveTodos(partitionState.todos.filter(entry => !entry.completed)),
-  updateText: (text) =>
+  updateText: text =>
     (partitionState.text = text.trim()),
-  updateEditText: (text) =>
+  updateEditText: text =>
     (partitionState.editText = text.trim()),
   saveTodo: () =>
     saveTodoEdit(partitionState.todos, partitionState.text),
-  saveEdit: (id) =>
+  saveEdit: id =>
     saveTodoEdit(partitionState.todos, partitionState.editText, id),
-  onCheck: (id) => {
+  onCheck: id => {
     const arr = partitionState.todos
     const index = findTodo(arr, id)
     arr[index].completed = !arr[index].completed
     saveTodos(arr)
   },
-  startEdit: (id) => {
+  startEdit: id => {
     const arr = partitionState.todos
     setState({editText: arr[findTodo(arr, id)].text, editID: id})
   },
   endEdit: () =>
     setState({ editText: '', editID: -1 }),
-  deleteTodo: (id) =>
+  deleteTodo: id =>
     saveTodos(partitionState.todos.filter(entry => entry.id !== id)),
-  setFilter: (filter) =>
+  setFilter: filter =>
     (partitionState.filter = filter)
 }

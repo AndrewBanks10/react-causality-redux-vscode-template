@@ -3,6 +3,7 @@ import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import NavMenu from '../NavMenu'
 import RaisedButton from 'material-ui/RaisedButton'
+import Loader from '../common/Loader'
 
 //
 // This is a css injection because this component is an independent react web component.
@@ -12,13 +13,10 @@ import RaisedButton from 'material-ui/RaisedButton'
 import styles from './view.inject'
 
 export const Loader1 = ({getIsBusy}) => {
-  let className = ''
-  if (getIsBusy) {
-    className = styles.loader
+  if (!getIsBusy) {
+    return null
   }
-  return (
-    <div className={className} />
-  )
+  return <Loader />
 }
 
 export const ErrorMessage = ({ error, clearError }) => {

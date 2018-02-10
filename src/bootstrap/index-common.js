@@ -1,9 +1,9 @@
 import './libs'
 import React from 'react'
-import { render } from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import { render } from 'react-dom'
 import './css'
-import {globalPartitionState} from '../causality-redux/init'
+import { globalPartitionState } from '../causality-redux/init'
 import App from '../react-components/App'
 
 if (!globalPartitionState.injectTapEventPlugin) {

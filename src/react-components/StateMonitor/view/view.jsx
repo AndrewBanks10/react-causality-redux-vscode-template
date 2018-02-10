@@ -34,31 +34,18 @@ const BasicEntry = props =>
     <span className={styles.keyValue}>{`${props.objKey}: `}</span><span className={styles.basicValue}>{convertJSON(props.obj)}</span>
   </div>
 
-export class StateDetailObject extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = { isOpen: false }
-    this.toggleOpen = this.toggleOpen.bind(this)
-  }
-  toggleOpen () {
-    this.setState({ isOpen: !this.state.isOpen })
-  }
-  render () {
-    return (
-      isBasicType(this.props.obj)
-        ? <BasicEntry {...this.props} />
-        : <div className={styles.stateDetailKey}>
-          <div className={styles.complexKey}>{`${this.props.objKey}: `}</div> {
-            this.state.isOpen
-              ? <div onClick={this.toggleOpen} className={styles.complexOpenClose}>{'\u25B2'}</div>
-              : <div onClick={this.toggleOpen} className={styles.complexOpenClose}>{'\u25BC'}</div>
-          }
-          <div className={styles.complexValue}>{this.state.isOpen ? convertJSON(this.props.obj) : null}</div>
-          <div className={styles.floatClear} />
-        </div>
-    )
-  }
-}
+const StateDetailObject = props =>
+  isBasicType(props.obj)
+    ? <BasicEntry {...props} />
+    : <div className={styles.stateDetailKey}>
+      <div className={styles.complexKey}>{`${props.objKey}: `}</div> {
+        props.objOpenStates[props.index]
+          ? <div onClick={() => props.toggleObjOpenState(props.index)} className={styles.complexOpenClose}>{'\u25B2'}</div>
+          : <div onClick={() => props.toggleObjOpenState(props.index)} className={styles.complexOpenClose}>{'\u25BC'}</div>
+      }
+      <div className={styles.complexValue}>{props.objOpenStates[props.index] ? convertJSON(props.obj) : null}</div>
+      <div className={styles.floatClear} />
+    </div>
 
 const StateDetail = props => {
   const keyList = Object.keys(props.nextState).sort().map((key, index) => {
@@ -66,7 +53,10 @@ const StateDetail = props => {
       <StateDetailObject
         objKey={key}
         key={index}
+        index={index}
         obj={props.nextState[key]}
+        objOpenStates={props.objOpenStates}
+        toggleObjOpenState={props.toggleObjOpenState}
       />
     )
   })
@@ -112,7 +102,11 @@ const DisplayStateDetail = props => {
           <div className={styles.displayModuleText}>Changed Keys:</div>
         </div>
         <div className={styles.displayStateObjectContainer}>
-          <StateDetail nextState={props.nextState} />
+          <StateDetail
+            nextState={props.nextState}
+            objOpenStates={props.objOpenStates}
+            toggleObjOpenState={props.toggleObjOpenState}
+          />
         </div>
       </div>
     </div>

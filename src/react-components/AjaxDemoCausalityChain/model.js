@@ -1,6 +1,7 @@
 let httpReq = null
 const url = 'https://jsonplaceholder.typicode.com/todos'
 
+// All this effort is for abort logic and fetch does not support it.
 const Http = (function () {
   const errorMsg = 'Unknown network error.'
 

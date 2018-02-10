@@ -21,22 +21,6 @@ tr:nth-child(even) {
     background-color: #eeeeee;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loader {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #555555;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    animation: spin 1s linear infinite;
-    @extend .center-div-on-screen;
-    z-index:99;
-}
-
 .error-message-text
 {
 	padding-bottom:4px;

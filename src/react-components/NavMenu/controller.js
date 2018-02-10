@@ -7,10 +7,8 @@ export const defaultState = {
 }
 
 export const uiServiceFunctions = {
-  closeMenu: () => {
-    partitionState.open = false
-  },
-  openMenu: (event) => {
+  closeMenu: () =>
+    (partitionState.open = false),
+  openMenu: event =>
     setState({ open: true, anchorEl: event.currentTarget })
-  }
 }

@@ -1,22 +1,64 @@
 import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-
-import Todo from '../Todo'
-import NewsForm from '../NewsForm'
-import RouterForm from '../RouterForm'
+import Loadable from 'react-loadable'
 import HomeApp from '../HomeApp/HomeApp'
-import CommentForm from '../CommentForm'
-import CounterForm from '../CounterForm'
-import MultiPartition from '../MultiPartition'
-import AsyncApp from '../RedditRedux/containers/AsyncApp'
-import AjaxDemoCausalityChain from '../AjaxDemoCausalityChain'
-// Import MonitorComponent last so that any component initialization is not included
+import Loader from '../common/Loader'
 import { StateMonitor } from '../StateMonitor'
+
+//
+// The code below demonstrates dynamic loading of components and the react router.
+//
+
+//
+// Dynamically loaded components
+//
+const AsyncApp = Loadable({
+  loader: () => import('../RedditRedux/containers/AsyncApp'),
+  loading: Loader
+})
+
+const Todo = Loadable({
+  loader: () => import('../Todo'),
+  loading: Loader
+})
+
+const NewsForm = Loadable({
+  loader: () => import('../NewsForm'),
+  loading: Loader
+})
+
+const RouterForm = Loadable({
+  loader: () => import('../RouterForm'),
+  loading: Loader
+})
+
+const CommentForm = Loadable({
+  loader: () => import('../CommentForm'),
+  loading: Loader
+})
+
+const CounterForm = Loadable({
+  loader: () => import('../CounterForm'),
+  loading: Loader
+})
+
+const MultiPartition = Loadable({
+  loader: () => import('../MultiPartition'),
+  loading: Loader
+})
+
+const AjaxDemoCausalityChain = Loadable({
+  loader: () => import('../AjaxDemoCausalityChain'),
+  loading: Loader
+})
 
 export const convertToLinkId = (route) => {
   return route.replace(/\\/g, 'xxxlinkid')
 }
 
+//
+// Used for react Link in NavMenu.
+//
 export const HOMEROUTE = '/'
 export const CAUSALITYCHAINROUTE = '/causalitychain'
 export const NEWSROUTE = '/news'
@@ -27,6 +69,9 @@ export const TODODEMOROUTE = '/tododemo'
 export const MULTIPARTITIONROUTE = '/multipartition'
 export const ASYNCAPP = '/asyncapp'
 
+//
+// React router
+//
 const MainApp = () =>
   <div>
     <StateMonitor />

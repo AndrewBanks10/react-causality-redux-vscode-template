@@ -12,8 +12,8 @@ export const uiServiceFunctions = {
   onGet: () => {
     partitionState.getIsBusy = true
     handleGet(
-      (data) => { setState({ getIsBusy: false, data }) },
-      (error) => { setState({ getIsBusy: false, error }) }
+      data => { setState({ getIsBusy: false, data }) },
+      error => { setState({ getIsBusy: false, error }) }
     )
   },
   onAbortGet: () => {

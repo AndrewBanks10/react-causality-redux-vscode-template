@@ -8,7 +8,10 @@ export const copyHotReloadedComponents = (partitionName, partition) => {
   causalityRedux.getKeys(partition).forEach(partitionKey => {
     if (isCausalityReduxComponent(partition[partitionKey])) {
       allStates.forEach(entry => {
-        if (typeof entry.store[partitionName][partitionKey] !== 'undefined') {
+        if (typeof entry.store !== 'undefined' &&
+          typeof entry.store[partitionName] !== 'undefined' &&
+          typeof entry.store[partitionName][partitionKey] !== 'undefined'
+        ) {
           entry.store[partitionName][partitionKey] = partition[partitionKey]
         }
       })

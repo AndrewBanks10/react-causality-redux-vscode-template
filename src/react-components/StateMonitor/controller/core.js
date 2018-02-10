@@ -1,6 +1,6 @@
 import causalityRedux from 'causality-redux'
 import '../model/hmrchangedmodules'
-import { setState, getState, stateMonitorPartition } from './setup'
+import { partitionState, setState, getState, stateMonitorPartition } from './setup'
 import { copyHotReloadedComponents } from './hmr'
 import { mapModulesOnStack } from './sourcemaps'
 import getStackTrace from '../model/callstack'
@@ -22,7 +22,8 @@ export const defaultState = {
   line: 0,
   partitionName: '',
   nextState: {},
-  clipBoard: ''
+  clipBoard: '',
+  objOpenStates: []
 }
 
 //
@@ -85,6 +86,11 @@ const discloseStates = () => {
 // Services functions called by the UI.
 //
 export const uiServiceFunctions = {
+  toggleObjOpenState: index => {
+    const objOpenStates = partitionState.objOpenStates
+    objOpenStates[index] = !objOpenStates[index]
+    partitionState.objOpenStates = objOpenStates
+  },
   startDebug: () => {
     if (allStates.length === 0) {
       return
@@ -100,6 +106,7 @@ export const uiServiceFunctions = {
         const tos = allStates[index].callStack.length - 1
         setState({
           displayModule: true,
+          objOpenStates: Object.keys(allStates[index].nextState).map(e => false),
           clipBoard: JSON.stringify({ file: allStates[index].callStack[tos].moduleName, line: allStates[index].callStack[tos].line, stack: allStates[index].callStack }),
           moduleName: allStates[index].callStack[tos].moduleName,
           line: allStates[index].callStack[tos].line,

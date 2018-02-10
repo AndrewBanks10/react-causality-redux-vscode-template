@@ -62,21 +62,18 @@ export const uiServiceFunctions = {
         // This will turn off the busy indicator in the UI and display articles.
         setState({ isBusy: false, newsObj })
       },
-      (errorMsg) => {
+      errorMsg => {
         // This will turn off the busy indicator in the UI and display an error message.
         setState({ isBusy: false, errorMsg })
       }
     )
   },
-  closeNews: () => {
-    partitionState.newsObj = initialNewsObj
-  },
-  clearError: () => {
-    partitionState.errorMsg = ''
-  },
-  clear: () => {
-    partitionState.newsSources = []
-  }
+  closeNews: () =>
+    (partitionState.newsObj = initialNewsObj),
+  clearError: () =>
+    (partitionState.errorMsg = ''),
+  clear: () =>
+    (partitionState.newsSources = [])
 }
 
 const handleWindowResize = () => {

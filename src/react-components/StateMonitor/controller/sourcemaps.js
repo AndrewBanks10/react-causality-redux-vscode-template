@@ -23,6 +23,5 @@ const handleTSSourceMapsComplete = () => {
   }
 }
 
-export const handleTSSourceMaps = () => {
+export const handleTSSourceMaps = () =>
   loadSourceMaps(handleTSSourceMapsComplete)
-}

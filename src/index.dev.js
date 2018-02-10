@@ -4,7 +4,7 @@ import { AppContainer } from 'react-hot-loader'
 //
 // The below is the necessary technique to utilize hot re-loading of react.
 //
-const renderRoot = (TheApp) => {
+const renderRoot = TheApp => {
   render(
     <AppContainer warnings={false}>
       <TheApp />

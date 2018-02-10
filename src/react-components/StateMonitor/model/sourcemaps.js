@@ -20,7 +20,7 @@ let scriptUrls = []
 export const setIsTypeScript = val =>
   (isTypescript = val)
 
-export function mapModule (frameModule) {
+export const mapModule = frameModule => {
   // If the source maps are not valid do not translate yet.
   // Once they become valid, translation will occur.
   if (!sourcemapsValid || !doTSSourceMaps) {

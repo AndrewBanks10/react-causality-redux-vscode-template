@@ -5,17 +5,15 @@ import AppBar from 'material-ui/AppBar'
 import RaisedButton from 'material-ui/RaisedButton'
 import NavMenu from '../NavMenu'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Loader from '../common/Loader'
 
 const MuiTheme = getMuiTheme()
 
 export const LoaderNews = ({isBusy}) => {
-  let className = ''
-  if (isBusy) {
-    className = styles.loader
+  if (!isBusy) {
+    return null
   }
-  return (
-    <div className={className} />
-  )
+  return <Loader />
 }
 
 export const ErrorMessage = ({ errorMsg, clearError }) => {

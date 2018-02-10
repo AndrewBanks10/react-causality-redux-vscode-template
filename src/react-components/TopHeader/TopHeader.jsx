@@ -1,7 +1,6 @@
 import React from 'react'
 import styles from '../../stylesheets/TopHeader'
 import img from '../../assets/react.png'
-
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 const MuiTheme = getMuiTheme()
 

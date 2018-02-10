@@ -11,24 +11,20 @@ export const defaultState = {
 }
 
 export const uiServiceFunctions = {
-  onChangeURL: (url) => {
-    partitionState.currentUrl = url
-  },
+  onChangeURL: url =>
+    (partitionState.currentUrl = url),
   changeURL: () => {
     replaceHistory(partitionState.currentUrl)
     partitionState.currentUrl = ''
   },
-  onChangeGo: (goText) => {
-    partitionState.goText = goText
-  },
+  onChangeGo: goText =>
+    (partitionState.goText = goText),
   onGo: () => {
     historyGo(partitionState.goText)
     partitionState.goText = ''
   },
-  onForward: () => {
-    historyForward()
-  },
-  onBack: () => {
+  onForward: () =>
+    historyForward(),
+  onBack: () =>
     historyBack()
-  }
 }

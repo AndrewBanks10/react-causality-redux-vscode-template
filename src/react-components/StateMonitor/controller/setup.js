@@ -5,12 +5,12 @@ import { handleTSSourceMaps } from './sourcemaps'
 
 const stateMonitorPartition = 'stateMonitorPartition'
 
-const { setState, getState, wrappedComponents } = establishControllerConnections({
+const { partitionState, setState, getState, wrappedComponents } = establishControllerConnections({
   module,
   partition: { partitionName: stateMonitorPartition, defaultState, uiServiceFunctions },
   uiComponent: MonitorComponent,
   uiComponentName: 'MonitorComponent'
 })
 
-export { setState, getState, stateMonitorPartition, handleTSSourceMaps }
+export { partitionState, setState, getState, stateMonitorPartition, handleTSSourceMaps }
 export default wrappedComponents.MonitorComponent
