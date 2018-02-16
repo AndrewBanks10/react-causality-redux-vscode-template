@@ -11,12 +11,13 @@ const TopHeader = () =>
         <tbody>
           <tr>
             <td className={styles.reactContainer}>
-              <img className={styles.reactLogo} src={img} />
+              <a href='https://www.npmjs.com/package/create-react-cr-project' target='_blank'>
+                <img title='Get the React Development Environment' className={styles.reactLogo} src={img} />
+              </a>
             </td>
             <td className={styles.topTextContainer} style={{ color: MuiTheme.appBar.textColor }}>
               <h1 className={styles.titleText}>React Development Environment Demo</h1>
-
-              <span className={styles.descriptionText}>Simply install and you are coding and debugging immediately.</span>
+              <span className={styles.descriptionText}>Simply click the react image to download and you are coding and debugging immediately.</span>
             </td>
           </tr>
         </tbody>
