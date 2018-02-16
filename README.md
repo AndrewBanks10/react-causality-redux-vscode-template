@@ -1,9 +1,11 @@
-# Create-react-project with vscode, perhaps the best environment for developing with react. 
+# Create-react-cr-project with vscode, perhaps the best environment for developing with react. 
 [![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com) 
 
-A complete react-causality-redux es6 jsx react project creator for Visual Studio Code based on skolmer [react-hot-boilerplate-vscode](https://github.com/skolmer/react-hot-boilerplate-vscode). Also, some of information below is provided by [skolmer](https://github.com/skolmer/react-hot-boilerplate-vscode).
+A complete react-causality-redux es6 jsx react project creator for Visual Studio Code originally based on skolmer [react-hot-boilerplate-vscode](https://github.com/skolmer/react-hot-boilerplate-vscode). Also, some of information below is provided by [skolmer](https://github.com/skolmer/react-hot-boilerplate-vscode).
 
-(**Please note, create-react-project is only compatible with node 8.1.3 or higher.**)
+[Download the React Development Environment.](https://www.npmjs.com/package/create-react-cr-project)
+
+(**Please note, create-react-cr-project is only compatible with node 8.1.3 or higher.**)
 
 ## Extensive List Of Features
 * **Significantly less coding and debugging than with react alone or with react and redux.**
@@ -20,6 +22,7 @@ A complete react-causality-redux es6 jsx react project creator for Visual Studio
 * Clean separation between business logic and react components. No entangling program state and business code wiht the UI. Allows react components to be pure UI components. This way when react becomes obsolute, you simply take it out and install a new UI without having to rewrite any program state code or business code.
 * The ability to build independent react web components with the react UI part of the component being free of business logic.
 * Support for the react router and redux store synchronization with your routes such that any route component will retain its redux store values given route changes and/or browser forward or back movements.
+* React loadable support (code splitting).
 * React/enzyme auto test environment with vscode debugging.
 * Dll library support for debugging for much faster debug compilation.
 * Dll library support for production. Users do not have to reload react code for example, each time they visit your site. Ideally, they need only reload your code when it changes.
@@ -27,6 +30,7 @@ A complete react-causality-redux es6 jsx react project creator for Visual Studio
 * urlLoader support for your images, fonts etc. Inlines them in the production bundle for faster loading if they are below a threshhold. Also, they can be imported into your react components.
 * Minification build bundles for both css and js for production use.
 * Allows you to view your production product after a build.
+* Supports progressive web apps for production. You can opt out of this.
 * Supports material-ui react components.
 * Supports development and production proxies so that you can proxy REST requests to your production server or some stub server such as the json-server.
 
