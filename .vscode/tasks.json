@@ -88,8 +88,8 @@
 					},
 					"background": {
 						"activeOnStart": true,
-						"beginsPattern": "^webpack: Compiling\\.\\.\\.$",
-						"endsPattern": "^webpack: (Compiled successfully|Failed to compile)\\.$"
+						"beginsPattern": "^Starting servers$",
+						"endsPattern": "^Servers started$"
 					}
 				},
 				{
@@ -155,6 +155,14 @@
 		{
 			"args": [
 				"run",
+				"config",
+				"--silent"
+			],
+			"taskName": "Run Project Configuration"
+		},
+		{
+			"args": [
+				"run",
 				"build",
 				"--silent"
 			],
@@ -175,14 +183,6 @@
 				"--silent"
 			],
 			"taskName": "(Internal)BuildMochaDebug"
-		},
-		{
-			"args": [
-				"run",
-				"config",
-				"--silent"
-			],
-			"taskName": "Run Project Configuration"
 		},
 		{
 			"args": [
