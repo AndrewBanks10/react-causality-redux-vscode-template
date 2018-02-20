@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { findNodeFunction, update, nodeExists, testCauseAndEffectWithExists, testCauseAndEffectWithNotExists } from '../../../test/projectsetup'
 import history from '../../../src/history/history'
-import { NEWSROUTE } from '../MainApp/MainApp'
+import { newsRoute } from '../../util/routes'
 
 //
 // This verifies the NewsForm component and its business logic.
@@ -9,7 +9,7 @@ import { NEWSROUTE } from '../MainApp/MainApp'
 describe('View NewsForm', function () {
   this.slow(2000)
   before(function () {
-    history.replace(NEWSROUTE)
+    history.replace(newsRoute)
     update()
   })
 

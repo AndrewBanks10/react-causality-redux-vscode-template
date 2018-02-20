@@ -35,9 +35,9 @@ export const findNodeFunction = (type, id) =>
 
 export const nodeExists = selector => findNode(selector).first().exists()
 export const nodeString = selector => findNode(selector).first().text()
-export const nodeValue = selector => findNode(selector).get(0).value
+export const nodeValue = selector => findNode(selector).props().value
 export const simulateClick = selector => findNode(selector).first().simulate('click')
-export const simulateInput = (selector, value) => findNode(selector).first().simulate('change', {target: {value}})
+export const simulateInput = (selector, value) => findNode(selector).first().simulate('change', { target: { value } })
 export const update = () => appMount.update()
 export { appMount }
 

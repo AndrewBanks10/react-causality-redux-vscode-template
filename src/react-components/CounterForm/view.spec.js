@@ -1,11 +1,11 @@
 import { findNodeFunction, update, testCauseAndEffectWithHtmlString } from '../../../test/projectsetup'
 import history from '../../../src/history/history'
-import { COUNTERROUTE } from '../MainApp/MainApp'
+import { counterRoute } from '../../util/routes'
 
 describe('View CounterForm', function () {
   this.slow(200)
   before(function () {
-    history.replace(COUNTERROUTE)
+    history.replace(counterRoute)
     update()
   })
   // Click on the increment button
